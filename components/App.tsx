@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { CalendarDays, Map as MapIcon, Route, type LucideIcon } from 'lucide-react';
 import { Home } from './screens/Home';
 import { Today } from './screens/Today';
 import { TripView } from './screens/TripView';
@@ -10,7 +11,7 @@ import { applyOps, type EditResult } from '@/lib/ops';
 import { DEFAULT_SETTINGS, load, loadSettings, sampleTrip, save, saveSettings, type Persisted } from '@/lib/store';
 import { todayIndex } from '@/lib/derive';
 import { toISO, toMin } from '@/lib/format';
-import { C, rule, sans, serif } from '@/lib/theme';
+import { C, rule, sans } from '@/lib/theme';
 import type { Settings, Sheet, Stop, Trip } from '@/lib/types';
 
 type Tab = 'home' | 'today' | 'trip' | 'map';
@@ -285,10 +286,10 @@ export default function App() {
     }
   };
 
-  const tabs: [Tab, string][] = [
-    ['today', 'Today'],
-    ['trip', 'Trip'],
-    ['map', 'Map'],
+  const tabs: [Tab, string, LucideIcon][] = [
+    ['today', 'Today', CalendarDays],
+    ['trip', 'Trip', Route],
+    ['map', 'Map', MapIcon],
   ];
 
   return (
@@ -355,32 +356,41 @@ export default function App() {
         )}
 
         <nav
+          aria-label="Trip sections"
           style={{
             display: effTab === 'home' ? 'none' : 'grid',
             position: 'absolute',
             left: 0,
             right: 0,
             bottom: 0,
-            height: 84,
+            zIndex: 20,
+            height: 'var(--tabbar)',
             background: 'rgba(243,238,228,.96)',
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
             borderTop: `1px solid ${rule(0.1)}`,
             gridTemplateColumns: 'repeat(3,1fr)',
-            padding: '0 8px 22px',
+            padding: '0 8px var(--safe-bottom)',
           }}
         >
-          {tabs.map(([k, l]) => (
-            <div
-              key={k}
-              onClick={() => go(k)}
-              role="button"
-              tabIndex={0}
-              aria-current={effTab === k ? 'page' : undefined}
-              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 7, cursor: 'pointer', color: effTab === k ? C.ink : C.muted2 }}
-            >
-              <div style={{ width: 18, height: 2, borderRadius: 1, background: effTab === k ? settings.accent : 'transparent' }} />
-              <div style={{ font: serif(17, 1) }}>{l}</div>
-            </div>
-          ))}
+          {tabs.map(([k, l, Icon]) => {
+            const active = effTab === k;
+            return (
+              <div
+                key={k}
+                onClick={() => go(k)}
+                role="button"
+                tabIndex={0}
+                aria-label={l}
+                title={l}
+                aria-current={active ? 'page' : undefined}
+                style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 5, cursor: 'pointer', color: active ? C.ink : C.muted2 }}
+              >
+                <Icon size={22} strokeWidth={active ? 1.9 : 1.6} />
+                <div style={{ width: 4, height: 4, borderRadius: 2, background: active ? settings.accent : 'transparent' }} />
+              </div>
+            );
+          })}
         </nav>
 
         <SheetFrame open={!!sheet} onClose={() => setSheet(null)}>

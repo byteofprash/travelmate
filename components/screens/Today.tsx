@@ -77,7 +77,7 @@ export const Today = forwardRef<HTMLDivElement, {
   const cards = settings.cardStyle === 'cards';
 
   return (
-    <div ref={ref} className="scroll" style={{ position: 'absolute', inset: '0 0 84px 0', overflowY: 'auto', padding: '58px 0 24px' }}>
+    <div ref={ref} className="scroll" style={{ position: 'absolute', inset: '0 0 var(--tabbar) 0', overflowY: 'auto', padding: '58px 0 24px' }}>
       <div style={{ padding: '2px 16px 0 22px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
           <div onClick={p.onHome} role="button" tabIndex={0} style={{ font: mono(500, 11), letterSpacing: '.08em', textTransform: 'uppercase', color: C.muted, cursor: 'pointer' }}>

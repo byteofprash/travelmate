@@ -23,7 +23,7 @@ export function TripView({
   const accent = settings.accent;
   const rows = routeRows(meta, trip);
   return (
-    <div className="scroll" style={{ position: 'absolute', inset: '0 0 84px 0', overflowY: 'auto', padding: '58px 0 24px' }}>
+    <div className="scroll" style={{ position: 'absolute', inset: '0 0 var(--tabbar) 0', overflowY: 'auto', padding: '58px 0 24px' }}>
       <div style={{ padding: '6px 22px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div onClick={onHome} role="button" tabIndex={0} style={{ font: mono(500, 11), letterSpacing: '.08em', textTransform: 'uppercase', color: C.muted, cursor: 'pointer' }}>
           ‹ All trips

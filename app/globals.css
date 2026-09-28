@@ -21,15 +21,22 @@ h1 { font-weight: 400; }
   align-items: center;
   justify-content: center;
 }
+:root {
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --tabbar: calc(52px + var(--safe-bottom));
+}
+/* On phones the app is pinned to the viewport so the tab bar always sits on the bottom edge. */
 .phone {
-  position: relative;
-  width: 100vw;
-  height: 100dvh;
+  position: fixed;
+  inset: 0;
   overflow: hidden;
 }
 @media (min-width: 520px) and (min-height: 700px) {
   .stage { padding: 20px; }
+  :root { --safe-bottom: 0px; }
   .phone {
+    position: relative;
+    inset: auto;
     width: 402px;
     height: min(874px, calc(100dvh - 40px));
     border-radius: 44px;

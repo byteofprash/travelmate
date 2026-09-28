@@ -54,7 +54,7 @@ export function MapView({
   });
 
   return (
-    <div ref={ref} style={{ position: 'absolute', inset: '0 0 84px 0', overflow: 'hidden', background: C.sand }}>
+    <div ref={ref} style={{ position: 'absolute', inset: '0 0 var(--tabbar) 0', overflow: 'hidden', background: C.sand }}>
       <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} style={{ position: 'absolute', inset: 0, display: 'block' }}>
         <defs>
           <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
