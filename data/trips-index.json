@@ -1,0 +1,38 @@
+[
+  {
+    "id": "cph",
+    "name": "Copenhagen & Malmö",
+    "start": "2026-10-27",
+    "end": "2026-10-30",
+    "nights": 3,
+    "summary": "Denmark and Sweden, across the Øresund Bridge",
+    "status": "empty"
+  },
+  {
+    "id": "lon",
+    "name": "London",
+    "start": "2026-11-02",
+    "end": "2026-11-05",
+    "nights": 3,
+    "summary": "United Kingdom",
+    "status": "empty"
+  },
+  {
+    "id": "vn",
+    "name": "Vietnam",
+    "start": "2026-11-09",
+    "end": "2026-11-16",
+    "nights": 7,
+    "summary": "Vietnam",
+    "status": "empty"
+  },
+  {
+    "id": "eg",
+    "name": "Egypt",
+    "start": "2026-12-23",
+    "end": "2026-12-31",
+    "nights": 8,
+    "summary": "Hurghada, Luxor, Aswan, Cairo",
+    "status": "planned"
+  }
+]

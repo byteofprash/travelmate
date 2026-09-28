@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+</helmet>
+<div style="display:grid;grid-template-columns:62px 18px minmax(0,1fr);align-items:stretch;min-height:44px;font-family:Geist,system-ui,sans-serif">
+  <div style="font:400 11.5px/1 'Geist Mono',monospace;color:#6E665B;text-align:right;padding-top:15px">{{ timeText }}</div>
+  <div style="display:flex;justify-content:center"><div style="width:0;border-left:1.5px dashed rgba(31,27,22,.28)"></div></div>
+  <div style="padding:10px 6px 10px 8px;display:flex;flex-direction:column;gap:3px">
+    <div style="font:500 10.5px/1.2 'Geist Mono',monospace;letter-spacing:.07em;text-transform:uppercase;color:{{ modeColor }}">{{ modeLine }}</div>
+    <div style="font:400 12.5px/1.35 Geist,sans-serif;color:#6E665B">{{ detailText }}</div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:360,&quot;height&quot;:64},&quot;mode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;car&quot;,&quot;options&quot;:[&quot;car&quot;,&quot;walk&quot;,&quot;train&quot;,&quot;metro&quot;,&quot;flight&quot;],&quot;tsType&quot;:&quot;'car'|'walk'|'train'|'metro'|'flight'&quot;},&quot;duration&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;35 min&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;time&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;08:00&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;detail&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Private vehicle over the Nile bridge&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+const MODES={car:['Car','#4A443B'],walk:['Walk','#2F6F73'],train:['Train','#4A5B8C'],metro:['Metro','#4A5B8C'],flight:['Flight','#4A5B8C']};
+class Component extends DCLogic {
+  renderVals(){
+    const p=this.props;const m=MODES[p.mode??'car']||MODES.car;const dur=p.duration??'35 min';
+    return {timeText:p.time??'',modeLine:m[0]+(dur?' · '+dur:''),modeColor:m[1],detailText:p.detail??'Private vehicle over the Nile bridge'};
+  }
+}
+</script>
+</body>
+</html>

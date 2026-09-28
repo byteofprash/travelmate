@@ -1,0 +1,1055 @@
+{
+  "id": "eg",
+  "year": 2026,
+  "month": 12,
+  "days": [
+    {
+      "num": 1,
+      "d": 23,
+      "wd": "Wed",
+      "title": "Munich to Hurghada",
+      "mode": "Self-planned",
+      "stay": "lily",
+      "summary": "Two flights south, via France",
+      "items": [
+        {
+          "kind": "stop",
+          "id": "z1",
+          "time": "—",
+          "title": "Depart Munich",
+          "sub": "MUC · Lufthansa to France",
+          "tag": "Flight",
+          "note": "Add flight numbers and times."
+        },
+        {
+          "kind": "leg",
+          "mode": "flight",
+          "dur": "—",
+          "text": "Connection in France, then easyJet to Hurghada"
+        },
+        {
+          "kind": "stop",
+          "id": "z2",
+          "time": "—",
+          "title": "Arrive Hurghada International",
+          "sub": "HRG · easyJet",
+          "tag": "Arrival",
+          "ll": [
+            27.178,
+            33.799
+          ]
+        },
+        {
+          "kind": "leg",
+          "mode": "car",
+          "dur": "20 min",
+          "text": "Taxi to the apartment"
+        },
+        {
+          "kind": "stop",
+          "id": "z3",
+          "time": "—",
+          "title": "Check in",
+          "sub": "Lily Apartments · Overnight",
+          "tag": "Stay",
+          "stay": "lily",
+          "ll": [
+            27.215,
+            33.83
+          ]
+        }
+      ],
+      "theme": "Southbound",
+      "blurb": "Two flights from Munich and a first night by the Red Sea.",
+      "story": "Munich to France, then on to Hurghada. Nothing to do tonight but check in and rest.",
+      "bring": [
+        "Passport",
+        "e-Visa",
+        "Euros & USD"
+      ]
+    },
+    {
+      "num": 2,
+      "d": 24,
+      "wd": "Thu",
+      "title": "Red Sea to Luxor",
+      "mode": "Guided",
+      "stay": "jv",
+      "summary": "A morning by the sea, then the drive to Luxor",
+      "items": [
+        {
+          "kind": "stop",
+          "id": "a1",
+          "time": "09:30",
+          "title": "Pick-up",
+          "sub": "Tour itinerary says the airport. Confirm Lily Apartments",
+          "tag": "Pick-up",
+          "ll": [
+            27.215,
+            33.83
+          ],
+          "note": "Pick-up point needs confirming with the tour operator."
+        },
+        {
+          "kind": "leg",
+          "mode": "car",
+          "dur": "15 min",
+          "text": "Private vehicle to the coast"
+        },
+        {
+          "kind": "stop",
+          "id": "a2",
+          "time": "10:00",
+          "title": "Red Sea visit",
+          "sub": "Hurghada coastline",
+          "tag": "Visit",
+          "dur": "2–3 hr",
+          "ll": [
+            27.225,
+            33.845
+          ]
+        },
+        {
+          "kind": "leg",
+          "mode": "car",
+          "dur": "4 hr 15 min",
+          "text": "Private vehicle, 290 km via Safaga and Qena",
+          "time": "13:00",
+          "via": [
+            [
+              26.73,
+              33.93
+            ],
+            [
+              26.16,
+              32.72
+            ]
+          ]
+        },
+        {
+          "kind": "stop",
+          "id": "a3",
+          "time": "17:30",
+          "title": "Drop-off at your hotel",
+          "sub": "Jolie Ville Kings Island · Overnight",
+          "tag": "Stay",
+          "stay": "jv",
+          "ll": [
+            25.655,
+            32.618
+          ]
+        }
+      ],
+      "theme": "From the sea to the Nile",
+      "blurb": "A morning on the coast, then the long drive to Luxor.",
+      "story": "A slow morning on the coast, then four hours across the Eastern Desert, reaching the Nile at Qena and following it down to Luxor.",
+      "bring": [
+        "Swimwear",
+        "Sunscreen",
+        "Snacks for the drive"
+      ]
+    },
+    {
+      "num": 3,
+      "d": 25,
+      "wd": "Fri",
+      "title": "Luxor West Bank",
+      "mode": "Guided",
+      "stay": "jv",
+      "summary": "Tombs, temples and lunch across the Nile",
+      "items": [
+        {
+          "kind": "stop",
+          "id": "b1",
+          "time": "07:00",
+          "title": "Breakfast at the hotel",
+          "sub": "Jolie Ville Kings Island",
+          "tag": "Meal",
+          "dur": "45 min",
+          "ll": [
+            25.655,
+            32.618
+          ]
+        },
+        {
+          "kind": "leg",
+          "mode": "car",
+          "dur": "40 min",
+          "text": "Hotel pick-up by private vehicle, over the Nile bridge",
+          "time": "08:00"
+        },
+        {
+          "kind": "stop",
+          "id": "b2",
+          "time": "08:40",
+          "title": "Valley of the Kings",
+          "sub": "West Bank",
+          "tag": "Visit",
+          "dur": "2 hr",
+          "ll": [
+            25.7402,
+            32.6014
+          ],
+          "note": "Standard ticket covers 3 tombs. Tutankhamun’s tomb is extra."
+        },
+        {
+          "kind": "leg",
+          "mode": "car",
+          "dur": "10 min",
+          "text": "Private vehicle"
+        },
+        {
+          "kind": "stop",
+          "id": "b3",
+          "time": "11:00",
+          "title": "Temple of Hatshepsut",
+          "sub": "Deir el-Bahari",
+          "tag": "Visit",
+          "dur": "1 hr",
+          "ll": [
+            25.7381,
+            32.6065
+          ]
+        },
+        {
+          "kind": "leg",
+          "mode": "car",
+          "dur": "10 min",
+          "text": "Private vehicle"
+        },
+        {
+          "kind": "stop",
+          "id": "b4",
+          "time": "12:20",
+          "title": "Colossi of Memnon",
+          "sub": "Photo stop",
+          "tag": "Visit",
+          "dur": "20 min",
+          "ll": [
+            25.7206,
+            32.6104
+          ]
+        },
+        {
+          "kind": "leg",
+          "mode": "car",
+          "dur": "10 min",
+          "text": "Private vehicle"
+        },
+        {
+          "kind": "stop",
+          "id": "b5",
+          "time": "13:00",
+          "title": "Lunch at a local Egyptian restaurant",
+          "sub": "West Bank · Included",
+          "tag": "Meal",
+          "dur": "1 hr",
+          "ll": [
+            25.712,
+            32.626
+          ]
+        },
+        {
+          "kind": "leg",
+          "mode": "car",
+          "dur": "40 min",
+          "text": "Back over the Nile bridge"
+        },
+        {
+          "kind": "stop",
+          "id": "b6",
+          "time": "15:00",
+          "title": "Return to your hotel",
+          "sub": "Jolie Ville Kings Island · Overnight",
+          "tag": "Stay",
+          "stay": "jv",
+          "ll": [
+            25.655,
+            32.618
+          ]
+        }
+      ],
+      "theme": "City of the dead",
+      "blurb": "Royal tombs, Hatshepsut’s temple and the Colossi, across the Nile.",
+      "story": "The West Bank was where Thebes buried its kings. Tombs cut deep into the valley, a queen’s terraced temple against the cliffs, and two stone giants in the fields.",
+      "bring": [
+        "Cash for tickets",
+        "Hat",
+        "Water"
+      ]
+    },
+    {
+      "num": 4,
+      "d": 26,
+      "wd": "Sat",
+      "title": "Luxor East Bank",
+      "mode": "Guided",
+      "stay": "jv",
+      "summary": "Karnak and Luxor Temple",
+      "items": [
+        {
+          "kind": "stop",
+          "id": "c1",
+          "time": "07:30",
+          "title": "Breakfast at the hotel",
+          "sub": "Jolie Ville Kings Island",
+          "tag": "Meal",
+          "dur": "45 min",
+          "ll": [
+            25.655,
+            32.618
+          ]
+        },
+        {
+          "kind": "leg",
+          "mode": "car",
+          "dur": "20 min",
+          "text": "Hotel pick-up",
+          "time": "08:30"
+        },
+        {
+          "kind": "stop",
+          "id": "c2",
+          "time": "08:50",
+          "title": "Karnak Temple",
+          "sub": "East Bank",
+          "tag": "Visit",
+          "dur": "2.5 hr",
+          "ll": [
+            25.7188,
+            32.6573
+          ]
+        },
+        {
+          "kind": "leg",
+          "mode": "car",
+          "dur": "10 min",
+          "text": "Private vehicle along the Corniche"
+        },
+        {
+          "kind": "stop",
+          "id": "c3",
+          "time": "11:45",
+          "title": "Luxor Temple",
+          "sub": "City centre",
+          "tag": "Visit",
+          "dur": "1.5 hr",
+          "ll": [
+            25.6995,
+            32.6391
+          ]
+        },
+        {
+          "kind": "leg",
+          "mode": "walk",
+          "dur": "8 min",
+          "text": "Walk along the Corniche"
+        },
+        {
+          "kind": "stop",
+          "id": "c4",
+          "time": "13:30",
+          "title": "Lunch at a local Egyptian restaurant",
+          "sub": "East Bank · Included",
+          "tag": "Meal",
+          "dur": "1 hr",
+          "ll": [
+            25.7018,
+            32.6412
+          ]
+        },
+        {
+          "kind": "leg",
+          "mode": "car",
+          "dur": "15 min",
+          "text": "Drop-off at your hotel"
+        },
+        {
+          "kind": "stop",
+          "id": "c5",
+          "time": "15:00",
+          "title": "Back at the hotel",
+          "sub": "Jolie Ville Kings Island · Overnight",
+          "tag": "Stay",
+          "stay": "jv",
+          "ll": [
+            25.655,
+            32.618
+          ]
+        }
+      ],
+      "theme": "City of the living",
+      "blurb": "Karnak in the morning, Luxor Temple at midday.",
+      "story": "Karnak’s forest of columns first, before the heat, then Luxor Temple in the centre of town. Lunch by the Corniche and a free afternoon.",
+      "bring": [
+        "Comfortable shoes",
+        "Camera"
+      ]
+    },
+    {
+      "num": 5,
+      "d": 27,
+      "wd": "Sun",
+      "title": "Luxor to Aswan",
+      "mode": "Guided",
+      "stay": "bk",
+      "summary": "South along the Nile, two temples on the way",
+      "items": [
+        {
+          "kind": "stop",
+          "id": "d1",
+          "time": "07:00",
+          "title": "Breakfast at the hotel",
+          "sub": "Jolie Ville Kings Island",
+          "tag": "Meal",
+          "dur": "45 min",
+          "ll": [
+            25.655,
+            32.618
+          ]
+        },
+        {
+          "kind": "leg",
+          "mode": "car",
+          "dur": "1 hr 45 min",
+          "text": "Hotel pick-up, private vehicle south, 110 km",
+          "time": "08:00"
+        },
+        {
+          "kind": "stop",
+          "id": "d2",
+          "time": "09:45",
+          "title": "Edfu Temple",
+          "sub": "Temple of Horus",
+          "tag": "Visit",
+          "dur": "1.5 hr",
+          "ll": [
+            24.978,
+            32.873
+          ]
+        },
+        {
+          "kind": "leg",
+          "mode": "car",
+          "dur": "1 hr 15 min",
+          "text": "Private vehicle, 65 km"
+        },
+        {
+          "kind": "stop",
+          "id": "d3",
+          "time": "12:30",
+          "title": "Lunch during the tour",
+          "sub": "On the road · Included",
+          "tag": "Meal",
+          "dur": "1 hr",
+          "ll": [
+            24.6,
+            32.93
+          ]
+        },
+        {
+          "kind": "leg",
+          "mode": "car",
+          "dur": "30 min",
+          "text": "Private vehicle"
+        },
+        {
+          "kind": "stop",
+          "id": "d4",
+          "time": "14:00",
+          "title": "Kom Ombo Temple",
+          "sub": "Temple of Sobek & Haroeris",
+          "tag": "Visit",
+          "dur": "1 hr",
+          "ll": [
+            24.452,
+            32.928
+          ]
+        },
+        {
+          "kind": "leg",
+          "mode": "car",
+          "dur": "1 hr",
+          "text": "Private vehicle to Aswan, 50 km"
+        },
+        {
+          "kind": "stop",
+          "id": "d5",
+          "time": "16:30",
+          "title": "Drop-off at your hotel",
+          "sub": "Bakar House · Overnight",
+          "tag": "Stay",
+          "stay": "bk",
+          "ll": [
+            24.1,
+            32.878
+          ]
+        }
+      ],
+      "theme": "Down the Nile",
+      "blurb": "Two riverside temples on the drive south to Aswan.",
+      "story": "Horus at Edfu, then the double temple of Kom Ombo above the river, arriving in Nubian Aswan by late afternoon.",
+      "bring": [
+        "Cash for tips",
+        "Snacks"
+      ]
+    },
+    {
+      "num": 6,
+      "d": 28,
+      "wd": "Mon",
+      "title": "Abu Simbel, then Cairo",
+      "mode": "Guided",
+      "stay": "lc",
+      "summary": "A dawn drive into the desert, an evening flight north",
+      "items": [
+        {
+          "kind": "stop",
+          "id": "g1",
+          "time": "04:00",
+          "title": "Early pick-up",
+          "sub": "Bakar House",
+          "tag": "Pick-up",
+          "ll": [
+            24.1,
+            32.878
+          ],
+          "note": "Bring a jacket, the desert is cold before sunrise."
+        },
+        {
+          "kind": "leg",
+          "mode": "car",
+          "dur": "3 hr 30 min",
+          "text": "Private vehicle, 280 km through the desert"
+        },
+        {
+          "kind": "stop",
+          "id": "g2",
+          "time": "07:45",
+          "title": "Abu Simbel Temples",
+          "sub": "Ramses II and Queen Nefertari",
+          "tag": "Visit",
+          "dur": "2 hr",
+          "ll": [
+            22.336,
+            31.626
+          ]
+        },
+        {
+          "kind": "leg",
+          "mode": "car",
+          "dur": "3 hr 30 min",
+          "text": "Private vehicle back to Aswan",
+          "time": "10:00"
+        },
+        {
+          "kind": "leg",
+          "mode": "car",
+          "dur": "25 min",
+          "text": "Private transfer to Aswan Airport",
+          "time": "14:00"
+        },
+        {
+          "kind": "stop",
+          "id": "g3",
+          "time": "16:30",
+          "title": "Flight ASW → CAI",
+          "sub": "Aswan International",
+          "tag": "Flight",
+          "dur": "1 hr 25",
+          "ll": [
+            23.964,
+            32.82
+          ],
+          "note": "Add flight number."
+        },
+        {
+          "kind": "leg",
+          "mode": "car",
+          "dur": "1 hr",
+          "text": "Car from Cairo International to Giza",
+          "time": "18:15"
+        },
+        {
+          "kind": "stop",
+          "id": "g4",
+          "time": "19:30",
+          "title": "Check in",
+          "sub": "Locanda Pyramid View · Overnight",
+          "tag": "Stay",
+          "stay": "lc",
+          "ll": [
+            29.9755,
+            31.1435
+          ]
+        }
+      ],
+      "theme": "Dawn at Abu Simbel",
+      "blurb": "A 4 am desert drive to Ramses II, then an evening flight to Cairo.",
+      "story": "The longest day. Leave in the dark for Ramses II’s great temple near the Sudanese border, drive back, and fly north to Cairo.",
+      "bring": [
+        "Jacket",
+        "Packed breakfast",
+        "Boarding pass"
+      ]
+    },
+    {
+      "num": 7,
+      "d": 29,
+      "wd": "Tue",
+      "title": "Giza Pyramids & the Grand Egyptian Museum",
+      "mode": "Guided",
+      "stay": "lc",
+      "summary": "The plateau in the morning, the museum after",
+      "items": [
+        {
+          "kind": "leg",
+          "mode": "car",
+          "dur": "10 min",
+          "text": "Hotel pick-up",
+          "time": "08:30"
+        },
+        {
+          "kind": "stop",
+          "id": "h1",
+          "time": "08:45",
+          "title": "Great Pyramids of Giza",
+          "sub": "Giza Plateau",
+          "tag": "Visit",
+          "dur": "2 hr",
+          "ll": [
+            29.9792,
+            31.1342
+          ]
+        },
+        {
+          "kind": "leg",
+          "mode": "walk",
+          "dur": "15 min",
+          "text": "Walk down the plateau"
+        },
+        {
+          "kind": "stop",
+          "id": "h2",
+          "time": "11:00",
+          "title": "Great Sphinx",
+          "sub": "Giza Plateau",
+          "tag": "Visit",
+          "dur": "45 min",
+          "ll": [
+            29.9753,
+            31.1376
+          ]
+        },
+        {
+          "kind": "leg",
+          "mode": "car",
+          "dur": "10 min",
+          "text": "Private vehicle"
+        },
+        {
+          "kind": "stop",
+          "id": "h3",
+          "time": "12:00",
+          "title": "Lunch at a local Egyptian restaurant",
+          "sub": "Giza · Included",
+          "tag": "Meal",
+          "dur": "1 hr",
+          "ll": [
+            29.985,
+            31.13
+          ]
+        },
+        {
+          "kind": "leg",
+          "mode": "car",
+          "dur": "5 min",
+          "text": "Private vehicle"
+        },
+        {
+          "kind": "stop",
+          "id": "h4",
+          "time": "13:15",
+          "title": "Grand Egyptian Museum",
+          "sub": "GEM",
+          "tag": "Visit",
+          "dur": "3 hr",
+          "ll": [
+            29.9947,
+            31.1196
+          ]
+        },
+        {
+          "kind": "leg",
+          "mode": "car",
+          "dur": "15 min",
+          "text": "Return to your hotel"
+        },
+        {
+          "kind": "stop",
+          "id": "h5",
+          "time": "16:45",
+          "title": "Back at the hotel",
+          "sub": "Locanda Pyramid View · Overnight",
+          "tag": "Stay",
+          "stay": "lc",
+          "ll": [
+            29.9755,
+            31.1435
+          ]
+        }
+      ],
+      "theme": "The last wonder",
+      "blurb": "The Great Pyramids, the Sphinx and the GEM.",
+      "story": "The only ancient wonder still standing, the Sphinx below it, and the afternoon with Tutankhamun’s treasures at the Grand Egyptian Museum.",
+      "bring": [
+        "Passport",
+        "Water",
+        "Hat"
+      ]
+    },
+    {
+      "num": 8,
+      "d": 30,
+      "wd": "Wed",
+      "title": "Memphis, Saqqara & Dahshur",
+      "mode": "Guided",
+      "stay": "lc",
+      "summary": "The oldest pyramids, south of Cairo",
+      "items": [
+        {
+          "kind": "stop",
+          "id": "i1",
+          "time": "07:30",
+          "title": "Breakfast at the hotel",
+          "sub": "Locanda Pyramid View",
+          "tag": "Meal",
+          "dur": "45 min",
+          "ll": [
+            29.9755,
+            31.1435
+          ]
+        },
+        {
+          "kind": "leg",
+          "mode": "car",
+          "dur": "40 min",
+          "text": "Hotel pick-up, private vehicle south",
+          "time": "08:30"
+        },
+        {
+          "kind": "stop",
+          "id": "i2",
+          "time": "09:10",
+          "title": "Memphis",
+          "sub": "Ancient capital, open-air museum",
+          "tag": "Visit",
+          "dur": "1 hr",
+          "ll": [
+            29.8447,
+            31.2508
+          ]
+        },
+        {
+          "kind": "leg",
+          "mode": "car",
+          "dur": "15 min",
+          "text": "Private vehicle"
+        },
+        {
+          "kind": "stop",
+          "id": "i3",
+          "time": "10:30",
+          "title": "Saqqara & the Step Pyramid of Djoser",
+          "sub": "Saqqara Necropolis",
+          "tag": "Visit",
+          "dur": "2 hr",
+          "ll": [
+            29.8713,
+            31.2165
+          ]
+        },
+        {
+          "kind": "leg",
+          "mode": "car",
+          "dur": "15 min",
+          "text": "Private vehicle"
+        },
+        {
+          "kind": "stop",
+          "id": "i4",
+          "time": "12:45",
+          "title": "Lunch at a local Egyptian restaurant",
+          "sub": "Saqqara · Included",
+          "tag": "Meal",
+          "dur": "1 hr",
+          "ll": [
+            29.84,
+            31.225
+          ]
+        },
+        {
+          "kind": "leg",
+          "mode": "car",
+          "dur": "20 min",
+          "text": "Private vehicle"
+        },
+        {
+          "kind": "stop",
+          "id": "i5",
+          "time": "14:15",
+          "title": "Dahshur",
+          "sub": "Bent Pyramid & Red Pyramid",
+          "tag": "Visit",
+          "dur": "1.5 hr",
+          "ll": [
+            29.8,
+            31.207
+          ]
+        },
+        {
+          "kind": "leg",
+          "mode": "car",
+          "dur": "45 min",
+          "text": "Return to your hotel · End of tour services"
+        },
+        {
+          "kind": "stop",
+          "id": "i6",
+          "time": "16:30",
+          "title": "Back at the hotel",
+          "sub": "Locanda Pyramid View · Overnight",
+          "tag": "Stay",
+          "stay": "lc",
+          "ll": [
+            29.9755,
+            31.1435
+          ]
+        }
+      ],
+      "theme": "Before Giza",
+      "blurb": "Where pyramid building began, south of Cairo.",
+      "story": "Memphis, the first capital. Djoser’s Step Pyramid at Saqqara, then the Bent and Red Pyramids at Dahshur, the experiments that led to Giza.",
+      "bring": [
+        "Torch",
+        "Closed shoes",
+        "Water"
+      ]
+    },
+    {
+      "num": 9,
+      "d": 31,
+      "wd": "Thu",
+      "title": "Cairo to Munich",
+      "mode": "Self-planned",
+      "stay": null,
+      "summary": "Home via Istanbul",
+      "items": [
+        {
+          "kind": "stop",
+          "id": "j1",
+          "time": "—",
+          "title": "Check out",
+          "sub": "Locanda Pyramid View",
+          "tag": "Stay",
+          "ll": [
+            29.9755,
+            31.1435
+          ]
+        },
+        {
+          "kind": "leg",
+          "mode": "car",
+          "dur": "1 hr",
+          "text": "Car to Cairo International (CAI)"
+        },
+        {
+          "kind": "stop",
+          "id": "j2",
+          "time": "—",
+          "title": "AJet CAI → SAW",
+          "sub": "Cairo International",
+          "tag": "Flight",
+          "ll": [
+            30.1219,
+            31.4056
+          ],
+          "note": "Add flight numbers and times."
+        },
+        {
+          "kind": "leg",
+          "mode": "flight",
+          "dur": "—",
+          "text": "Connection at Istanbul Sabiha Gökçen"
+        },
+        {
+          "kind": "stop",
+          "id": "j3",
+          "time": "—",
+          "title": "Arrive Munich",
+          "sub": "MUC",
+          "tag": "Arrival"
+        }
+      ],
+      "theme": "Homeward",
+      "blurb": "Check out and fly back to Munich via Istanbul.",
+      "story": "Check out, head to Cairo International, and fly home with AJet through Sabiha Gökçen.",
+      "bring": [
+        "Passport",
+        "Boarding passes"
+      ]
+    }
+  ],
+  "stays": {
+    "lily": {
+      "id": "lily",
+      "city": "Hurghada",
+      "name": "Lily Apartments",
+      "area": "Hurghada",
+      "inShort": "Wed 23 Dec, on arrival",
+      "outShort": "Thu 24 Dec, morning",
+      "nights": [
+        0
+      ],
+      "conf": "Add confirmation",
+      "phone": "Add phone",
+      "by": "Booked yourself",
+      "notes": "The tour says “pick-up from the airport”. You’ll be here instead, so confirm the pick-up point with the tour operator.",
+      "ll": [
+        27.215,
+        33.83
+      ],
+      "day": 0
+    },
+    "jv": {
+      "id": "jv",
+      "city": "Luxor",
+      "name": "Jolie Ville Hotel & Spa Kings Island",
+      "area": "Kings Island, south of Luxor",
+      "inShort": "Thu 24 Dec, evening drop-off",
+      "outShort": "Sun 27 Dec, morning",
+      "nights": [
+        1,
+        2,
+        3
+      ],
+      "conf": "Add confirmation",
+      "phone": "Add phone",
+      "by": "Booked yourself · Tour picks up here",
+      "notes": "On an island a few kilometres south of the centre, so allow 15 minutes for every pick-up.",
+      "ll": [
+        25.655,
+        32.618
+      ],
+      "day": 2
+    },
+    "bk": {
+      "id": "bk",
+      "city": "Aswan",
+      "name": "Bakar House",
+      "area": "Aswan, West Bank (Nubian village)",
+      "inShort": "Sun 27 Dec, evening drop-off",
+      "outShort": "Mon 28 Dec, 04:00 pick-up",
+      "nights": [
+        4
+      ],
+      "conf": "Add confirmation",
+      "phone": "Add phone",
+      "by": "Booked yourself",
+      "notes": "Very early start for Abu Simbel. Ask for a packed breakfast the night before.",
+      "ll": [
+        24.1,
+        32.878
+      ],
+      "day": 4
+    },
+    "lc": {
+      "id": "lc",
+      "city": "Cairo",
+      "name": "Locanda Pyramid View",
+      "area": "Nazlet El-Semman, Giza",
+      "inShort": "Mon 28 Dec, evening",
+      "outShort": "Thu 31 Dec",
+      "nights": [
+        5,
+        6,
+        7
+      ],
+      "conf": "Add confirmation",
+      "phone": "Add phone",
+      "by": "Booked yourself",
+      "notes": "Walking distance to the Giza Plateau entrance.",
+      "ll": [
+        29.9755,
+        31.1435
+      ],
+      "day": 6
+    }
+  },
+  "journeys": [
+    {
+      "day": 0,
+      "mode": "Flight",
+      "by": "Lufthansa",
+      "from": "Munich",
+      "to": "France",
+      "dur": "Add time"
+    },
+    {
+      "day": 0,
+      "mode": "Flight",
+      "by": "easyJet",
+      "from": "France",
+      "to": "Hurghada",
+      "dur": "Add time"
+    },
+    {
+      "day": 1,
+      "mode": "Car",
+      "by": "Private, tour",
+      "from": "Hurghada",
+      "to": "Luxor",
+      "dur": "4 hr 15 min"
+    },
+    {
+      "day": 4,
+      "mode": "Car",
+      "by": "Private, tour",
+      "from": "Luxor",
+      "to": "Aswan",
+      "dur": "4 hr 30 min + stops"
+    },
+    {
+      "day": 5,
+      "mode": "Car",
+      "by": "Private, tour",
+      "from": "Aswan",
+      "to": "Abu Simbel & back",
+      "dur": "7 hr total"
+    },
+    {
+      "day": 5,
+      "mode": "Flight",
+      "by": "ASW → CAI",
+      "from": "Aswan",
+      "to": "Cairo",
+      "dur": "1 hr 25 min"
+    },
+    {
+      "day": 8,
+      "mode": "Flight",
+      "by": "AJet",
+      "from": "Cairo",
+      "to": "Istanbul SAW",
+      "dur": "Add time"
+    },
+    {
+      "day": 8,
+      "mode": "Flight",
+      "by": "AJet",
+      "from": "Istanbul SAW",
+      "to": "Munich",
+      "dur": "Add time"
+    }
+  ]
+}

@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#E6E0D5;font-family:Geist,system-ui,sans-serif;color:#1F1B16}a{color:#A8492A;text-decoration:none}a:hover{color:#1F1B16}*{box-sizing:border-box}input,textarea{font-family:inherit}::-webkit-scrollbar{width:0;height:0}</style>
+</helmet>
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px 20px;gap:48px;flex-wrap:wrap">
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="position:relative;height:100%;background:#F3EEE4;overflow:hidden;font-family:Geist,system-ui,sans-serif;color:#1F1B16">
+
+<sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+<div style="position:absolute;inset:0;overflow-y:auto;padding:58px 0 40px">
+  <div style="padding:6px 22px 0;font:500 11px/1 'Geist Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#6E665B">Autumn & winter 2026</div>
+  <h1 style="margin:14px 22px 0;font:400 44px/1 Newsreader,serif;letter-spacing:-.02em">Trips</h1>
+  <div style="margin:8px 22px 0;font:400 13.5px/1.4 Geist,sans-serif;color:#6E665B">4 upcoming · 21 nights away</div>
+  <div style="padding:10px 16px 0;display:flex;flex-direction:column">
+    <sc-for list="{{ tripMonths }}" as="mo" hint-placeholder-count="3">
+      <div style="margin:22px 6px 10px;display:flex;align-items:center;gap:12px">
+        <div style="font:italic 400 18px/1 Newsreader,serif;color:#4A443B">{{ mo.name }}</div>
+        <div style="flex:1;height:1px;background:rgba(31,27,22,.12)"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <sc-for list="{{ mo.trips }}" as="tr" hint-placeholder-count="1">
+          <div onClick="{{ tr.onClick }}" style="display:grid;grid-template-columns:54px minmax(0,1fr);gap:14px;padding:16px;border-radius:18px;background:{{ tr.bg }};color:{{ tr.fg }};border:1px solid rgba(31,27,22,.09);cursor:pointer" style-hover="transform:translateY(-1px)">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding-top:2px">
+              <div style="font:400 30px/1 Newsreader,serif">{{ tr.startDay }}</div>
+              <div style="font:500 10px/1 'Geist Mono',monospace;letter-spacing:.08em;color:{{ tr.muted }}">{{ tr.startMon }}</div>
+            </div>
+            <div style="min-width:0">
+              <div style="display:flex;justify-content:space-between;gap:8px;align-items:baseline">
+                <div style="font:500 10px/1.3 'Geist Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:{{ tr.muted }};white-space:nowrap">{{ tr.kicker }}</div>
+                <sc-if value="{{ tr.isNext }}"><div style="font:500 9.5px/1 'Geist Mono',monospace;letter-spacing:.08em;padding:4px 7px;border-radius:5px;background:{{ accent }};color:#FBF8F2">NEXT</div></sc-if>
+              </div>
+              <div style="margin-top:6px;font:400 25px/1.05 Newsreader,serif;letter-spacing:-.01em">{{ tr.name }}</div>
+              <div style="margin-top:5px;font:400 12.5px/1.4 Geist,sans-serif;color:{{ tr.muted }}">{{ tr.meta }}</div>
+              <div style="margin-top:12px;padding-top:10px;border-top:1px solid {{ tr.rule }};display:flex;justify-content:space-between;align-items:center;gap:10px">
+                <div style="font:400 12.5px/1.3 Geist,sans-serif">{{ tr.status }}</div>
+                <div style="font:400 18px/1 Newsreader,serif;color:{{ tr.muted }}">→</div>
+              </div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </sc-for>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isToday }}">
+<div ref="{{ scrollRef }}" style="position:absolute;inset:0 0 84px 0;overflow-y:auto;padding:58px 0 24px">
+  <div style="padding:2px 16px 0 22px;display:flex;justify-content:space-between;align-items:center;gap:12px">
+    <div style="display:flex;flex-direction:column;gap:5px">
+      <div onClick="{{ goHome }}" style="font:500 11px/1 'Geist Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#6E665B;cursor:pointer">‹ Trips · Egypt</div>
+      <div style="font:500 11px/1 'Geist Mono',monospace;letter-spacing:.08em;color:#6E665B">DAY {{ day.num }} OF 9</div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <div onClick="{{ openJourneys }}" title="Journeys" style="width:42px;height:42px;border-radius:21px;border:1px solid rgba(31,27,22,.16);background:#FBF8F2;display:flex;align-items:center;justify-content:center;cursor:pointer" style-hover="background:#FFFDF8">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#1F1B16" stroke-width="1.6" stroke-linejoin="round"><path d="M10.5 3.5c0-.8.7-1.5 1.5-1.5s1.5.7 1.5 1.5V9l7.5 4.5v2L13.5 13v5l2.5 2v1.5L12 20.5 8 21.5V20l2.5-2v-5L3 15.5v-2L10.5 9z"></path></svg>
+      </div>
+      <div onClick="{{ openStaysSheet }}" title="Stays" style="width:42px;height:42px;border-radius:21px;border:1px solid rgba(31,27,22,.16);background:#FBF8F2;display:flex;align-items:center;justify-content:center;cursor:pointer" style-hover="background:#FFFDF8">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1F1B16" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5v14M3 15h18v4M21 15v-3a3 3 0 0 0-3-3h-7v6"></path><circle cx="7" cy="11.5" r="2"></circle></svg>
+      </div>
+    </div>
+  </div>
+  <div style="display:flex;gap:6px;overflow-x:auto;padding:14px 22px 4px">
+    <sc-for list="{{ strip }}" as="s" hint-placeholder-count="9">
+      <div onClick="{{ s.onClick }}" style="flex:none;width:44px;padding:8px 0 9px;border-radius:12px;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;background:{{ s.bg }};color:{{ s.fg }};opacity:{{ s.op }}">
+        <div style="font:500 10px/1 'Geist Mono',monospace;letter-spacing:.06em;text-transform:uppercase">{{ s.wd }}</div>
+        <div style="font:500 19px/1 Newsreader,serif">{{ s.d }}</div>
+        <div style="width:4px;height:4px;border-radius:2px;background:{{ s.dot }}"></div>
+      </div>
+    </sc-for>
+  </div>
+  <div style="padding:22px 22px 0">
+    <div style="font:500 12px/1 Geist,sans-serif;color:{{ accent }};letter-spacing:.02em">{{ day.label }}</div>
+    <h1 style="margin:8px 0 0;font:400 38px/1.02 Newsreader,serif;letter-spacing:-.015em;text-wrap:balance">{{ day.title }}</h1>
+    <div style="margin-top:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <span style="font:500 10.5px/1 'Geist Mono',monospace;letter-spacing:.06em;text-transform:uppercase;padding:5px 8px;border-radius:6px;border:1px solid rgba(31,27,22,.18);color:#4A443B">{{ day.mode }}</span>
+      <span style="font:400 13px/1.3 Geist,sans-serif;color:#6E665B">{{ day.summary }}</span>
+    </div>
+  </div>
+  <div style="margin:20px 16px 0"><dc-import name="DaySummary" theme="{{ summary.theme }}" blurb="{{ summary.blurb }}" stats="{{ summary.stats }}" on-open="{{ openDaySheet }}" hint-size="100%,210px"></dc-import></div>
+  <div style="padding:26px 16px 8px 0">
+    <sc-for list="{{ timeline }}" as="it" hint-placeholder-count="6">
+      <sc-if value="{{ it.isNow }}">
+        <div style="display:grid;grid-template-columns:62px 18px minmax(0,1fr);align-items:center;height:22px;margin:2px 0">
+          <div style="font:600 11.5px/1 'Geist Mono',monospace;color:#D23B2E;text-align:right">{{ it.time }}</div>
+          <div style="display:flex;justify-content:center"><div style="width:11px;height:11px;border-radius:6px;background:#D23B2E;box-shadow:0 0 0 3px rgba(210,59,46,.18)"></div></div>
+          <div style="height:2px;background:#D23B2E;border-radius:1px;margin-left:-4px"></div>
+        </div>
+      </sc-if>
+      <sc-if value="{{ it.isLeg }}">
+        <dc-import name="CommuteLeg" mode="{{ it.mode }}" duration="{{ it.dur }}" time="{{ it.time }}" detail="{{ it.text }}" hint-size="100%,56px"></dc-import>
+      </sc-if>
+      <sc-if value="{{ it.isStop }}">
+        <div style="display:grid;grid-template-columns:62px 18px minmax(0,1fr);align-items:start">
+          <div style="font:500 13px/1 'Geist Mono',monospace;text-align:right;padding-top:{{ it.timePad }}">{{ it.time }}</div>
+          <div style="display:flex;justify-content:center;padding-top:{{ it.dotPad }}"><div style="width:11px;height:11px;border-radius:6px;border:2px solid {{ it.dotColor }};background:#F3EEE4"></div></div>
+          <div style="margin:{{ cardMargin }}"><dc-import name="ActivityCard" variant="{{ cardStyle }}" tag="{{ it.tag }}" title="{{ it.title }}" subtitle="{{ it.sub }}" duration="{{ it.dur }}" note="{{ it.note }}" on-open="{{ it.onClick }}" hint-size="100%,96px"></dc-import></div>
+        </div>
+      </sc-if>
+    </sc-for>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isTrip }}">
+<div style="position:absolute;inset:0 0 84px 0;overflow-y:auto;padding:58px 0 24px">
+  <div style="padding:6px 22px 0;display:flex;justify-content:space-between;align-items:center">
+    <div onClick="{{ goHome }}" style="font:500 11px/1 'Geist Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#6E665B;cursor:pointer">‹ All trips</div>
+    <div onClick="{{ openAdd }}" style="font:500 12.5px/1 Geist,sans-serif;padding:9px 12px;border-radius:999px;background:#26211B;color:#F3EEE4;cursor:pointer">Edit trip</div>
+  </div>
+  <h1 style="margin:14px 22px 0;font:400 40px/1 Newsreader,serif;letter-spacing:-.015em">Egypt</h1>
+  <div style="margin:8px 22px 0;font:400 13.5px/1.4 Geist,sans-serif;color:#6E665B">23–31 December · 9 days · 4 cities · 4 stays</div>
+  <div style="margin:20px 16px 0;padding:16px 18px;border-radius:18px;border:1px solid rgba(31,27,22,.12);display:flex;flex-direction:column;gap:10px">
+    <sc-for list="{{ routeRows }}" as="r" hint-placeholder-count="3">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="flex:1;font:400 19px/1.1 Newsreader,serif">{{ r.city }}</div>
+        <div style="font:400 11.5px/1 'Geist Mono',monospace;color:#6E665B">{{ r.nights }}</div>
+      </div>
+      <sc-if value="{{ r.hasLeg }}"><div style="padding-left:2px;font:500 10.5px/1 'Geist Mono',monospace;letter-spacing:.07em;text-transform:uppercase;color:{{ accent }}">↓ {{ r.leg }}</div></sc-if>
+    </sc-for>
+  </div>
+  <div style="padding:24px 16px 0;display:flex;flex-direction:column;gap:10px">
+    <sc-for list="{{ dayCards }}" as="dc" hint-placeholder-count="5">
+      <div onClick="{{ dc.onClick }}" style="display:grid;grid-template-columns:52px minmax(0,1fr);gap:14px;padding:14px 16px;border-radius:16px;background:#FBF8F2;border:1px solid rgba(31,27,22,.09);cursor:pointer" style-hover="background:#FFFDF8">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding-top:2px">
+          <div style="font:500 10px/1 'Geist Mono',monospace;letter-spacing:.06em;text-transform:uppercase;color:#6E665B">{{ dc.wd }}</div>
+          <div style="font:400 28px/1 Newsreader,serif">{{ dc.d }}</div>
+          <sc-if value="{{ dc.isToday }}"><div style="font:500 9.5px/1 'Geist Mono',monospace;letter-spacing:.06em;color:{{ accent }}">TODAY</div></sc-if>
+        </div>
+        <div style="min-width:0">
+          <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+            <span style="font:500 10px/1.3 'Geist Mono',monospace;letter-spacing:.06em;text-transform:uppercase;color:#6E665B;white-space:nowrap">Day {{ dc.num }} · {{ dc.mode }}</span>
+            <sc-if value="{{ dc.draft }}"><span style="font:500 10px/1 'Geist Mono',monospace;letter-spacing:.06em;text-transform:uppercase;padding:3px 6px;border-radius:5px;background:#EADFCB;color:#6B4E1F">Draft</span></sc-if>
+          </div>
+          <div style="margin-top:6px;font:400 20px/1.15 Newsreader,serif">{{ dc.title }}</div>
+          <div style="margin-top:5px;font:400 12.5px/1.4 Geist,sans-serif;color:#6E665B;text-wrap:pretty">{{ dc.highlights }}</div>
+          <div style="margin-top:9px;padding-top:9px;border-top:1px solid rgba(31,27,22,.08);font:400 12px/1.3 Geist,sans-serif;color:#4A443B">{{ dc.stay }}</div>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isMap }}">
+<div style="position:absolute;inset:0 0 84px 0;overflow:hidden;background:#EFE8DC">
+  <svg width="402" height="790" viewBox="0 0 402 790" style="position:absolute;inset:0;display:block">
+    <defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" fill="none" stroke="rgba(31,27,22,.05)" stroke-width="1"></path></pattern></defs>
+    <rect width="402" height="790" fill="url(#grid)"></rect>
+    <polygon points="{{ map.sea }}" fill="#D6E0DB"></polygon>
+    <polyline points="{{ map.nile }}" fill="none" stroke="#B9D0CC" stroke-width="{{ map.nileW }}" stroke-linecap="round" stroke-linejoin="round"></polyline>
+    <sc-for list="{{ map.routes }}" as="rt">
+      <polyline points="{{ rt.pts }}" fill="none" stroke="{{ accent }}" stroke-width="2.5" stroke-dasharray="{{ rt.dash }}" stroke-linecap="round" stroke-linejoin="round"></polyline>
+    </sc-for>
+  </svg>
+  <sc-for list="{{ map.labels }}" as="lb">
+    <div style="position:absolute;left:{{ lb.left }};top:{{ lb.top }};font:italic 400 13px/1 Newsreader,serif;color:#5E7A77;white-space:nowrap;transform:translateY(-100%)">{{ lb.t }}</div>
+  </sc-for>
+  <sc-for list="{{ map.markers }}" as="mk">
+    <div onClick="{{ mk.onClick }}" style="position:absolute;left:{{ mk.left }};top:{{ mk.top }};width:0;height:0;cursor:pointer">
+      <div style="position:absolute;left:-13px;top:-13px;width:26px;height:26px;border-radius:13px;background:{{ mk.fill }};border:2.5px solid #F3EEE4;color:#F3EEE4;display:flex;align-items:center;justify-content:center;font:500 11px/1 'Geist Mono',monospace">{{ mk.n }}</div>
+      <div style="position:absolute;top:-9px;left:{{ mk.labLeft }};right:{{ mk.labRight }};font:400 15px/18px Newsreader,serif;color:#1F1B16;white-space:nowrap;max-width:150px;overflow:hidden;text-overflow:ellipsis;display:{{ mk.labDisplay }};text-shadow:0 0 3px #EFE8DC,0 0 3px #EFE8DC,0 0 3px #EFE8DC">{{ mk.label }}</div>
+    </div>
+  </sc-for>
+  <div style="position:absolute;top:58px;left:16px;right:16px;display:flex;flex-direction:column;gap:10px">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div style="display:flex;padding:3px;border-radius:999px;background:rgba(251,248,242,.92);border:1px solid rgba(31,27,22,.1)">
+        <div onClick="{{ setMapDay }}" style="flex:none;white-space:nowrap;padding:8px 16px;border-radius:999px;font:500 12.5px/1 Geist,sans-serif;cursor:pointer;background:{{ mapTabs.dayBg }};color:{{ mapTabs.dayFg }}">Day</div>
+        <div onClick="{{ setMapTrip }}" style="flex:none;white-space:nowrap;padding:8px 16px;border-radius:999px;font:500 12.5px/1 Geist,sans-serif;cursor:pointer;background:{{ mapTabs.tripBg }};color:{{ mapTabs.tripFg }}">Whole trip</div>
+      </div>
+      <div style="font:500 10.5px/1 'Geist Mono',monospace;letter-spacing:.06em;color:#6E665B;padding:8px 10px;border-radius:999px;background:rgba(251,248,242,.92)">{{ map.scale }}</div>
+    </div>
+    <sc-if value="{{ mapIsDay }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;gap:6px;overflow-x:auto;margin:0 -16px;padding:0 16px">
+        <sc-for list="{{ mapDayChips }}" as="c" hint-placeholder-count="5">
+          <div onClick="{{ c.onClick }}" style="flex:none;white-space:nowrap;padding:7px 10px;border-radius:999px;font:500 11px/1 'Geist Mono',monospace;cursor:pointer;background:{{ c.bg }};color:{{ c.fg }};border:1px solid rgba(31,27,22,.1)">{{ c.t }}</div>
+        </sc-for>
+      </div>
+    </sc-if>
+  </div>
+  <div style="position:absolute;left:0;right:0;bottom:14px">
+    <div style="padding:0 18px 8px;font:400 22px/1.1 Newsreader,serif;text-shadow:0 0 8px #EFE8DC">{{ map.title }}</div>
+    <div style="display:flex;gap:10px;overflow-x:auto;padding:0 16px 2px">
+      <sc-for list="{{ map.cards }}" as="mc" hint-placeholder-count="3">
+        <div onClick="{{ mc.onClick }}" style="flex:none;width:210px;padding:12px 14px;border-radius:16px;background:#FBF8F2;border:1px solid rgba(31,27,22,.1);box-shadow:0 6px 18px rgba(31,27,22,.08);cursor:pointer;display:flex;gap:11px;align-items:flex-start">
+          <div style="flex:none;width:24px;height:24px;border-radius:12px;background:{{ mc.fill }};color:#F3EEE4;display:flex;align-items:center;justify-content:center;font:500 11px/1 'Geist Mono',monospace">{{ mc.n }}</div>
+          <div style="min-width:0">
+            <div style="font:400 11.5px/1 'Geist Mono',monospace;color:#6E665B">{{ mc.time }}</div>
+            <div style="margin-top:5px;font:400 16px/1.15 Newsreader,serif">{{ mc.title }}</div>
+            <div style="margin-top:3px;font:400 11.5px/1.3 Geist,sans-serif;color:#6E665B">{{ mc.sub }}</div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isStays }}">
+<div style="position:absolute;inset:0 0 84px 0;overflow-y:auto;padding:58px 0 24px">
+  <div style="padding:6px 22px 0;font:500 11px/1 'Geist Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#6E665B">Where you're sleeping</div>
+  <h1 style="margin:14px 22px 0;font:400 40px/1 Newsreader,serif;letter-spacing:-.015em">Stays</h1>
+  <div style="padding:22px 16px 0;display:flex;flex-direction:column;gap:12px">
+    <sc-for list="{{ stayCards }}" as="st" hint-placeholder-count="2">
+      <div onClick="{{ st.onClick }}" style="padding:18px;border-radius:18px;background:#FBF8F2;border:1px solid rgba(31,27,22,.09);cursor:pointer">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px">
+          <div style="font:500 10.5px/1 'Geist Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:{{ accent }}">{{ st.city }}</div>
+          <div style="font:400 11.5px/1 'Geist Mono',monospace;color:#6E665B">{{ st.nightsLabel }}</div>
+        </div>
+        <div style="margin-top:9px;font:400 24px/1.1 Newsreader,serif">{{ st.name }}</div>
+        <div style="margin-top:5px;font:400 12.5px/1.35 Geist,sans-serif;color:#6E665B">{{ st.area }}</div>
+        <div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:12px;padding-top:12px;border-top:1px solid rgba(31,27,22,.08)">
+          <div><div style="font:500 10px/1 'Geist Mono',monospace;letter-spacing:.07em;color:#6E665B">CHECK-IN</div><div style="margin-top:5px;font:400 13px/1.3 Geist,sans-serif">{{ st.inShort }}</div></div>
+          <div><div style="font:500 10px/1 'Geist Mono',monospace;letter-spacing:.07em;color:#6E665B">CHECK-OUT</div><div style="margin-top:5px;font:400 13px/1.3 Geist,sans-serif">{{ st.outShort }}</div></div>
+        </div>
+      </div>
+    </sc-for>
+    <div style="padding:14px 18px;border-radius:18px;border:1px dashed rgba(31,27,22,.22);font:400 13px/1.4 Geist,sans-serif;color:#6E665B">Thu 31 Dec: no stay. AJet from Cairo to Munich via Istanbul (SAW).</div>
+  </div>
+</div>
+</sc-if>
+
+<div style="display:{{ tabBarDisplay }};position:absolute;left:0;right:0;bottom:0;height:84px;background:rgba(243,238,228,.96);border-top:1px solid rgba(31,27,22,.1);grid-template-columns:repeat(3,1fr);padding:0 8px 22px">
+  <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="4">
+    <div onClick="{{ t.onClick }}" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;cursor:pointer;color:{{ t.fg }}">
+      <div style="width:18px;height:2px;border-radius:1px;background:{{ t.bar }}"></div>
+      <div style="font:400 17px/1 Newsreader,serif">{{ t.label }}</div>
+    </div>
+  </sc-for>
+</div>
+
+<div onClick="{{ closeSheet }}" style="position:absolute;inset:0;background:rgba(31,27,22,.38);transition:opacity .25s;opacity:{{ sheetUi.scrim }};pointer-events:{{ sheetUi.pe }};z-index:30"></div>
+<div style="position:absolute;left:0;right:0;bottom:0;max-height:86%;overflow-y:auto;background:#F7F3EB;border-radius:28px 28px 0 0;z-index:31;transition:transform .32s cubic-bezier(.2,.8,.2,1);transform:{{ sheetUi.tf }};padding:10px 0 34px">
+  <div style="width:38px;height:5px;border-radius:3px;background:rgba(31,27,22,.18);margin:0 auto 8px"></div>
+
+  <sc-if value="{{ sheetIsStop }}">
+    <div style="padding:10px 22px 0">
+      <div style="font:500 10.5px/1 'Geist Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:{{ sel.tagColor }}">{{ sel.tag }} · {{ sel.dayLabel }}</div>
+      <div style="margin-top:9px;font:400 30px/1.05 Newsreader,serif;letter-spacing:-.01em">{{ sel.title }}</div>
+      <div style="margin-top:6px;font:400 13px/1.35 Geist,sans-serif;color:#6E665B">{{ sel.sub }}</div>
+      <div style="margin-top:18px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <label style="display:flex;flex-direction:column;gap:6px;padding:10px 12px;border-radius:12px;background:#FBF8F2;border:1px solid rgba(31,27,22,.1)">
+          <span style="font:500 10px/1 'Geist Mono',monospace;letter-spacing:.07em;color:#6E665B">START</span>
+          <input type="time" value="{{ draftTime }}" onChange="{{ onTime }}" style="border:0;background:transparent;font:500 16px/1 'Geist Mono',monospace;color:#1F1B16;padding:0;outline:none">
+        </label>
+        <div style="display:flex;flex-direction:column;gap:6px;padding:10px 12px;border-radius:12px;background:#FBF8F2;border:1px solid rgba(31,27,22,.1)">
+          <span style="font:500 10px/1 'Geist Mono',monospace;letter-spacing:.07em;color:#6E665B">DURATION</span>
+          <span style="font:500 16px/1 'Geist Mono',monospace">{{ sel.durOrDash }}</span>
+        </div>
+      </div>
+      <div style="margin-top:18px;display:flex;flex-direction:column;gap:0;border-top:1px solid rgba(31,27,22,.1)">
+        <div style="padding:12px 0;border-bottom:1px solid rgba(31,27,22,.1);display:grid;grid-template-columns:96px minmax(0,1fr);gap:10px">
+          <div style="font:500 10.5px/1.4 'Geist Mono',monospace;letter-spacing:.07em;color:#6E665B">GETTING THERE</div>
+          <div style="font:400 13px/1.4 Geist,sans-serif">{{ sel.before }}</div>
+        </div>
+        <div style="padding:12px 0;border-bottom:1px solid rgba(31,27,22,.1);display:grid;grid-template-columns:96px minmax(0,1fr);gap:10px">
+          <div style="font:500 10.5px/1.4 'Geist Mono',monospace;letter-spacing:.07em;color:#6E665B">AFTERWARDS</div>
+          <div style="font:400 13px/1.4 Geist,sans-serif">{{ sel.after }}</div>
+        </div>
+        <div style="padding:12px 0;border-bottom:1px solid rgba(31,27,22,.1);display:grid;grid-template-columns:96px minmax(0,1fr);gap:10px">
+          <div style="font:500 10.5px/1.4 'Geist Mono',monospace;letter-spacing:.07em;color:#6E665B">ARRANGED BY</div>
+          <div style="font:400 13px/1.4 Geist,sans-serif">{{ sel.by }}</div>
+        </div>
+      </div>
+      <div style="margin-top:16px;font:500 10.5px/1 'Geist Mono',monospace;letter-spacing:.07em;color:#6E665B">NOTES</div>
+      <textarea value="{{ draftNote }}" onChange="{{ onNote }}" placeholder="Add a note: tickets, what to bring, who to call" rows="3" style="margin-top:8px;width:100%;resize:none;padding:12px;border-radius:12px;border:1px solid rgba(31,27,22,.14);background:#FBF8F2;font:400 14px/1.4 Geist,sans-serif;color:#1F1B16;outline:none"></textarea>
+      <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1.4fr;gap:10px">
+        <div onClick="{{ showSelOnMap }}" style="padding:14px;border-radius:14px;border:1px solid rgba(31,27,22,.18);text-align:center;font:500 14px/1 Geist,sans-serif;cursor:pointer">Show on map</div>
+        <div onClick="{{ saveStop }}" style="padding:14px;border-radius:14px;background:#26211B;color:#F3EEE4;text-align:center;font:500 14px/1 Geist,sans-serif;cursor:pointer">Save changes</div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ sheetIsStay }}">
+    <div style="padding:10px 22px 0">
+      <div style="font:500 10.5px/1 'Geist Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:{{ accent }}">Stay · {{ selStay.city }}</div>
+      <div style="margin-top:9px;font:400 30px/1.05 Newsreader,serif;letter-spacing:-.01em">{{ selStay.name }}</div>
+      <div style="margin-top:6px;font:400 13px/1.35 Geist,sans-serif;color:#6E665B">{{ selStay.area }}</div>
+      <div style="margin-top:18px;display:flex;gap:6px">
+        <sc-for list="{{ selStay.nightChips }}" as="nc">
+          <div style="flex:1;padding:9px 0;border-radius:10px;text-align:center;background:{{ nc.bg }};color:{{ nc.fg }};border:1px solid rgba(31,27,22,.1)">
+            <div style="font:500 9.5px/1 'Geist Mono',monospace;letter-spacing:.06em">{{ nc.wd }}</div>
+            <div style="margin-top:4px;font:400 17px/1 Newsreader,serif">{{ nc.d }}</div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="margin-top:18px;border-top:1px solid rgba(31,27,22,.1)">
+        <sc-for list="{{ selStay.rows }}" as="row">
+          <div style="padding:12px 0;border-bottom:1px solid rgba(31,27,22,.1);display:grid;grid-template-columns:104px minmax(0,1fr);gap:10px">
+            <div style="font:500 10.5px/1.4 'Geist Mono',monospace;letter-spacing:.07em;color:#6E665B">{{ row.k }}</div>
+            <div style="font:400 13.5px/1.4 Geist,sans-serif">{{ row.v }}</div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="margin-top:14px;padding:12px 14px;border-radius:12px;background:#EFE8DC;font:italic 400 14.5px/1.45 Newsreader,serif;color:#4A443B">{{ selStay.notes }}</div>
+      <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div onClick="{{ showStayOnMap }}" style="padding:14px;border-radius:14px;border:1px solid rgba(31,27,22,.18);text-align:center;font:500 14px/1 Geist,sans-serif;cursor:pointer">Show on map</div>
+        <div onClick="{{ closeSheet }}" style="padding:14px;border-radius:14px;background:#26211B;color:#F3EEE4;text-align:center;font:500 14px/1 Geist,sans-serif;cursor:pointer">Done</div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ sheetIsDay }}">
+    <div style="padding:10px 22px 0">
+      <div style="font:500 10.5px/1 'Geist Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:{{ accent }}">Day {{ day.num }} · {{ day.wd }} {{ day.d }} December</div>
+      <div style="margin-top:10px;font:italic 400 32px/1.05 Newsreader,serif;letter-spacing:-.01em;text-wrap:balance">{{ summary.theme }}</div>
+      <div style="margin-top:10px;font:400 14.5px/1.5 Newsreader,serif;color:#4A443B;text-wrap:pretty">{{ summary.story }}</div>
+      <div style="margin-top:18px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px">
+        <sc-for list="{{ summary.stats }}" as="sx">
+          <div style="padding:10px 12px;border-radius:12px;background:#FBF8F2;border:1px solid rgba(31,27,22,.1);min-width:0">
+            <div style="font:500 9.5px/1 'Geist Mono',monospace;letter-spacing:.07em;color:#6E665B">{{ sx.k }}</div>
+            <div style="margin-top:6px;font:500 14px/1.2 Geist,sans-serif">{{ sx.v }}</div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="margin-top:20px;font:500 10.5px/1 'Geist Mono',monospace;letter-spacing:.07em;color:#6E665B">THE PLAN</div>
+      <div style="margin-top:8px;border-top:1px solid rgba(31,27,22,.1)">
+        <sc-for list="{{ summary.plan }}" as="p">
+          <div style="padding:10px 0;border-bottom:1px solid rgba(31,27,22,.1);display:grid;grid-template-columns:56px minmax(0,1fr);gap:10px;align-items:baseline">
+            <div style="font:500 12px/1 'Geist Mono',monospace;color:#6E665B">{{ p.time }}</div>
+            <div style="font:400 16px/1.25 Newsreader,serif">{{ p.title }}</div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="margin-top:18px;font:500 10.5px/1 'Geist Mono',monospace;letter-spacing:.07em;color:#6E665B">BRING</div>
+      <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:6px">
+        <sc-for list="{{ summary.bring }}" as="b">
+          <div style="padding:7px 11px;border-radius:999px;border:1px solid rgba(31,27,22,.16);font:400 12.5px/1 Geist,sans-serif">{{ b }}</div>
+        </sc-for>
+      </div>
+      <div onClick="{{ openTonight }}" style="margin-top:18px;padding:14px 16px;border-radius:14px;background:#EFE8DC;display:flex;align-items:center;gap:12px;cursor:pointer">
+        <div style="flex:1;min-width:0">
+          <div style="font:500 10px/1 'Geist Mono',monospace;letter-spacing:.08em;color:#2F6F73">{{ tonight.kicker }}</div>
+          <div style="margin-top:5px;font:400 17px/1.2 Newsreader,serif">{{ tonight.name }}</div>
+        </div>
+        <div style="font:400 18px/1 Newsreader,serif;color:#6E665B">→</div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ sheetIsJourneys }}">
+    <div style="padding:10px 22px 0">
+      <div style="font:500 10.5px/1 'Geist Mono',monospace;letter-spacing:.08em;color:#6E665B">ALL JOURNEYS · 23–31 DEC</div>
+      <div style="margin-top:9px;font:400 30px/1.05 Newsreader,serif">Journeys</div>
+      <div style="margin-top:6px;font:400 13px/1.4 Geist,sans-serif;color:#6E665B">Every flight and long transfer on this trip. Tap one to open its day.</div>
+      <div style="margin-top:16px;display:flex;flex-direction:column;gap:8px">
+        <sc-for list="{{ journeys }}" as="j" hint-placeholder-count="6">
+          <div onClick="{{ j.onClick }}" style="display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 14px;border-radius:14px;background:{{ j.bg }};border:1px solid rgba(31,27,22,.1);cursor:pointer">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:3px">
+              <div style="font:500 9.5px/1 'Geist Mono',monospace;letter-spacing:.06em;color:#6E665B">{{ j.wd }}</div>
+              <div style="font:400 20px/1 Newsreader,serif">{{ j.d }}</div>
+            </div>
+            <div style="min-width:0">
+              <div style="font:500 10px/1.2 'Geist Mono',monospace;letter-spacing:.07em;text-transform:uppercase;color:{{ j.modeColor }}">{{ j.mode }} · {{ j.by }}</div>
+              <div style="margin-top:4px;font:400 17px/1.2 Newsreader,serif">{{ j.from }} → {{ j.to }}</div>
+            </div>
+            <div style="font:400 11.5px/1.2 'Geist Mono',monospace;color:#6E665B;text-align:right;max-width:74px">{{ j.dur }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ sheetIsStays }}">
+    <div style="padding:10px 22px 0">
+      <div style="font:500 10.5px/1 'Geist Mono',monospace;letter-spacing:.08em;color:#6E665B">8 NIGHTS · 4 STAYS</div>
+      <div style="margin-top:9px;font:400 30px/1.05 Newsreader,serif">Stays</div>
+      <div style="margin-top:16px;display:flex;flex-direction:column;gap:8px">
+        <sc-for list="{{ stayCards }}" as="st" hint-placeholder-count="4">
+          <div onClick="{{ st.onClick }}" style="padding:14px 16px;border-radius:14px;background:{{ st.bg }};border:1px solid rgba(31,27,22,.1);cursor:pointer;display:flex;align-items:center;gap:12px">
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;justify-content:space-between;gap:10px;font:500 10px/1 'Geist Mono',monospace;letter-spacing:.07em;text-transform:uppercase"><span style="color:{{ accent }}">{{ st.city }}</span><span style="color:#6E665B">{{ st.nightsLabel }}</span></div>
+              <div style="margin-top:6px;font:400 18px/1.2 Newsreader,serif">{{ st.name }}</div>
+              <div style="margin-top:3px;font:400 12px/1.3 Geist,sans-serif;color:#6E665B">{{ st.inShort }} → {{ st.outShort }}</div>
+            </div>
+            <div style="font:400 18px/1 Newsreader,serif;color:#6E665B">→</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ sheetIsAdd }}">
+    <div style="padding:10px 22px 0">
+      <div style="font:500 10.5px/1 'Geist Mono',monospace;letter-spacing:.08em;color:#6E665B">EGYPT · 23–31 DEC</div>
+      <div style="margin-top:9px;font:400 30px/1.05 Newsreader,serif">Edit trip</div>
+      <div style="margin-top:6px;font:400 13px/1.45 Geist,sans-serif;color:#6E665B">Describe a change, or paste bookings and new plans. Claude updates the itinerary and tells you what changed.</div>
+      <div style="margin-top:14px;display:flex;flex-direction:column;gap:6px">
+        <sc-for list="{{ exampleChips }}" as="ex" hint-placeholder-count="3">
+          <div onClick="{{ ex.onClick }}" style="align-self:flex-start;padding:8px 12px;border-radius:999px;border:1px solid rgba(31,27,22,.16);font:400 12.5px/1.2 Geist,sans-serif;color:#4A443B;cursor:pointer" style-hover="background:#FBF8F2">{{ ex.t }}</div>
+        </sc-for>
+      </div>
+      <textarea value="{{ editText }}" onChange="{{ onEditText }}" placeholder="e.g. Add a dinner cruise on the 26th at 19:00, back by 22:00" rows="5" style="margin-top:12px;width:100%;resize:none;padding:14px;border-radius:14px;border:1px solid rgba(31,27,22,.14);background:#FBF8F2;font:400 14px/1.45 Geist,sans-serif;color:#1F1B16;outline:none"></textarea>
+      <sc-if value="{{ edit.hasErr }}"><div style="margin-top:8px;font:400 12.5px/1.4 Geist,sans-serif;color:#B03A2E">{{ edit.err }}</div></sc-if>
+      <div onClick="{{ applyEdit }}" style="margin-top:12px;padding:15px;border-radius:14px;background:#26211B;color:#F3EEE4;text-align:center;font:500 14.5px/1 Geist,sans-serif;cursor:pointer;opacity:{{ edit.btnOp }}">{{ edit.btn }}</div>
+      <sc-if value="{{ edit.hasResult }}">
+        <div style="margin-top:14px;padding:14px 16px;border-radius:14px;background:#EFE8DC">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px">
+            <div style="font:500 10.5px/1 'Geist Mono',monospace;letter-spacing:.08em;color:#2F6F73">{{ edit.resultHead }}</div>
+            <div onClick="{{ undoEdit }}" style="font:500 12.5px/1 Geist,sans-serif;color:#1F1B16;text-decoration:underline;cursor:pointer">Undo</div>
+          </div>
+          <div style="margin-top:8px;display:flex;flex-direction:column;gap:6px">
+            <sc-for list="{{ edit.summary }}" as="ln"><div style="font:400 14.5px/1.4 Newsreader,serif">{{ ln }}</div></sc-for>
+          </div>
+        </div>
+      </sc-if>
+      <div style="margin-top:18px;padding-top:14px;border-top:1px solid rgba(31,27,22,.1);display:flex;justify-content:space-between;align-items:center">
+        <div onClick="{{ toggleData }}" style="font:500 12.5px/1 Geist,sans-serif;cursor:pointer">{{ edit.dataLabel }}</div>
+        <div onClick="{{ resetTrip }}" style="font:400 12.5px/1 Geist,sans-serif;color:#6E665B;cursor:pointer">Reset to original</div>
+      </div>
+      <sc-if value="{{ edit.showData }}">
+        <pre style="margin:10px 0 0;max-height:260px;overflow:auto;padding:12px;border-radius:12px;background:#26211B;color:#E8DFD0;font:400 10.5px/1.5 'Geist Mono',monospace;white-space:pre-wrap;word-break:break-word">{{ edit.json }}</pre>
+      </sc-if>
+    </div>
+  </sc-if>
+</div>
+
+<div style="position:absolute;top:56px;left:50%;z-index:40;transform:translateX(-50%) translateY({{ toastUi.y }});opacity:{{ toastUi.op }};transition:all .3s;padding:10px 16px;border-radius:999px;background:#26211B;color:#F3EEE4;font:500 12.5px/1 Geist,sans-serif;white-space:nowrap;pointer-events:none">{{ toastUi.text }}</div>
+</div>
+</x-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#A8492A&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;#A8492A&quot;,&quot;#2F6F73&quot;,&quot;#4A5B8C&quot;,&quot;#8A6A2F&quot;]},&quot;cardStyle&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;cards&quot;,&quot;tsType&quot;:&quot;'cards'|'ledger'&quot;,&quot;options&quot;:[&quot;cards&quot;,&quot;ledger&quot;]},&quot;showTransport&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;},&quot;liveClock&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Now line&quot;},&quot;simulatedHour&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:10.5,&quot;min&quot;:5,&quot;max&quot;:22,&quot;step&quot;:0.25,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Now line&quot;}}">
+const HOTEL_H=[27.215,33.83], HOTEL_L=[25.655,32.618], HOTEL_A=[24.10,32.878], HOTEL_C=[29.9755,31.1435];
+const TODAY_IDX=2;
+let STAYS={
+ lily:{id:'lily',city:'Hurghada',name:'Lily Apartments',area:'Hurghada',inShort:'Wed 23 Dec, on arrival',outShort:'Thu 24 Dec, morning',nights:[0],conf:'Add confirmation',phone:'Add phone',by:'Booked yourself',notes:'The tour says “pick-up from the airport”. You’ll be here instead, so confirm the pick-up point with the tour operator.',ll:HOTEL_H,day:0},
+ jv:{id:'jv',city:'Luxor',name:'Jolie Ville Hotel & Spa Kings Island',area:'Kings Island, south of Luxor',inShort:'Thu 24 Dec, evening drop-off',outShort:'Sun 27 Dec, morning',nights:[1,2,3],conf:'Add confirmation',phone:'Add phone',by:'Booked yourself · Tour picks up here',notes:'On an island a few kilometres south of the centre, so allow 15 minutes for every pick-up.',ll:HOTEL_L,day:2},
+ bk:{id:'bk',city:'Aswan',name:'Bakar House',area:'Aswan, West Bank (Nubian village)',inShort:'Sun 27 Dec, evening drop-off',outShort:'Mon 28 Dec, 04:00 pick-up',nights:[4],conf:'Add confirmation',phone:'Add phone',by:'Booked yourself',notes:'Very early start for Abu Simbel. Ask for a packed breakfast the night before.',ll:HOTEL_A,day:4},
+ lc:{id:'lc',city:'Cairo',name:'Locanda Pyramid View',area:'Nazlet El-Semman, Giza',inShort:'Mon 28 Dec, evening',outShort:'Thu 31 Dec',nights:[5,6,7],conf:'Add confirmation',phone:'Add phone',by:'Booked yourself',notes:'Walking distance to the Giza Plateau entrance.',ll:HOTEL_C,day:6}
+};
+const S=(id,time,title,sub,o={})=>({kind:'stop',id,time,title,sub,...o});
+const L=(mode,dur,text,o={})=>({kind:'leg',mode,dur,text,...o});
+let DAYS=[
+ {num:1,d:23,wd:'Wed',title:'Munich to Hurghada',mode:'Self-planned',stay:'lily',summary:'Two flights south, via France',items:[
+  S('z1','—','Depart Munich','MUC · Lufthansa to France',{tag:'Flight',note:'Add flight numbers and times.'}),
+  L('flight','—','Connection in France, then easyJet to Hurghada'),
+  S('z2','—','Arrive Hurghada International','HRG · easyJet',{tag:'Arrival',ll:[27.178,33.799]}),
+  L('car','20 min','Taxi to the apartment'),
+  S('z3','—','Check in','Lily Apartments · Overnight',{tag:'Stay',stay:'lily',ll:HOTEL_H})]},
+ {num:2,d:24,wd:'Thu',title:'Red Sea to Luxor',mode:'Guided',stay:'jv',summary:'A morning by the sea, then the drive to Luxor',items:[
+  S('a1','09:30','Pick-up','Tour itinerary says the airport. Confirm Lily Apartments',{tag:'Pick-up',ll:HOTEL_H,note:'Pick-up point needs confirming with the tour operator.'}),
+  L('car','15 min','Private vehicle to the coast'),
+  S('a2','10:00','Red Sea visit','Hurghada coastline',{tag:'Visit',dur:'2–3 hr',ll:[27.225,33.845]}),
+  L('car','4 hr 15 min','Private vehicle, 290 km via Safaga and Qena',{time:'13:00',via:[[26.73,33.93],[26.16,32.72]]}),
+  S('a3','17:30','Drop-off at your hotel','Jolie Ville Kings Island · Overnight',{tag:'Stay',stay:'jv',ll:HOTEL_L})]},
+ {num:3,d:25,wd:'Fri',title:'Luxor West Bank',mode:'Guided',stay:'jv',summary:'Tombs, temples and lunch across the Nile',items:[
+  S('b1','07:00','Breakfast at the hotel','Jolie Ville Kings Island',{tag:'Meal',dur:'45 min',ll:HOTEL_L}),
+  L('car','40 min','Hotel pick-up by private vehicle, over the Nile bridge',{time:'08:00'}),
+  S('b2','08:40','Valley of the Kings','West Bank',{tag:'Visit',dur:'2 hr',ll:[25.7402,32.6014],note:'Standard ticket covers 3 tombs. Tutankhamun’s tomb is extra.'}),
+  L('car','10 min','Private vehicle'),
+  S('b3','11:00','Temple of Hatshepsut','Deir el-Bahari',{tag:'Visit',dur:'1 hr',ll:[25.7381,32.6065]}),
+  L('car','10 min','Private vehicle'),
+  S('b4','12:20','Colossi of Memnon','Photo stop',{tag:'Visit',dur:'20 min',ll:[25.7206,32.6104]}),
+  L('car','10 min','Private vehicle'),
+  S('b5','13:00','Lunch at a local Egyptian restaurant','West Bank · Included',{tag:'Meal',dur:'1 hr',ll:[25.712,32.626]}),
+  L('car','40 min','Back over the Nile bridge'),
+  S('b6','15:00','Return to your hotel','Jolie Ville Kings Island · Overnight',{tag:'Stay',stay:'jv',ll:HOTEL_L})]},
+ {num:4,d:26,wd:'Sat',title:'Luxor East Bank',mode:'Guided',stay:'jv',summary:'Karnak and Luxor Temple',items:[
+  S('c1','07:30','Breakfast at the hotel','Jolie Ville Kings Island',{tag:'Meal',dur:'45 min',ll:HOTEL_L}),
+  L('car','20 min','Hotel pick-up',{time:'08:30'}),
+  S('c2','08:50','Karnak Temple','East Bank',{tag:'Visit',dur:'2.5 hr',ll:[25.7188,32.6573]}),
+  L('car','10 min','Private vehicle along the Corniche'),
+  S('c3','11:45','Luxor Temple','City centre',{tag:'Visit',dur:'1.5 hr',ll:[25.6995,32.6391]}),
+  L('walk','8 min','Walk along the Corniche'),
+  S('c4','13:30','Lunch at a local Egyptian restaurant','East Bank · Included',{tag:'Meal',dur:'1 hr',ll:[25.7018,32.6412]}),
+  L('car','15 min','Drop-off at your hotel'),
+  S('c5','15:00','Back at the hotel','Jolie Ville Kings Island · Overnight',{tag:'Stay',stay:'jv',ll:HOTEL_L})]},
+ {num:5,d:27,wd:'Sun',title:'Luxor to Aswan',mode:'Guided',stay:'bk',summary:'South along the Nile, two temples on the way',items:[
+  S('d1','07:00','Breakfast at the hotel','Jolie Ville Kings Island',{tag:'Meal',dur:'45 min',ll:HOTEL_L}),
+  L('car','1 hr 45 min','Hotel pick-up, private vehicle south, 110 km',{time:'08:00'}),
+  S('d2','09:45','Edfu Temple','Temple of Horus',{tag:'Visit',dur:'1.5 hr',ll:[24.978,32.873]}),
+  L('car','1 hr 15 min','Private vehicle, 65 km'),
+  S('d3','12:30','Lunch during the tour','On the road · Included',{tag:'Meal',dur:'1 hr',ll:[24.6,32.93]}),
+  L('car','30 min','Private vehicle'),
+  S('d4','14:00','Kom Ombo Temple','Temple of Sobek & Haroeris',{tag:'Visit',dur:'1 hr',ll:[24.452,32.928]}),
+  L('car','1 hr','Private vehicle to Aswan, 50 km'),
+  S('d5','16:30','Drop-off at your hotel','Bakar House · Overnight',{tag:'Stay',stay:'bk',ll:HOTEL_A})]},
+ {num:6,d:28,wd:'Mon',title:'Abu Simbel, then Cairo',mode:'Guided',stay:'lc',summary:'A dawn drive into the desert, an evening flight north',items:[
+  S('g1','04:00','Early pick-up','Bakar House',{tag:'Pick-up',ll:HOTEL_A,note:'Bring a jacket, the desert is cold before sunrise.'}),
+  L('car','3 hr 30 min','Private vehicle, 280 km through the desert'),
+  S('g2','07:45','Abu Simbel Temples','Ramses II and Queen Nefertari',{tag:'Visit',dur:'2 hr',ll:[22.336,31.626]}),
+  L('car','3 hr 30 min','Private vehicle back to Aswan',{time:'10:00'}),
+  L('car','25 min','Private transfer to Aswan Airport',{time:'14:00'}),
+  S('g3','16:30','Flight ASW → CAI','Aswan International',{tag:'Flight',dur:'1 hr 25',ll:[23.964,32.82],note:'Add flight number.'}),
+  L('car','1 hr','Car from Cairo International to Giza',{time:'18:15'}),
+  S('g4','19:30','Check in','Locanda Pyramid View · Overnight',{tag:'Stay',stay:'lc',ll:HOTEL_C})]},
+ {num:7,d:29,wd:'Tue',title:'Giza Pyramids & the Grand Egyptian Museum',mode:'Guided',stay:'lc',summary:'The plateau in the morning, the museum after',items:[
+  L('car','10 min','Hotel pick-up',{time:'08:30'}),
+  S('h1','08:45','Great Pyramids of Giza','Giza Plateau',{tag:'Visit',dur:'2 hr',ll:[29.9792,31.1342]}),
+  L('walk','15 min','Walk down the plateau'),
+  S('h2','11:00','Great Sphinx','Giza Plateau',{tag:'Visit',dur:'45 min',ll:[29.9753,31.1376]}),
+  L('car','10 min','Private vehicle'),
+  S('h3','12:00','Lunch at a local Egyptian restaurant','Giza · Included',{tag:'Meal',dur:'1 hr',ll:[29.985,31.13]}),
+  L('car','5 min','Private vehicle'),
+  S('h4','13:15','Grand Egyptian Museum','GEM',{tag:'Visit',dur:'3 hr',ll:[29.9947,31.1196]}),
+  L('car','15 min','Return to your hotel'),
+  S('h5','16:45','Back at the hotel','Locanda Pyramid View · Overnight',{tag:'Stay',stay:'lc',ll:HOTEL_C})]},
+ {num:8,d:30,wd:'Wed',title:'Memphis, Saqqara & Dahshur',mode:'Guided',stay:'lc',summary:'The oldest pyramids, south of Cairo',items:[
+  S('i1','07:30','Breakfast at the hotel','Locanda Pyramid View',{tag:'Meal',dur:'45 min',ll:HOTEL_C}),
+  L('car','40 min','Hotel pick-up, private vehicle south',{time:'08:30'}),
+  S('i2','09:10','Memphis','Ancient capital, open-air museum',{tag:'Visit',dur:'1 hr',ll:[29.8447,31.2508]}),
+  L('car','15 min','Private vehicle'),
+  S('i3','10:30','Saqqara & the Step Pyramid of Djoser','Saqqara Necropolis',{tag:'Visit',dur:'2 hr',ll:[29.8713,31.2165]}),
+  L('car','15 min','Private vehicle'),
+  S('i4','12:45','Lunch at a local Egyptian restaurant','Saqqara · Included',{tag:'Meal',dur:'1 hr',ll:[29.84,31.225]}),
+  L('car','20 min','Private vehicle'),
+  S('i5','14:15','Dahshur','Bent Pyramid & Red Pyramid',{tag:'Visit',dur:'1.5 hr',ll:[29.8,31.207]}),
+  L('car','45 min','Return to your hotel · End of tour services'),
+  S('i6','16:30','Back at the hotel','Locanda Pyramid View · Overnight',{tag:'Stay',stay:'lc',ll:HOTEL_C})]},
+ {num:9,d:31,wd:'Thu',title:'Cairo to Munich',mode:'Self-planned',stay:null,summary:'Home via Istanbul',items:[
+  S('j1','—','Check out','Locanda Pyramid View',{tag:'Stay',ll:HOTEL_C}),
+  L('car','1 hr','Car to Cairo International (CAI)'),
+  S('j2','—','AJet CAI → SAW','Cairo International',{tag:'Flight',ll:[30.1219,31.4056],note:'Add flight numbers and times.'}),
+  L('flight','—','Connection at Istanbul Sabiha Gökçen'),
+  S('j3','—','Arrive Munich','MUC',{tag:'Arrival'})]}
+];
+const NILE=[[22.35,31.65],[22.9,32.3],[23.5,32.85],[24.09,32.9],[24.6,32.93],[25.29,32.55],[25.5,32.52],[25.62,32.58],[25.66,32.61],[25.69,32.632],[25.705,32.637],[25.72,32.646],[25.745,32.655],[25.78,32.672],[26.16,32.72],[26.3,32.2],[26.56,31.69],[27.18,31.18],[28.1,30.75],[29.07,31.1],[30.04,31.24],[30.6,31.05],[31.2,30.9]];
+const SEA=[[31,32.55],[29.97,32.55],[29.6,32.35],[28.35,33.1],[27.26,33.81],[26.73,33.94],[26.1,34.28],[25.07,34.9],[23.5,35.7],[23.5,38],[28,38],[28,34.6],[27.73,34.25],[29.2,33.1],[31,33]];
+let THEMES=[
+ ['Southbound','Two flights from Munich and a first night by the Red Sea.','Munich to France, then on to Hurghada. Nothing to do tonight but check in and rest.',['Passport','e-Visa','Euros & USD']],
+ ['From the sea to the Nile','A morning on the coast, then the long drive to Luxor.','A slow morning on the coast, then four hours across the Eastern Desert, reaching the Nile at Qena and following it down to Luxor.',['Swimwear','Sunscreen','Snacks for the drive']],
+ ['City of the dead','Royal tombs, Hatshepsut’s temple and the Colossi, across the Nile.','The West Bank was where Thebes buried its kings. Tombs cut deep into the valley, a queen’s terraced temple against the cliffs, and two stone giants in the fields.',['Cash for tickets','Hat','Water']],
+ ['City of the living','Karnak in the morning, Luxor Temple at midday.','Karnak’s forest of columns first, before the heat, then Luxor Temple in the centre of town. Lunch by the Corniche and a free afternoon.',['Comfortable shoes','Camera']],
+ ['Down the Nile','Two riverside temples on the drive south to Aswan.','Horus at Edfu, then the double temple of Kom Ombo above the river, arriving in Nubian Aswan by late afternoon.',['Cash for tips','Snacks']],
+ ['Dawn at Abu Simbel','A 4 am desert drive to Ramses II, then an evening flight to Cairo.','The longest day. Leave in the dark for Ramses II’s great temple near the Sudanese border, drive back, and fly north to Cairo.',['Jacket','Packed breakfast','Boarding pass']],
+ ['The last wonder','The Great Pyramids, the Sphinx and the GEM.','The only ancient wonder still standing, the Sphinx below it, and the afternoon with Tutankhamun’s treasures at the Grand Egyptian Museum.',['Passport','Water','Hat']],
+ ['Before Giza','Where pyramid building began, south of Cairo.','Memphis, the first capital. Djoser’s Step Pyramid at Saqqara, then the Bent and Red Pyramids at Dahshur, the experiments that led to Giza.',['Torch','Closed shoes','Water']],
+ ['Homeward','Check out and fly back to Munich via Istanbul.','Check out, head to Cairo International, and fly home with AJet through Sabiha Gökçen.',['Passport','Boarding passes']]
+];
+let JOURNEYS=[
+ {day:0,mode:'Flight',by:'Lufthansa',from:'Munich',to:'France',dur:'Add time'},
+ {day:0,mode:'Flight',by:'easyJet',from:'France',to:'Hurghada',dur:'Add time'},
+ {day:1,mode:'Car',by:'Private, tour',from:'Hurghada',to:'Luxor',dur:'4 hr 15 min'},
+ {day:4,mode:'Car',by:'Private, tour',from:'Luxor',to:'Aswan',dur:'4 hr 30 min + stops'},
+ {day:5,mode:'Car',by:'Private, tour',from:'Aswan',to:'Abu Simbel & back',dur:'7 hr total'},
+ {day:5,mode:'Flight',by:'ASW → CAI',from:'Aswan',to:'Cairo',dur:'1 hr 25 min'},
+ {day:8,mode:'Flight',by:'AJet',from:'Cairo',to:'Istanbul SAW',dur:'Add time'},
+ {day:8,mode:'Flight',by:'AJet',from:'Istanbul SAW',to:'Munich',dur:'Add time'}
+];
+const clone=o=>JSON.parse(JSON.stringify(o));
+const snapshot=()=>clone({days:DAYS.map((d,i)=>({...d,theme:THEMES[i]?.[0],blurb:THEMES[i]?.[1],story:THEMES[i]?.[2],bring:THEMES[i]?.[3]||[]})),stays:STAYS,journeys:JOURNEYS});
+const loadTrip=t=>{t=clone(t);DAYS=t.days.sort((a,b)=>a.num-b.num);STAYS=t.stays||{};JOURNEYS=(t.journeys||[]).filter(j=>j.day<DAYS.length);
+  DAYS.forEach(d=>{d.items=d.items||[];d.items.forEach((it,k)=>{it.id=it.id||('x'+d.num+'_'+k+'_'+Math.random().toString(36).slice(2,6));});});
+  THEMES=DAYS.map(d=>[d.theme||d.title,d.blurb||d.summary||'',d.story||d.summary||'',d.bring||[]]);};
+const SAMPLE=snapshot();
+const STORE='tc-trip-v1';
+const SYS=`You edit a travel itinerary stored as JSON. Reply with ONLY a JSON object, no prose, no code fences:
+{"summary":["short human sentence per change"],"ops":[...]}
+Ops (day = day "num", 1-based):
+{"op":"update_item","id":"b2","fields":{...}}
+{"op":"add_item","day":3,"after_id":"b4"|null,"item":{...}}
+{"op":"remove_item","id":"b2"}
+{"op":"update_day","day":3,"fields":{...}}
+{"op":"add_day","day":{full day object}}
+{"op":"remove_day","day":9}
+{"op":"update_stay","id":"lc","fields":{...}} / {"op":"add_stay","stay":{...}} / {"op":"remove_stay","id":"lc"}
+{"op":"add_journey","journey":{...}} / {"op":"update_journey","index":2,"fields":{...}} / {"op":"remove_journey","index":2}
+Item shapes. Stop: {"kind":"stop","id","time":"HH:MM" or "—","title","sub","tag":"Visit|Meal|Stay|Flight|Arrival|Pick-up","dur","note","ll":[lat,lon],"stay":"stayId" (only for overnight/drop-off stops)}.
+Leg (travel between stops): {"kind":"leg","mode":"car|walk|train|metro|flight","dur":"35 min","text","time":"HH:MM" optional}.
+Keep legs between consecutive stops. Give realistic lat/lon for new places. Keep times in chronological order and shift later items if a change pushes them. Journey: {"day":0-based index,"mode":"Flight|Car|Train","by","from","to","dur"}. Day: {"num","d":day of month,"wd":"Mon".."Sun","title","mode":"Guided|Self-planned","stay":stayId|null,"summary","theme","blurb","story","bring":[],"items":[]}.
+Use the same concise, calm British-English tone as the existing data. If the request is unclear, return {"summary":["Couldn't tell what to change: <reason>"],"ops":[]}.`;
+function applyOps(t,ops){
+  const findItem=id=>{for(const d of t.days){const i=d.items.findIndex(x=>x.id===id);if(i>=0)return [d,i];}return [null,-1];};
+  const dayBy=n=>t.days.find(d=>d.num===n);
+  for(const o of ops||[]){
+    if(o.op==='update_item'){const [d,i]=findItem(o.id);if(d)Object.assign(d.items[i],o.fields);}
+    else if(o.op==='add_item'){const d=dayBy(o.day);if(!d)continue;const it={kind:'stop',...o.item};it.id=it.id||'n'+Math.random().toString(36).slice(2,7);
+      const i=o.after_id?d.items.findIndex(x=>x.id===o.after_id):-1;d.items.splice(o.after_id?(i>=0?i+1:d.items.length):0,0,it);}
+    else if(o.op==='remove_item'){const [d,i]=findItem(o.id);if(d)d.items.splice(i,1);}
+    else if(o.op==='update_day'){const d=dayBy(o.day);if(d)Object.assign(d,o.fields);}
+    else if(o.op==='add_day'){t.days=t.days.filter(d=>d.num!==o.day.num);t.days.push(o.day);}
+    else if(o.op==='remove_day'){t.days=t.days.filter(d=>d.num!==o.day);}
+    else if(o.op==='update_stay'){if(t.stays[o.id])Object.assign(t.stays[o.id],o.fields);}
+    else if(o.op==='add_stay'){t.stays[o.stay.id]=o.stay;}
+    else if(o.op==='remove_stay'){delete t.stays[o.id];t.days.forEach(d=>{if(d.stay===o.id)d.stay=null;});}
+    else if(o.op==='add_journey'){t.journeys.push(o.journey);t.journeys.sort((a,b)=>a.day-b.day);}
+    else if(o.op==='update_journey'){if(t.journeys[o.index])Object.assign(t.journeys[o.index],o.fields);}
+    else if(o.op==='remove_journey'){t.journeys.splice(o.index,1);}
+  }
+  return t;
+}
+const toMin=t=>{const m=/^(\d\d):(\d\d)$/.exec(t||'');return m?(+m[1])*60+(+m[2]):null;};
+const durMin=s=>{let h=/(\d+)\s*hr/.exec(s||''),m=/(\d+)\s*min/.exec(s||'');return (h?+h[1]*60:0)+(m?+m[1]:0);};
+const fmtDur=n=>n>=60?Math.floor(n/60)+' hr'+(n%60?' '+(n%60)+' min':''):n+' min';
+const WD=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+const TAGC={'Pick-up':'#4A443B',Visit:'#A8492A',Meal:'#8A6A2F',Stay:'#2F6F73',Flight:'#4A5B8C',Arrival:'#4A5B8C'};
+const ADD_TEXT=`DAY 1 – DECEMBER 24
+HURGHADA AIRPORT → RED SEA VISIT → LUXOR
+* Pick-up from Hurghada International Airport upon arrival.
+* Enjoy a 2–3 hour visit by the Red Sea.
+* Drive by private vehicle from Hurghada to Luxor.
+* Overnight in Luxor.
+
+DAY 2 – DECEMBER 25
+LUXOR WEST BANK
+* Breakfast at the hotel.
+* Visit the Valley of the Kings.
+* Visit the Temple of Hatshepsut.
+* Stop at the Colossi of Memnon.
+* Lunch at a local Egyptian restaurant.
+* Overnight in Luxor.
+
+DAY 3 – DECEMBER 26
+LUXOR EAST BANK
+* Visit Karnak Temple.
+* Visit Luxor Temple.`;
+
+class Component extends DCLogic {
+  state={tab:'home',dayIdx:TODAY_IDX,sheet:null,mapMode:'day',edits:{},draftTime:'',draftNote:'',editText:'',editBusy:false,editErr:'',editResult:null,prevTrip:null,showData:false,toast:''};
+  scrollRef=React.createRef();
+  go(tab,extra={}){this.setState({tab,sheet:null,...extra});}
+  pickDay(i){this.setState({dayIdx:i});if(this.scrollRef.current)this.scrollRef.current.scrollTop=0;}
+  stopData(id){for(const d of DAYS)for(const it of d.items)if(it.id===id)return {day:d,it,...this.withEdits(it)};return null;}
+  withEdits(it){const e=this.state.edits[it.id]||{};return {time:e.time??it.time,note:e.note??it.note??''};}
+  openStop(it){
+    if(it.stay){this.setState({sheet:{type:'stay',id:it.stay}});return;}
+    const e=this.withEdits(it);this.setState({sheet:{type:'stop',id:it.id},draftTime:e.time,draftNote:e.note});
+  }
+  flash(t){this.setState({toast:t});clearTimeout(this._tt);this._tt=setTimeout(()=>this.setState({toast:''}),2200);}
+  project(pts,box){
+    const lat=pts.map(p=>p[0]),lon=pts.map(p=>p[1]);
+    let a=Math.min(...lat),b=Math.max(...lat),c=Math.min(...lon),d=Math.max(...lon);
+    const mid=(a+b)/2,k=Math.cos(mid*Math.PI/180);
+    let sx=Math.max((d-c)*k,.03),sy=Math.max(b-a,.03);
+    const s=Math.min(box.w/sx,box.h/sy);
+    const cx=(c+d)/2*k,cy=(a+b)/2;
+    return {f:p=>[+(box.x+box.w/2+(p[1]*k-cx)*s).toFixed(1),+(box.y+box.h/2-(p[0]-cy)*s).toFixed(1)],s,k};
+  }
+  buildMap(accent){
+    const box={x:50,y:170,w:302,h:360};
+    const str=(pr,arr)=>arr.map(p=>pr.f(p).join(',')).join(' ');
+    if(this.state.mapMode==='trip'){
+      const cities=[{n:'1',label:'Hurghada',ll:HOTEL_H,sub:'1 night · Lily Apartments',time:'23–24 Dec',day:0,anchor:'start'},{n:'2',label:'Luxor',ll:HOTEL_L,sub:'3 nights · Jolie Ville',time:'24–27 Dec',day:2,anchor:'end'},{n:'3',label:'Aswan',ll:HOTEL_A,sub:'1 night · Bakar House',time:'27–28 Dec',day:4,anchor:'start'},{n:'4',label:'Abu Simbel',ll:[22.336,31.626],sub:'Day trip',time:'28 Dec',day:5,anchor:'start'},{n:'5',label:'Cairo',ll:HOTEL_C,sub:'3 nights · Locanda Pyramid View',time:'28–31 Dec',day:6,anchor:'end'}];
+      const pr=this.project(cities.map(c=>c.ll),box);
+      const markers=cities.map(c=>{const [x,y]=pr.f(c.ll);const left=c.anchor==='end';return {x,y,ty:y+4,n:c.n,label:c.label,lx:left?x-20:x+20,anchor:c.anchor,fill:'#26211B',onClick:()=>this.setState({mapMode:'day',dayIdx:c.day})};});
+      return {sea:str(pr,SEA),nile:str(pr,NILE),nileW:4,scale:'~200 km',title:'Egypt · 23–31 Dec',
+        routes:[{pts:str(pr,[HOTEL_H,[26.73,33.93],[26.16,32.72],HOTEL_L,[24.978,32.873],[24.452,32.928],HOTEL_A,[22.336,31.626]]),dash:'0'},{pts:str(pr,[[23.964,32.82],[27.2,32.2],HOTEL_C]),dash:'2 7'}],
+        labels:[{t:'Red Sea',...(([x,y])=>({x,y}))(pr.f([26.6,34.6]))},{t:'Nile',...(([x,y])=>({x:x-30,y}))(pr.f([27.6,30.95]))}],
+        markers,cards:cities.map(c=>({n:c.n,time:c.time,title:c.label,sub:c.sub,fill:'#26211B',onClick:()=>this.setState({mapMode:'day',dayIdx:c.day})}))};
+    }
+    const day=DAYS[this.state.dayIdx];
+    const stops=day.items.filter(i=>i.kind==='stop'&&i.ll);
+    const uniq=[];stops.forEach(s=>{const u=uniq.find(q=>q.ll[0]===s.ll[0]&&q.ll[1]===s.ll[1]);if(u)u.stops.push(s);else uniq.push({ll:s.ll,stops:[s]});});
+    const route=[];day.items.forEach(it=>{if(it.kind==='stop'&&it.ll)route.push(it.ll);else if(it.via)route.push(...it.via);});
+    const pr=this.project(route,box);
+    const spanKm=Math.round(box.w/pr.s/pr.k*111*.25);
+    const markers=uniq.map((u,i)=>{const [x,y]=pr.f(u.ll);const s0=u.stops[0];const left=x>250;
+      return {x,y,ty:y+4,n:String(i+1),label:u.stops.length>1?(s0.stay?STAYS[s0.stay].name:s0.sub):s0.title,lx:left?x-20:x+20,anchor:left?'end':'start',fill:s0.tag==='Stay'||s0.stay?'#2F6F73':accent,onClick:()=>this.openStop(s0)};});
+    const nOf=s=>String(uniq.findIndex(u=>u.stops.includes(s))+1);
+    return {sea:str(pr,SEA),nile:str(pr,NILE),nileW:pr.s>2000?22:(pr.s>400?8:4),scale:spanKm<2?'~'+Math.round(spanKm*1000/100)*100+' m':'~'+spanKm+' km',title:'Day '+day.num+' · '+day.title,
+      routes:[{pts:str(pr,route),dash:'5 6'}],labels:pr.s>2000?[{t:'Nile',...(([x,y])=>({x:x-14,y}))(pr.f([25.683,32.612]))}]:[{t:'Red Sea',...(([x,y])=>({x,y}))(pr.f([26.9,34.3]))}],
+      markers,cards:stops.map(s=>({n:nOf(s),time:this.withEdits(s).time,title:s.title,sub:s.sub,fill:s.stay||s.tag==='Stay'?'#2F6F73':accent,onClick:()=>this.openStop(s)}))};
+  }
+  componentDidMount(){this._clk=setInterval(()=>this.forceUpdate(),30000);
+    try{const s=localStorage.getItem(STORE);if(s){loadTrip(JSON.parse(s));this.forceUpdate();}}catch(e){}}
+  persist(){try{localStorage.setItem(STORE,JSON.stringify(snapshot()));}catch(e){}}
+  async runEdit(){
+    const text=(this.state.editText||'').trim();if(!text||this.state.editBusy)return;
+    this.setState({editBusy:true,editErr:'',editResult:null});
+    try{
+      const raw=await window.claude.complete({model:'claude-sonnet-4-5',max_tokens:12000,system:SYS,
+        messages:[{role:'user',content:'Current trip JSON:\n'+JSON.stringify(snapshot())+'\n\nRequest:\n'+text}]});
+      const m=raw.slice(raw.indexOf('{'),raw.lastIndexOf('}')+1);const res=JSON.parse(m);
+      const before=snapshot();
+      if(res.ops&&res.ops.length){loadTrip(applyOps(snapshot(),res.ops));this.persist();}
+      const dayIdx=Math.min(this.state.dayIdx,DAYS.length-1);
+      this.setState({editBusy:false,editResult:{summary:res.summary||[],n:(res.ops||[]).length},prevTrip:(res.ops||[]).length?before:null,editText:(res.ops||[]).length?'':text,dayIdx});
+      if((res.ops||[]).length)this.flash('Trip updated');
+    }catch(e){this.setState({editBusy:false,editErr:'Couldn’t update the trip. Try rephrasing, or try again in a moment.'});}
+  }
+  componentWillUnmount(){clearInterval(this._clk);}
+  nowMin(){if(this.props.liveClock===false)return Math.round((this.props.simulatedHour??10.5)*60);const d=new Date();return d.getHours()*60+d.getMinutes();}
+  htmlMap(m){
+    return {...m,labels:(m.labels||[]).map(l=>({...l,left:l.x+'px',top:l.y+'px'})),
+      markers:(m.markers||[]).map((k,i,arr)=>{const left=k.anchor==='end'||k.x>200;
+        const crowded=arr.slice(0,i).some(o=>Math.hypot(o.x-k.x,o.y-k.y)<30);
+        return {...k,left:k.x+'px',top:k.y+'px',labLeft:left?'auto':'20px',labRight:left?'20px':'auto',labDisplay:crowded?'none':'block'};})};
+  }
+  renderVals(){
+    const accent=this.props.accent??'#A8492A';
+    const cardStyle=this.props.cardStyle??'cards';
+    const showTransport=this.props.showTransport??true;
+    const {tab,sheet,mapMode}=this.state;const dayIdx=Math.max(0,Math.min(this.state.dayIdx,DAYS.length-1));
+    const day=DAYS[dayIdx];
+    const strip=[];for(let d=21;d<=31;d++){const ti=DAYS.findIndex(x=>x.d===d);const sel=ti===dayIdx;const inT=ti>=0;
+      strip.push({d,wd:WD[(d-21)%7],bg:sel?'#26211B':(inT?'#FBF8F2':'transparent'),fg:sel?'#F3EEE4':'#1F1B16',op:inT?1:.35,dot:ti===TODAY_IDX?accent:'transparent',onClick:()=>inT&&this.pickDay(ti)});}
+    const modeLabel={car:'Car',walk:'Walk',train:'Train',flight:'Flight',metro:'Metro'};
+    const timeline=day.items.filter(i=>showTransport||i.kind==='stop').map(it=>{
+      if(it.kind==='leg')return {isLeg:true,isStop:false,time:it.time||'',mode:it.mode,dur:it.dur,modeLine:modeLabel[it.mode]+' · '+it.dur,text:it.text,modeColor:it.mode==='walk'?'#2F6F73':'#4A443B'};
+      const e=this.withEdits(it);const tag=it.tag||'';
+      return {isLeg:false,isStop:true,time:e.time,title:it.title,sub:it.sub,dur:it.dur||'',tag,tagColor:TAGC[tag]||'#6E665B',hasNote:!!e.note,note:e.note,dotColor:TAGC[tag]||'#6E665B',timePad:cardStyle==='cards'?'22px':'6px',dotPad:cardStyle==='cards'?'21px':'5px',onClick:()=>this.openStop(it)};
+    });
+    if(dayIdx===TODAY_IDX){const nm=this.nowMin();let pos=0,last=null;
+      timeline.forEach((t,i)=>{const m=toMin(t.time);if(m!=null){if(m<=nm)pos=i+1;last=m;}});
+      const first=timeline.findIndex(t=>toMin(t.time)!=null);if(first>=0&&nm<toMin(timeline[first].time))pos=first;
+      timeline.splice(pos,0,{isNow:true,isLeg:false,isStop:false,time:String(Math.floor(nm/60)).padStart(2,'0')+':'+String(nm%60).padStart(2,'0')});}
+    timeline.forEach(t=>{if(!t.isNow)t.isNow=false;});
+    const th=THEMES[dayIdx];const stopsN=day.items.filter(i=>i.kind==='stop'&&i.tag==='Visit').length;
+    const road=day.items.filter(i=>i.kind==='leg'&&i.mode!=='flight').reduce((a,l)=>a+durMin(l.dur),0);
+    const timed=day.items.map(i=>toMin(this.withEdits(i).time??i.time)).filter(x=>x!=null);
+    const summary={theme:th[0],blurb:th[1],story:th[2],bring:th[3],
+      stats:[{k:'SIGHTS',v:String(stopsN||'—')},{k:'ON THE ROAD',v:road?fmtDur(road):'—'},{k:'STARTS',v:timed.length?day.items.map(i=>this.withEdits(i).time||i.time).find(t=>toMin(t)!=null):'Add times'}],
+      plan:day.items.filter(i=>i.kind==='stop').map(i=>({time:this.withEdits(i).time,title:i.title}))};
+    const journeys=JOURNEYS.map(j=>({...j,wd:DAYS[j.day].wd.toUpperCase(),d:DAYS[j.day].d,bg:j.day===dayIdx?'#EFE8DC':'#FBF8F2',modeColor:j.mode==='Flight'?'#4A5B8C':'#4A443B',onClick:()=>this.go('today',{dayIdx:j.day})}));
+    const st=day.stay?STAYS[day.stay]:null;
+    const tonight=st?{kicker:'TONIGHT · NIGHT '+(st.nights.indexOf(dayIdx)+1)+' OF '+st.nights.length,name:st.name,meta:st.area+(st.conf.startsWith('Add')?'':' · Conf. '+st.conf)}
+      :{kicker:'TONIGHT',name:'Home in Munich',meta:'AJet from Cairo via Istanbul (SAW)'};
+    const label=dayIdx===TODAY_IDX?'Today · '+day.wd+' '+day.d+' December':day.wd+' '+day.d+' December';
+    const dayCards=DAYS.map((d,i)=>{const s=d.items.filter(x=>x.kind==='stop'&&x.tag==='Visit').map(x=>x.title);
+      return {...d,isToday:i===TODAY_IDX,draft:!!d.draft,highlights:s.length?s.join(' · '):d.summary,stay:d.stay?'Tonight: '+STAYS[d.stay].name:'No stay: flying home',onClick:()=>this.go('today',{dayIdx:i})};});
+    const tabs=[['today','Today'],['trip','Trip'],['map','Map']].map(([k,l])=>({label:l,fg:tab===k?'#1F1B16':'#8A8174',bar:tab===k?accent:'transparent',onClick:()=>this.go(k)}));
+    let sel={},selStay={};
+    if(sheet&&sheet.type==='stop'){const sd=this.stopData(sheet.id);const idx=sd.day.items.indexOf(sd.it);const pv=sd.day.items[idx-1],nx=sd.day.items[idx+1];
+      const legTxt=l=>l&&l.kind==='leg'?modeLabel[l.mode]+', '+l.dur+'. '+l.text:'Nothing planned';
+      sel={title:sd.it.title,sub:sd.it.sub,tag:sd.it.tag,tagColor:TAGC[sd.it.tag]||'#6E665B',dayLabel:sd.day.wd+' '+sd.day.d+' Dec',durOrDash:sd.it.dur||'—',before:idx===0?'Start of the day':legTxt(pv),after:legTxt(nx),by:sd.day.mode==='Guided'?'Nile Tours · Driver and guide included':'You'};}
+    if(sheet&&sheet.type==='stay'){const s=STAYS[sheet.id];
+      selStay={...s,nightChips:DAYS.map((d,i)=>({wd:d.wd.toUpperCase(),d:d.d,bg:s.nights.includes(i)?'#26211B':'#FBF8F2',fg:s.nights.includes(i)?'#F3EEE4':'#8A8174'})),
+        rows:[{k:'CHECK-IN',v:s.inShort},{k:'CHECK-OUT',v:s.outShort},{k:'NIGHTS',v:String(s.nights.length)},{k:'CONFIRMATION',v:s.conf},{k:'PHONE',v:s.phone},{k:'BOOKED VIA',v:s.by}]};}
+    return {
+      accent,cardStyle,cardMargin:cardStyle==='cards'?'4px 0 4px 8px':'0 0 0 8px',scrollRef:this.scrollRef,
+      isHome:tab==='home',tabBarDisplay:tab==='home'?'none':'grid',goHome:()=>this.go('home'),
+      tripMonths:(()=>{const T=[
+        {id:'cph',m:'October',startDay:'27',startMon:'OCT',name:'Copenhagen & Malmö',kicker:'27–30 Oct · 3 nights',meta:'Denmark and Sweden, across the Øresund Bridge',ready:false},
+        {id:'lon',m:'November',startDay:'2',startMon:'NOV',name:'London',kicker:'2–5 Nov · 3 nights',meta:'United Kingdom',ready:false},
+        {id:'vn',m:'November',startDay:'9',startMon:'NOV',name:'Vietnam',kicker:'9–16 Nov · 7 nights',meta:'Vietnam',ready:false},
+        {id:'eg',m:'December',startDay:'23',startMon:'DEC',name:'Egypt',kicker:'23–31 Dec · 8 nights',meta:'Hurghada, Luxor, Aswan, Cairo',ready:true}];
+        const out=[];T.forEach((t,i)=>{const dark=t.ready;const card={...t,isNext:i===0,bg:dark?'#26211B':'#FBF8F2',fg:dark?'#F3EEE4':'#1F1B16',muted:dark?'#C9BFAF':'#6E665B',rule:dark?'rgba(243,238,228,.14)':'rgba(31,27,22,.08)',
+          status:t.ready?DAYS.length+' days planned · '+Object.keys(STAYS).length+' stays · '+JOURNEYS.length+' journeys':'No plans yet · Add bookings or notes',
+          onClick:()=>t.ready?this.go('today'):this.flash('Only the Egypt trip has plans in this prototype')};
+          let g=out.find(o=>o.name===t.m);if(!g){g={name:t.m,trips:[]};out.push(g);}g.trips.push(card);});return out;})(),
+      isToday:tab==='today',isTrip:tab==='trip',isMap:tab==='map',isStays:tab==='stays',
+      day:{...day,label},strip,timeline,tonight,dayCards,tabs,summary,journeys,
+      openDaySheet:()=>this.setState({sheet:{type:'day'}}),openJourneys:()=>this.setState({sheet:{type:'journeys'}}),openStaysSheet:()=>this.setState({sheet:{type:'stays'}}),
+      sheetIsDay:!!sheet&&sheet.type==='day',sheetIsJourneys:!!sheet&&sheet.type==='journeys',sheetIsStays:!!sheet&&sheet.type==='stays',
+      openTonight:()=>st?this.setState({sheet:{type:'stay',id:st.id}}):this.openStop(day.items[day.items.length-1]),
+      routeRows:[{city:'Munich',nights:'Depart 23 Dec',hasLeg:true,leg:'Lufthansa + easyJet via France'},{city:'Hurghada',nights:'1 night',hasLeg:true,leg:'Private car · 4 hr 15 min'},{city:'Luxor',nights:'3 nights',hasLeg:true,leg:'Private car via Edfu & Kom Ombo'},{city:'Aswan',nights:'1 night',hasLeg:true,leg:'Abu Simbel, then flight · 1 hr 25 min'},{city:'Cairo',nights:'3 nights',hasLeg:true,leg:'AJet via Istanbul (SAW)'},{city:'Munich',nights:'Home 31 Dec',hasLeg:false}],
+      stayCards:Object.values(STAYS).map(s=>({...s,bg:s.nights.includes(dayIdx)?'#EFE8DC':'#FBF8F2',nightsLabel:s.nights.length+(s.nights.length>1?' nights':' night'),onClick:()=>this.setState({sheet:{type:'stay',id:s.id}})})),
+      map:tab==='map'?this.htmlMap(this.buildMap(accent)):{sea:'',nile:'',routes:[],labels:[],markers:[],cards:[]},
+      mapIsDay:mapMode==='day',
+      mapTabs:{dayBg:mapMode==='day'?'#26211B':'transparent',dayFg:mapMode==='day'?'#F3EEE4':'#1F1B16',tripBg:mapMode==='trip'?'#26211B':'transparent',tripFg:mapMode==='trip'?'#F3EEE4':'#1F1B16'},
+      setMapDay:()=>this.setState({mapMode:'day'}),setMapTrip:()=>this.setState({mapMode:'trip'}),
+      mapDayChips:DAYS.map((d,i)=>({t:'D'+d.num+' · '+d.d,bg:i===dayIdx?'#26211B':'rgba(251,248,242,.92)',fg:i===dayIdx?'#F3EEE4':'#1F1B16',onClick:()=>this.setState({dayIdx:i})})),
+      sheetUi:{scrim:sheet?1:0,pe:sheet?'auto':'none',tf:sheet?'translateY(0)':'translateY(105%)'},
+      sheetIsStop:!!sheet&&sheet.type==='stop',sheetIsStay:!!sheet&&sheet.type==='stay',sheetIsAdd:!!sheet&&sheet.type==='add',
+      sel,selStay,draftTime:this.state.draftTime,draftNote:this.state.draftNote,
+      onTime:e=>this.setState({draftTime:e.target.value}),onNote:e=>this.setState({draftNote:e.target.value}),
+      saveStop:()=>{const id=sheet.id;this.setState(s=>({edits:{...s.edits,[id]:{time:s.draftTime,note:s.draftNote}},sheet:null}));this.flash('Saved');},
+      showSelOnMap:()=>{const sd=this.stopData(sheet.id);this.go('map',{mapMode:'day',dayIdx:DAYS.indexOf(sd.day)});},
+      showStayOnMap:()=>this.go('map',{mapMode:'day',dayIdx:STAYS[sheet.id].day}),
+      closeSheet:()=>this.setState({sheet:null}),
+      openAdd:()=>this.setState({sheet:{type:'add'}}),
+      editText:this.state.editText,onEditText:e=>this.setState({editText:e.target.value}),
+      exampleChips:['Move the Abu Simbel pick-up to 03:30','Add a felucca ride in Aswan at 17:00 on the 27th','Cairo hotel confirmation is LPV-2231, phone +20 2 3383 0000'].map(t=>({t,onClick:()=>this.setState({editText:t})})),
+      applyEdit:()=>this.runEdit(),
+      undoEdit:()=>{if(this.state.prevTrip){loadTrip(this.state.prevTrip);this.persist();}this.setState({editResult:null,prevTrip:null,dayIdx:Math.min(this.state.dayIdx,DAYS.length-1)});this.flash('Change undone');},
+      toggleData:()=>this.setState(s=>({showData:!s.showData})),
+      resetTrip:()=>{loadTrip(SAMPLE);try{localStorage.removeItem(STORE);}catch(e){}this.setState({editResult:null,prevTrip:null,edits:{},dayIdx:Math.min(TODAY_IDX,DAYS.length-1)});this.flash('Reset to original trip');},
+      edit:{hasErr:!!this.state.editErr,err:this.state.editErr||'',btn:this.state.editBusy?'Updating your trip…':'Apply with Claude',btnOp:this.state.editBusy||!(this.state.editText||'').trim()?.55:1,
+        hasResult:!!this.state.editResult,resultHead:this.state.editResult?(this.state.editResult.n?this.state.editResult.n+(this.state.editResult.n>1?' CHANGES':' CHANGE'):'NO CHANGES'):'',summary:this.state.editResult?this.state.editResult.summary:[],
+        showData:!!this.state.showData,dataLabel:this.state.showData?'Hide trip data':'View trip data (JSON)',json:this.state.showData?JSON.stringify(snapshot(),null,2):''},
+      toastUi:{text:this.state.toast||' ',op:this.state.toast?1:0,y:this.state.toast?'0':'-10px'}
+    };
+  }
+}
+</script>
+</body>
+</html>

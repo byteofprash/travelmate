@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,400&family=Geist:wght@400;500&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+</helmet>
+<sc-if value="{{ isCards }}" hint-placeholder-val="{{ true }}">
+  <div onClick="{{ onOpen }}" style="padding:13px 14px 14px;border-radius:16px;background:#FBF8F2;border:1px solid rgba(31,27,22,.09);cursor:pointer;box-shadow:0 1px 2px rgba(31,27,22,.04);font-family:Geist,system-ui,sans-serif;color:#1F1B16" style-hover="background:#FFFDF8">
+    <div style="display:flex;justify-content:space-between;gap:10px;align-items:baseline">
+      <div style="font:500 10.5px/1 'Geist Mono',monospace;letter-spacing:.07em;text-transform:uppercase;color:{{ color }}">{{ tagText }}</div>
+      <div style="font:400 11.5px/1 'Geist Mono',monospace;color:#6E665B">{{ durText }}</div>
+    </div>
+    <div style="margin-top:7px;font:400 20px/1.15 Newsreader,serif;text-wrap:pretty">{{ titleText }}</div>
+    <div style="margin-top:4px;font:400 12.5px/1.35 Geist,sans-serif;color:#6E665B">{{ subText }}</div>
+    <sc-if value="{{ hasNote }}"><div style="margin-top:9px;padding-top:9px;border-top:1px solid rgba(31,27,22,.08);font:400 12.5px/1.4 Geist,sans-serif;color:#4A443B">{{ noteText }}</div></sc-if>
+  </div>
+</sc-if>
+<sc-if value="{{ isLedger }}">
+  <div onClick="{{ onOpen }}" style="padding:0 6px 16px 0;border-bottom:1px solid rgba(31,27,22,.12);cursor:pointer;font-family:Geist,system-ui,sans-serif;color:#1F1B16">
+    <div style="font:400 24px/1.1 Newsreader,serif;text-wrap:pretty">{{ titleText }}</div>
+    <div style="margin-top:6px;display:flex;gap:10px;font:400 12.5px/1.3 Geist,sans-serif;color:#6E665B;flex-wrap:wrap"><span style="color:{{ color }};font-weight:500">{{ tagText }}</span><span>{{ subText }}</span><span>{{ durText }}</span></div>
+    <sc-if value="{{ hasNote }}"><div style="margin-top:6px;font:italic 400 14px/1.4 Newsreader,serif;color:#4A443B">{{ noteText }}</div></sc-if>
+  </div>
+</sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:320,&quot;height&quot;:160},&quot;variant&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;cards&quot;,&quot;options&quot;:[&quot;cards&quot;,&quot;ledger&quot;],&quot;tsType&quot;:&quot;'cards'|'ledger'&quot;},&quot;tag&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;Visit&quot;,&quot;options&quot;:[&quot;Visit&quot;,&quot;Meal&quot;,&quot;Stay&quot;,&quot;Flight&quot;,&quot;Arrival&quot;,&quot;Pick-up&quot;],&quot;tsType&quot;:&quot;string&quot;},&quot;tagColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#A8492A&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;#A8492A&quot;,&quot;#8A6A2F&quot;,&quot;#2F6F73&quot;,&quot;#4A5B8C&quot;]},&quot;title&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Valley of the Kings&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;subtitle&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;West Bank&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;duration&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;2 hr&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;note&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;onOpen&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;() =&gt; void&quot;}}">
+const TAG_COLORS={'Pick-up':'#4A443B',Visit:'#A8492A',Meal:'#8A6A2F',Stay:'#2F6F73',Flight:'#4A5B8C',Arrival:'#4A5B8C'};
+class Component extends DCLogic {
+  renderVals(){
+    const p=this.props;const tag=p.tag??'Visit';const variant=p.variant??'cards';
+    return {isCards:variant!=='ledger',isLedger:variant==='ledger',tagText:tag,color:p.tagColor??TAG_COLORS[tag]??'#6E665B',
+      durText:p.duration??'',titleText:p.title??'Valley of the Kings',subText:p.subtitle??'',noteText:p.note??'',hasNote:!!p.note,onOpen:p.onOpen};
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body {
+  background: #E6E0D5;
+  font-family: Geist, system-ui, sans-serif;
+  color: #1F1B16;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+a { color: #A8492A; text-decoration: none; }
+a:hover { color: #1F1B16; }
+input, textarea { font-family: inherit; }
+h1 { font-weight: 400; }
+::-webkit-scrollbar { width: 0; height: 0; }
+.scroll { scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+
+/* The app is a phone-sized surface: full-bleed on phones, a 402 × 874 panel on larger screens. */
+.stage {
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.phone {
+  position: relative;
+  width: 100vw;
+  height: 100dvh;
+  overflow: hidden;
+}
+@media (min-width: 520px) and (min-height: 700px) {
+  .stage { padding: 20px; }
+  .phone {
+    width: 402px;
+    height: min(874px, calc(100dvh - 40px));
+    border-radius: 44px;
+    box-shadow: 0 30px 80px rgba(31, 27, 22, .18), 0 0 0 1px rgba(31, 27, 22, .08);
+  }
+}
+
+.hov-card { transition: background .15s; }
+.hov-card:hover { background: #FFFDF8 !important; }
+.lift { transition: transform .15s; }
+.lift:hover { transform: translateY(-1px); }
+.chip-hov:hover { background: #FBF8F2; }
+[role='button']:focus-visible { outline: 2px solid #A8492A; outline-offset: 2px; }

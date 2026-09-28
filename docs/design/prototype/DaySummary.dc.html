@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,400&family=Geist:wght@400;500&family=Geist+Mono:wght@500&display=swap" rel="stylesheet">
+</helmet>
+<div onClick="{{ onOpen }}" style="padding:18px 18px 16px;border-radius:20px;background:#26211B;color:#F3EEE4;cursor:pointer;font-family:Geist,system-ui,sans-serif">
+  <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px">
+    <div style="font:500 10.5px/1 'Geist Mono',monospace;letter-spacing:.1em;color:#C9BFAF;text-transform:uppercase">{{ kickerText }}</div>
+    <div style="font:400 20px/1 Newsreader,serif;color:#C9BFAF">→</div>
+  </div>
+  <div style="margin-top:10px;font:italic 400 27px/1.08 Newsreader,serif;letter-spacing:-.01em;text-wrap:balance">{{ theme }}</div>
+  <div style="margin-top:8px;font:400 13px/1.45 Geist,sans-serif;color:#D8CFC1;text-wrap:pretty">{{ blurb }}</div>
+  <sc-if value="{{ hasStats }}" hint-placeholder-val="{{ true }}">
+    <div style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(243,238,228,.14);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px">
+      <sc-for list="{{ statList }}" as="sx" hint-placeholder-count="3">
+        <div style="min-width:0">
+          <div style="font:500 9.5px/1 'Geist Mono',monospace;letter-spacing:.08em;color:#A89E8F;text-transform:uppercase">{{ sx.k }}</div>
+          <div style="margin-top:5px;font:400 14px/1.2 Geist,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ sx.v }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:370,&quot;height&quot;:220},&quot;kicker&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Theme of the day&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;theme&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;City of the dead&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;blurb&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Royal tombs, Hatshepsut’s temple and the Colossi, across the Nile.&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;stats&quot;:{&quot;editor&quot;:null,&quot;default&quot;:[{&quot;k&quot;:&quot;Sights&quot;,&quot;v&quot;:&quot;3&quot;},{&quot;k&quot;:&quot;On the road&quot;,&quot;v&quot;:&quot;1 hr 40 min&quot;},{&quot;k&quot;:&quot;Starts&quot;,&quot;v&quot;:&quot;07:00&quot;}],&quot;tsType&quot;:&quot;{k:string,v:string}[]&quot;},&quot;onOpen&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;() =&gt; void&quot;}}">
+class Component extends DCLogic {
+  renderVals(){
+    const stats=this.props.stats??[{k:'Sights',v:'3'},{k:'On the road',v:'1 hr 40 min'},{k:'Starts',v:'07:00'}];
+    return {kickerText:this.props.kicker??'Theme of the day',theme:this.props.theme??'City of the dead',blurb:this.props.blurb??'Royal tombs, Hatshepsut’s temple and the Colossi, across the Nile.',statList:stats,hasStats:stats.length>0,onOpen:this.props.onOpen};
+  }
+}
+</script>
+</body>
+</html>

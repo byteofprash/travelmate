@@ -1,0 +1,9 @@
+{
+  "name": "Travel Companion",
+  "short_name": "Travel",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F3EEE4",
+  "theme_color": "#F3EEE4",
+  "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml" }]
+}
