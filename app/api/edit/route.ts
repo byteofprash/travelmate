@@ -7,6 +7,10 @@ export const runtime = 'nodejs';
 export const maxDuration = 300;
 
 const MODEL = process.env.CLAUDE_MODEL || 'claude-sonnet-5-5';
+// Optional. An API key belongs to one workspace, and Anthropic reports the workspace that served each
+// request in the `anthropic-workspace-id` response header. If this is set, a response from any other
+// workspace is treated as an error, which catches a key from the wrong workspace being deployed.
+const EXPECTED_WORKSPACE = process.env.ANTHROPIC_WORKSPACE_ID?.trim() || undefined;
 
 const RequestSchema = z.object({
   request: z.string().min(1).max(20000),
@@ -67,6 +71,16 @@ export async function POST(req: Request) {
       tool_choice: { type: 'auto' },
       messages: [{ role: 'user', content }],
     });
+    if (EXPECTED_WORKSPACE) {
+      const { workspace_id } = await stream.withResponse();
+      if (!workspace_id) {
+        console.warn('ANTHROPIC_WORKSPACE_ID is set but the response named no workspace, so it could not be checked.');
+      } else if (workspace_id !== EXPECTED_WORKSPACE) {
+        stream.abort();
+        console.error(`Anthropic served this request from workspace ${workspace_id}, expected ${EXPECTED_WORKSPACE}.`);
+        return Response.json({ error: 'workspace_mismatch' }, { status: 502 });
+      }
+    }
     const msg = await stream.finalMessage();
 
     if (msg.stop_reason === 'refusal') {

@@ -14,7 +14,8 @@ Built from the Claude Design handoff in [`docs/design/`](docs/design/HANDOFF.md)
 
 1. Import the repo into Vercel. The Next.js preset needs no config changes.
 2. Add the environment variable **`ANTHROPIC_API_KEY`** (Project → Settings → Environment Variables).
-3. Optional: **`CLAUDE_MODEL`** overrides the model (default `claude-sonnet-5-5`, following the handoff's "sonnet").
+3. Optional: **`ANTHROPIC_WORKSPACE_ID`** (`wrkspc_...`). An API key belongs to exactly one Anthropic workspace, and each response says which workspace served it. If this is set, `/api/edit` returns an error (and logs it) when a response comes from any other workspace, which catches the wrong workspace's key being deployed. It checks the key; it can't choose the workspace, so to use a different workspace, create the API key in that workspace. The check happens after the request is sent, so it stops and flags a mismatch but can't prevent that one call.
+4. Optional: **`CLAUDE_MODEL`** overrides the model (default `claude-sonnet-5-5`, following the handoff's "sonnet").
 
 The Claude route sets `maxDuration = 300`, which fits Vercel's default Fluid Compute limits. Pasting a long itinerary into an empty trip can take a while.
 
