@@ -1,8 +1,27 @@
+/* DIN 1451. Uses a locally installed copy if there is one, otherwise the files in /public/fonts
+   (DIN1451-Regular / -Medium / -Italic .woff2). If neither exists the stack in lib/theme.ts falls
+   back to Bahnschrift, then the bundled Barlow. */
+@font-face {
+  font-family: 'DIN 1451'; font-style: normal; font-weight: 400; font-display: swap;
+  src: local('DIN 1451 Std'), local('DIN 1451'), local('DIN1451'), local('DIN 1451 Mittelschrift'),
+       url('/fonts/DIN1451-Regular.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'DIN 1451'; font-style: normal; font-weight: 500 700; font-display: swap;
+  src: local('DIN 1451 Std Medium'), local('DIN 1451 Medium'), local('DIN 1451 Std Bold'),
+       url('/fonts/DIN1451-Medium.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'DIN 1451'; font-style: italic; font-weight: 400; font-display: swap;
+  src: local('DIN 1451 Std Italic'), local('DIN 1451 Italic'),
+       url('/fonts/DIN1451-Italic.woff2') format('woff2');
+}
+
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; }
 body {
   background: #E6E0D5;
-  font-family: Geist, system-ui, sans-serif;
+  font-family: 'DIN 1451', Bahnschrift, Barlow, system-ui, sans-serif;
   color: #1F1B16;
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
@@ -58,7 +77,7 @@ h1 { font-weight: 400; }
 
 /* Desktop: sidebar + larger centre column, sheets become a right-hand drawer. */
 @media (min-width: 900px) {
-  :root { --tabbar: 0px; --safe-bottom: 0px; --top: 40px; --zoom: 1.25; }
+  :root { --tabbar: 0px; --safe-bottom: 0px; --top: 40px; --zoom: 1; }
   .stage { display: block; padding: 0; min-height: 0; }
   .phone {
     position: fixed; inset: 0; width: auto; height: auto;
@@ -75,7 +94,7 @@ h1 { font-weight: 400; }
   }
   .sheet.open { transform: translateX(0); }
   .sheet-grab { display: none; }
-  .sheet-body { zoom: 1.12; }
+  .sheet-body { zoom: 1; }
   .sheet-close {
     display: flex; position: sticky; top: 0; z-index: 2; float: right; margin: -8px 20px 0 0;
     width: 36px; height: 36px; border-radius: 18px; align-items: center; justify-content: center;
@@ -84,7 +103,7 @@ h1 { font-weight: 400; }
   .sheet-close:hover { background: #FFFDF8; }
 }
 @media (min-width: 1400px) {
-  :root { --zoom: 1.4; }
+  :root { --zoom: 1.1; }
 }
 
 /* Sidebar */
@@ -96,7 +115,7 @@ h1 { font-weight: 400; }
 .side-item {
   display: flex; align-items: center; gap: 12px; width: 100%; border: 0; background: transparent;
   border-radius: 12px; cursor: pointer; text-align: left; color: #4A443B;
-  font: 500 14px/1 Geist, system-ui, sans-serif; white-space: nowrap; transition: background .15s;
+  font: 500 14px/1 'DIN 1451', Bahnschrift, Barlow, system-ui, sans-serif; white-space: nowrap; transition: background .15s;
 }
 .side-item:hover { background: rgba(31, 27, 22, .06); }
 .side-item.active { background: #26211B; color: #F3EEE4; }

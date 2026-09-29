@@ -5,7 +5,7 @@ import { CommuteLeg } from '../CommuteLeg';
 import { DaySummary } from '../DaySummary';
 import { WD, addDays, fmtClock, toISO, toMin } from '@/lib/format';
 import { dayBits, dayDate, daySummary, isStop } from '@/lib/derive';
-import { C, TAGC, mono, rule, sans, serif } from '@/lib/theme';
+import { C, F, TAGC, mono, rule, sans, serif } from '@/lib/theme';
 import type { Day, Settings, Stop, Trip, TripMeta } from '@/lib/types';
 
 const iconBtn: React.CSSProperties = {
@@ -122,7 +122,7 @@ export const Today = forwardRef<HTMLDivElement, {
               }}
             >
               <div style={{ font: mono(500, 10), letterSpacing: '.06em', textTransform: 'uppercase' }}>{s.wd}</div>
-              <div style={{ font: `500 19px/1 Newsreader, Georgia, serif` }}>{s.d}</div>
+              <div style={{ font: `500 19px/1 ${F.serif}` }}>{s.d}</div>
               <div style={{ width: 4, height: 4, borderRadius: 2, background: s.iso === p.todayISO ? accent : 'transparent' }} />
             </div>
           );

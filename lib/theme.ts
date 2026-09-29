@@ -37,11 +37,10 @@ export const TAGC: Record<string, string> = {
 
 export const rule = (a: number) => `rgba(31,27,22,${a})`;
 
-export const F = {
-  serif: 'Newsreader, Georgia, serif',
-  sans: 'Geist, system-ui, sans-serif',
-  mono: "'Geist Mono', ui-monospace, monospace",
-};
+// One family across the whole app: DIN 1451 (installed, or from /public/fonts via globals.css),
+// then Bahnschrift (Windows' DIN 1451-based font), then the bundled Barlow stand-in.
+const DIN = "'DIN 1451', Bahnschrift, Barlow, system-ui, sans-serif";
+export const F = { serif: DIN, sans: DIN, mono: DIN };
 /** CSS `font` shorthand helpers. */
 export const mono = (w: number, size: number, lh: number | string = 1) => `${w} ${size}px/${lh} ${F.mono}`;
 export const sans = (w: number, size: number, lh: number | string = 1) => `${w} ${size}px/${lh} ${F.sans}`;

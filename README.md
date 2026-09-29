@@ -2,7 +2,7 @@
 
 The one app you open while travelling: where you're going today, how you're getting there and where you're sleeping tonight. Paste itineraries, booking emails or notes and Claude turns them into days, stops, commutes, stays and journeys, then edits them from plain-English requests.
 
-Built from the Claude Design handoff in [`docs/design/`](docs/design/HANDOFF.md) (high-fidelity: colours, type, spacing, radii and copy follow the mockup exactly).
+Built from the Claude Design handoff in [`docs/design/`](docs/design/HANDOFF.md). Colours, spacing, radii and copy follow the mockup; the typeface was changed to DIN 1451 at the owner's request (see Fonts).
 
 ## Stack
 
@@ -45,8 +45,18 @@ npm run dev
 ## Layouts
 
 - **Below 900px wide (phones):** the mobile design from the handoff, with a slim icon tab bar (Today, Trip, Map) pinned to the bottom edge.
-- **900px and wider (desktop):** the tab bar becomes a collapsible left sidebar with icons and names (Trips, then Today, Trip and Map for the open trip, and Settings). The centre column keeps the same cards but scaled up (about 1.25x, and 1.4x on screens 1400px and wider). Sheets open as a drawer on the right instead of from the bottom. The sidebar's collapsed state is remembered.
+- **900px and wider (desktop):** the tab bar becomes a collapsible left sidebar with icons and names (Trips, then Today, Trip and Map for the open trip, and Settings). The centre column keeps the same cards but at the phone's size (1x, and 1.1x on screens 1400px and wider). Sheets open as a drawer on the right instead of from the bottom. The sidebar's collapsed state is remembered.
 - The breakpoint lives in two places that must match: `app/globals.css` and `DESKTOP_QUERY` in `components/App.tsx`.
+
+## Fonts
+
+The whole app uses one family, **DIN 1451**. It's a commercial typeface, so it isn't bundled. To use it, either install it on the device, or add web-font files to `public/fonts/`:
+
+- `DIN1451-Regular.woff2` (400)
+- `DIN1451-Medium.woff2` (500 to 700)
+- `DIN1451-Italic.woff2` (italic, used for day themes)
+
+Until then the font stack falls back to Bahnschrift (Windows' DIN 1451-based font), then **Barlow** (open licence, bundled through `@fontsource/barlow`) as a DIN-style stand-in. Only use font files you hold a web licence for.
 
 ## Differences from the prototype
 

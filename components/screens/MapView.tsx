@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { buildDayMap, buildTripMap } from '@/lib/map';
 import { rangeShort } from '@/lib/format';
-import { C, mono, rule, sans, serif } from '@/lib/theme';
+import { C, F, mono, rule, sans, serif } from '@/lib/theme';
 import type { Settings, Stop, Trip, TripMeta } from '@/lib/types';
 
 export function MapView({
@@ -103,7 +103,7 @@ export function MapView({
               top: -9,
               left: k.labelLeft ? 'auto' : 20,
               right: k.labelLeft ? 20 : 'auto',
-              font: `400 15px/18px Newsreader, Georgia, serif`,
+              font: `400 15px/18px ${F.serif}`,
               color: C.ink,
               whiteSpace: 'nowrap',
               maxWidth: 150,
