@@ -31,7 +31,8 @@ export function Home({
     g.trips.push(t);
   }
   return (
-    <div className="scroll" style={{ position: 'absolute', inset: 0, overflowY: 'auto', padding: '58px 0 40px' }}>
+    <div className="scroll" style={{ position: 'absolute', inset: 0, overflowY: 'auto', padding: 'var(--top) 0 40px' }}>
+     <div className="col">
       <div style={{ padding: '6px 22px 0', font: mono(500, 11), letterSpacing: '.08em', textTransform: 'uppercase', color: C.muted }}>{seasonKicker(index)}</div>
       <h1 style={{ margin: '14px 22px 0', font: serif(44, 1), letterSpacing: '-.02em' }}>Trips</h1>
       <div style={{ margin: '8px 22px 0', font: sans(400, 13.5, 1.4), color: C.muted }}>
@@ -120,6 +121,7 @@ export function Home({
           Settings
         </div>
       </div>
+     </div>
     </div>
   );
 }

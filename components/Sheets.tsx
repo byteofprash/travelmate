@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { X } from 'lucide-react';
 import { MODES } from './CommuteLeg';
 import { isPlaceholder, plural, rangeShort } from '@/lib/format';
 import { dayBits, daySummary, homeCity, nightCount, operator, staysInOrder } from '@/lib/derive';
@@ -29,32 +30,13 @@ const val = (v: string) => (isPlaceholder(v) ? <span style={{ color: C.muted2 }}
 export function SheetFrame({ open, onClose, children }: { open: boolean; onClose: () => void; children: ReactNode }) {
   return (
     <>
-      <div
-        onClick={onClose}
-        style={{ position: 'absolute', inset: 0, background: C.scrim, transition: 'opacity .25s', opacity: open ? 1 : 0, pointerEvents: open ? 'auto' : 'none', zIndex: 30 }}
-      />
-      <div
-        className="scroll"
-        role="dialog"
-        aria-modal="true"
-        aria-hidden={!open}
-        style={{
-          position: 'absolute',
-          left: 0,
-          right: 0,
-          bottom: 0,
-          maxHeight: '86%',
-          overflowY: 'auto',
-          background: C.sheet,
-          borderRadius: '28px 28px 0 0',
-          zIndex: 31,
-          transition: 'transform .32s cubic-bezier(.2,.8,.2,1)',
-          transform: open ? 'translateY(0)' : 'translateY(105%)',
-          padding: '10px 0 34px',
-        }}
-      >
-        <div style={{ width: 38, height: 5, borderRadius: 3, background: rule(0.18), margin: '0 auto 8px' }} />
-        <div style={{ padding: '10px 22px 0' }}>{children}</div>
+      <div className={'sheet-scrim' + (open ? ' open' : '')} onClick={onClose} />
+      <div className={'scroll sheet' + (open ? ' open' : '')} role="dialog" aria-modal="true" aria-hidden={!open}>
+        <div className="sheet-grab" />
+        <button type="button" className="sheet-close" onClick={onClose} aria-label="Close" tabIndex={open ? 0 : -1}>
+          <X size={18} strokeWidth={1.6} color={C.ink} />
+        </button>
+        <div className="sheet-body" style={{ padding: '10px 22px 0' }}>{children}</div>
       </div>
     </>
   );

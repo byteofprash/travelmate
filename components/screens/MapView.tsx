@@ -118,7 +118,7 @@ export function MapView({
         </div>
       ))}
 
-      <div style={{ position: 'absolute', top: 58, left: 16, right: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <div style={{ position: 'absolute', top: 'var(--top)', left: 16, right: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', padding: 3, borderRadius: 999, background: 'rgba(251,248,242,.92)', border: `1px solid ${rule(0.1)}` }}>
             <div onClick={() => onMode('day')} style={seg(mode === 'day')}>Day</div>

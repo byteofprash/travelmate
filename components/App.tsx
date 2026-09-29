@@ -1,6 +1,7 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { Sidebar } from './Sidebar';
 import { CalendarDays, Map as MapIcon, Route, type LucideIcon } from 'lucide-react';
 import { Home } from './screens/Home';
 import { Today } from './screens/Today';
@@ -28,7 +29,22 @@ const examplesFor = (id: string, name: string, empty: boolean) =>
       ? [`Flying in on the first morning, home on the last evening`, `Staying at one hotel in ${name.split(' ')[0]} for every night`, `Add a free day to explore on day 2`]
       : ['Add dinner at 19:30 on day 2', 'Move the first pick-up 30 minutes later', 'Add my hotel confirmation number'];
 
-const ERR = 'Couldn’t update the trip. Try rephrasing, or try again in a moment.';
+const SIDEBAR_KEY = 'tc-sidebar-v1';
+// Keep in sync with the desktop breakpoint in globals.css.
+const DESKTOP_QUERY = '(min-width: 900px)';
+function useDesktop() {
+  return useSyncExternalStore(
+    (cb) => {
+      const m = window.matchMedia(DESKTOP_QUERY);
+      m.addEventListener('change', cb);
+      return () => m.removeEventListener('change', cb);
+    },
+    () => window.matchMedia(DESKTOP_QUERY).matches,
+    () => false,
+  );
+}
+
+const ERR ='Couldn’t update the trip. Try rephrasing, or try again in a moment.';
 
 /** `?today=2026-12-25&time=10:30` pins the clock, for checking the now line before the trip. */
 function readClockOverride() {
@@ -42,6 +58,14 @@ export default function App() {
   const [data, setData] = useState<Persisted>(() => load());
   const [settings, setSettings] = useState<Settings>(() => (typeof window === 'undefined' ? DEFAULT_SETTINGS : loadSettings()));
   const [override] = useState(readClockOverride);
+  const desktop = useDesktop();
+  const [sideCollapsed, setSideCollapsed] = useState(() => {
+    try {
+      return localStorage.getItem(SIDEBAR_KEY) === '1';
+    } catch {
+      return false;
+    }
+  });
   const [now, setNow] = useState(() => new Date());
 
   const [tab, setTab] = useState<Tab>('home');
@@ -67,6 +91,11 @@ export default function App() {
 
   useEffect(() => save(data), [data]);
   useEffect(() => saveSettings(settings), [settings]);
+  useEffect(() => {
+    try {
+      localStorage.setItem(SIDEBAR_KEY, sideCollapsed ? '1' : '0');
+    } catch {}
+  }, [sideCollapsed]);
   useEffect(() => {
     const t = setInterval(() => setNow(new Date()), 30000);
     return () => clearInterval(t);
@@ -295,6 +324,19 @@ export default function App() {
   return (
     <div className="stage">
       <div className="phone" style={{ background: C.paper, color: C.ink }}>
+        {desktop && (
+          <Sidebar
+            tab={effTab}
+            collapsed={sideCollapsed}
+            tripName={meta.name}
+            showTrip={planned}
+            accent={settings.accent}
+            onToggle={() => setSideCollapsed((c) => !c)}
+            onGo={(t) => go(t)}
+            onSettings={() => setSheet({ type: 'settings' })}
+          />
+        )}
+        <div className="main">
         {effTab === 'home' && (
           <Home
             index={data.index}
@@ -354,11 +396,12 @@ export default function App() {
             onStop={openStop}
           />
         )}
+        </div>
 
         <nav
           aria-label="Trip sections"
           style={{
-            display: effTab === 'home' ? 'none' : 'grid',
+            display: effTab === 'home' || desktop ? 'none' : 'grid',
             position: 'absolute',
             left: 0,
             right: 0,
@@ -402,7 +445,7 @@ export default function App() {
           aria-live="polite"
           style={{
             position: 'absolute',
-            top: 56,
+            top: 'calc(var(--top) - 2px)',
             left: '50%',
             zIndex: 40,
             transform: `translateX(-50%) translateY(${toast ? '0' : '-10px'})`,

@@ -42,6 +42,12 @@ npm run dev
 | `data/` | Sample trips from the handoff |
 | `docs/design/` | Original handoff README and HTML prototype, for reference |
 
+## Layouts
+
+- **Below 900px wide (phones):** the mobile design from the handoff, with a slim icon tab bar (Today, Trip, Map) pinned to the bottom edge.
+- **900px and wider (desktop):** the tab bar becomes a collapsible left sidebar with icons and names (Trips, then Today, Trip and Map for the open trip, and Settings). The centre column keeps the same cards but scaled up (about 1.25x, and 1.4x on screens 1400px and wider). Sheets open as a drawer on the right instead of from the bottom. The sidebar's collapsed state is remembered.
+- The breakpoint lives in two places that must match: `app/globals.css` and `DESKTOP_QUERY` in `components/App.tsx`.
+
 ## Differences from the prototype
 
 - Tapping an empty trip opens **Plan this trip**, which uses the same Claude pipeline to build the trip from pasted text. The prototype only showed a toast here.
