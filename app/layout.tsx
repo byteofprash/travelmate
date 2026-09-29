@@ -1,9 +1,4 @@
 import type { Metadata, Viewport } from 'next';
-// Free DIN-style stand-in (OFL), used until real DIN 1451 files are added. See README → Fonts.
-import '@fontsource/barlow/400.css';
-import '@fontsource/barlow/400-italic.css';
-import '@fontsource/barlow/500.css';
-import '@fontsource/barlow/600.css';
 import './globals.css';
 
 export const metadata: Metadata = {

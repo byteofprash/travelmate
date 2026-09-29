@@ -2,7 +2,7 @@
 
 The one app you open while travelling: where you're going today, how you're getting there and where you're sleeping tonight. Paste itineraries, booking emails or notes and Claude turns them into days, stops, commutes, stays and journeys, then edits them from plain-English requests.
 
-Built from the Claude Design handoff in [`docs/design/`](docs/design/HANDOFF.md). Colours, spacing, radii and copy follow the mockup; the typeface was changed to DIN 1451 at the owner's request (see Fonts).
+Built from the Claude Design handoff in [`docs/design/`](docs/design/HANDOFF.md). Colours, spacing, radii and copy follow the mockup; the typeface was changed to Liberation Sans at the owner's request (see Fonts).
 
 ## Stack
 
@@ -50,13 +50,7 @@ npm run dev
 
 ## Fonts
 
-The whole app uses one family, **DIN 1451**. It's a commercial typeface, so it isn't bundled. To use it, either install it on the device, or add web-font files to `public/fonts/`:
-
-- `DIN1451-Regular.woff2` (400)
-- `DIN1451-Medium.woff2` (500 to 700)
-- `DIN1451-Italic.woff2` (italic, used for day themes)
-
-Until then the font stack falls back to Bahnschrift (Windows' DIN 1451-based font), then **Barlow** (open licence, bundled through `@fontsource/barlow`) as a DIN-style stand-in. Only use font files you hold a web licence for.
+The whole app uses one family, **Liberation Sans** (SIL Open Font License 1.1, so it's fine to bundle). The web-font files and the licence are in `public/fonts/`, and `app/globals.css` loads them, using an installed copy first if there is one. Liberation Sans has no Medium weight, so the "500" weights in the design render as Regular and only 600+ renders as Bold. The family name is set in one place, `lib/theme.ts`, plus the `font-family` lines in `app/globals.css`.
 
 ## Differences from the prototype
 

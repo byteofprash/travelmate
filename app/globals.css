@@ -1,27 +1,23 @@
-/* DIN 1451. Uses a locally installed copy if there is one, otherwise the files in /public/fonts
-   (DIN1451-Regular / -Medium / -Italic .woff2). If neither exists the stack in lib/theme.ts falls
-   back to Bahnschrift, then the bundled Barlow. */
+/* Liberation Sans (SIL OFL 1.1, licence in /fonts). An installed copy is used if present, otherwise
+   the bundled files. There is no Medium cut, so 500 uses Regular and 600+ uses Bold. */
 @font-face {
-  font-family: 'DIN 1451'; font-style: normal; font-weight: 400; font-display: swap;
-  src: local('DIN 1451 Std'), local('DIN 1451'), local('DIN1451'), local('DIN 1451 Mittelschrift'),
-       url('/fonts/DIN1451-Regular.woff2') format('woff2');
+  font-family: 'Liberation Sans'; font-style: normal; font-weight: 400 500; font-display: swap;
+  src: local('Liberation Sans'), local('LiberationSans'), url('/fonts/LiberationSans-Regular.woff2') format('woff2');
 }
 @font-face {
-  font-family: 'DIN 1451'; font-style: normal; font-weight: 500 700; font-display: swap;
-  src: local('DIN 1451 Std Medium'), local('DIN 1451 Medium'), local('DIN 1451 Std Bold'),
-       url('/fonts/DIN1451-Medium.woff2') format('woff2');
+  font-family: 'Liberation Sans'; font-style: normal; font-weight: 600 700; font-display: swap;
+  src: local('Liberation Sans Bold'), local('LiberationSans-Bold'), url('/fonts/LiberationSans-Bold.woff2') format('woff2');
 }
 @font-face {
-  font-family: 'DIN 1451'; font-style: italic; font-weight: 400; font-display: swap;
-  src: local('DIN 1451 Std Italic'), local('DIN 1451 Italic'),
-       url('/fonts/DIN1451-Italic.woff2') format('woff2');
+  font-family: 'Liberation Sans'; font-style: italic; font-weight: 400 500; font-display: swap;
+  src: local('Liberation Sans Italic'), local('LiberationSans-Italic'), url('/fonts/LiberationSans-Italic.woff2') format('woff2');
 }
 
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; }
 body {
   background: #E6E0D5;
-  font-family: 'DIN 1451', Bahnschrift, Barlow, system-ui, sans-serif;
+  font-family: 'Liberation Sans', Arimo, Arial, Helvetica, sans-serif;
   color: #1F1B16;
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
@@ -115,7 +111,7 @@ h1 { font-weight: 400; }
 .side-item {
   display: flex; align-items: center; gap: 12px; width: 100%; border: 0; background: transparent;
   border-radius: 12px; cursor: pointer; text-align: left; color: #4A443B;
-  font: 500 14px/1 'DIN 1451', Bahnschrift, Barlow, system-ui, sans-serif; white-space: nowrap; transition: background .15s;
+  font: 500 14px/1 'Liberation Sans', Arimo, Arial, Helvetica, sans-serif; white-space: nowrap; transition: background .15s;
 }
 .side-item:hover { background: rgba(31, 27, 22, .06); }
 .side-item.active { background: #26211B; color: #F3EEE4; }
