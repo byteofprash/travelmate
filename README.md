@@ -60,9 +60,14 @@ The whole app uses one family, **Liberation Sans** (SIL Open Font License 1.1, s
 - The START time field is a 24-hour `HH:MM` text field, because browsers show `<input type="time">` in 12-hour format in some locales.
 - Placeholder values such as "Add confirmation" and "Add phone" are shown muted, as prompts.
 
+## Maps
+
+The Map tab uses **OpenStreetMap** through Leaflet, with the tiles muted to match the paper palette. Google Maps was ruled out because it needs a billing account and API key and charges beyond a free allowance. There's no key to configure. Day mode fits the day's stops with dashed routes; Whole trip mode shows one marker per city, with road legs solid and flights dotted.
+
+The public OpenStreetMap tile server has a [usage policy](https://operations.osmfoundation.org/policies/tiles/) meant for light use. If the app gets real traffic, point `NEXT_PUBLIC_MAP_TILES` (and `NEXT_PUBLIC_MAP_ATTRIBUTION`) at a tile provider such as MapTiler or Stadia, whose free tiers need a key.
+
 ## Next steps (from the handoff)
 
-- Replace the schematic map with a map SDK (for example Mapbox with a muted style using the same palette). This needs an access token.
 - Add server-side storage (a `trips` table plus a per-trip document) and sync, keeping the local cache for offline use.
 - Store a timezone per day, so the now line uses the trip's local time.
 - Forward booking emails into a trip, and add a "Now / Next" widget.

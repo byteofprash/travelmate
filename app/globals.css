@@ -128,3 +128,28 @@ h1 { font-weight: 400; }
 .lift:hover { transform: translateY(-1px); }
 .chip-hov:hover { background: #FBF8F2; }
 [role='button']:focus-visible { outline: 2px solid #A8492A; outline-offset: 2px; }
+
+/* Map (Leaflet + OpenStreetMap), muted to sit on the paper palette */
+.leaflet-container { background: #EFE8DC; font-family: inherit; outline: 0; }
+.map-tiles { filter: sepia(.32) saturate(.62) brightness(1.04) contrast(.92); }
+.map-root .leaflet-bottom { bottom: 168px; } /* keep controls and attribution above the cards */
+.leaflet-control-attribution {
+  background: rgba(251, 248, 242, .85) !important; color: #6E665B; font-size: 10px; border-radius: 6px 0 0 6px;
+}
+.leaflet-control-attribution a { color: #4A443B; }
+.leaflet-bar { border: 1px solid rgba(31, 27, 22, .14) !important; box-shadow: none !important; border-radius: 12px !important; overflow: hidden; }
+.leaflet-bar a, .leaflet-bar a:hover { background: #FBF8F2; color: #1F1B16; border-bottom-color: rgba(31, 27, 22, .1); }
+.leaflet-bar a:hover { background: #FFFDF8; }
+.tc-mk { background: none; border: 0; }
+.tc-mk .dot {
+  position: absolute; left: -13px; top: -13px; width: 26px; height: 26px; border-radius: 13px;
+  border: 2.5px solid #F3EEE4; color: #F3EEE4; display: flex; align-items: center; justify-content: center;
+  font: 500 11px/1 inherit; font-family: inherit; cursor: pointer; box-sizing: border-box;
+}
+.tc-mk .label {
+  position: absolute; top: -9px; left: 20px; font-size: 15px; line-height: 18px; color: #1F1B16; white-space: nowrap;
+  max-width: 150px; overflow: hidden; text-overflow: ellipsis; pointer-events: none;
+  text-shadow: 0 0 3px #EFE8DC, 0 0 3px #EFE8DC, 0 0 3px #EFE8DC;
+}
+.tc-mk .label.left { left: auto; right: 20px; }
+.tc-mk .label.hide { display: none; }
