@@ -45,7 +45,7 @@ export function ActivityCard({
         background: C.card,
         border: `1px solid ${rule(0.09)}`,
         cursor: 'pointer',
-        boxShadow: '0 1px 2px rgba(31,27,22,.04)',
+        boxShadow: '0 1px 2px rgba(34,36,40,.04)',
         color: C.ink,
       }}
     >

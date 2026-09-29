@@ -1,41 +1,43 @@
+// Colour palette in the style of Deutsche Bahn's design system: signature red on cool neutrals,
+// with blue, green and orange signal colours. (Inspired by DB's public colour values; no DB assets used.)
 export const C = {
-  paper: '#F3EEE4',
-  sheet: '#F7F3EB',
-  card: '#FBF8F2',
-  cardHover: '#FFFDF8',
-  sand: '#EFE8DC',
-  draftBg: '#EADFCB',
-  draftFg: '#6B4E1F',
-  ink: '#1F1B16',
-  ink2: '#4A443B',
-  muted: '#6E665B',
-  muted2: '#8A8174',
-  dark: '#26211B',
-  darkText: '#F3EEE4',
-  darkMuted: '#C9BFAF',
-  darkBody: '#D8CFC1',
-  darkLabel: '#A89E8F',
-  accent: '#A8492A',
-  nile: '#2F6F73',
-  flight: '#4A5B8C',
-  meal: '#8A6A2F',
-  now: '#D23B2E',
-  error: '#B03A2E',
-  scrim: 'rgba(31,27,22,.38)',
+  paper: '#EDEEF0', // page background
+  sheet: '#F3F3F5',
+  card: '#FFFFFF',
+  cardHover: '#F8F8FA',
+  sand: '#E1E2E6', // info boxes, map background
+  draftBg: '#FFEADF',
+  draftFg: '#6F4000',
+  ink: '#16181B',
+  ink2: '#3B3E44',
+  muted: '#5A5E68',
+  muted2: '#727782',
+  dark: '#222428',
+  darkText: '#FFFFFF',
+  darkMuted: '#C3C7CE',
+  darkBody: '#E1E2E6',
+  darkLabel: '#A6ABB6',
+  accent: '#EC0016', // DB red
+  nile: '#408335', // stays (green)
+  flight: '#1455C0', // flights and arrivals (blue)
+  meal: '#AD6600', // meals (orange)
+  now: '#EC0016',
+  error: '#C00010',
+  scrim: 'rgba(13,14,17,.45)',
 };
 
-export const ACCENTS = ['#A8492A', '#2F6F73', '#4A5B8C', '#8A6A2F'];
+export const ACCENTS = ['#EC0016', '#1455C0', '#408335', '#814997'];
 
 export const TAGC: Record<string, string> = {
-  'Pick-up': '#4A443B',
-  Visit: '#A8492A',
-  Meal: '#8A6A2F',
-  Stay: '#2F6F73',
-  Flight: '#4A5B8C',
-  Arrival: '#4A5B8C',
+  'Pick-up': '#3B3E44',
+  Visit: '#EC0016',
+  Meal: '#AD6600',
+  Stay: '#408335',
+  Flight: '#1455C0',
+  Arrival: '#1455C0',
 };
 
-export const rule = (a: number) => `rgba(31,27,22,${a})`;
+export const rule = (a: number) => `rgba(34,36,40,${a})`;
 
 // One family across the whole app: Nunito Sans (from @fontsource-variable/nunito-sans), falling back to the
 // bundled Liberation Sans and then Arial-metric fonts (for glyphs Nunito Sans lacks, such as the → arrow).

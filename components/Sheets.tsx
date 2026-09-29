@@ -352,7 +352,7 @@ export function EditSheet({
         <div onClick={onReset} role="button" tabIndex={0} style={{ font: sans(400, 12.5), color: C.muted, cursor: 'pointer' }}>Reset to original</div>
       </div>
       {showData && (
-        <pre style={{ margin: '10px 0 0', maxHeight: 260, overflow: 'auto', padding: 12, borderRadius: 12, background: C.dark, color: '#E8DFD0', font: mono(400, 10.5, 1.5), whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+        <pre style={{ margin: '10px 0 0', maxHeight: 260, overflow: 'auto', padding: 12, borderRadius: 12, background: C.dark, color: '#E1E2E6', font: mono(400, 10.5, 1.5), whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
           {JSON.stringify(trip, null, 2)}
         </pre>
       )}

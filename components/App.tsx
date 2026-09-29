@@ -408,7 +408,7 @@ export default function App() {
             bottom: 0,
             zIndex: 20,
             height: 'var(--tabbar)',
-            background: 'rgba(243,238,228,.96)',
+            background: 'rgba(255,255,255,.96)',
             backdropFilter: 'blur(12px)',
             WebkitBackdropFilter: 'blur(12px)',
             borderTop: `1px solid ${rule(0.1)}`,

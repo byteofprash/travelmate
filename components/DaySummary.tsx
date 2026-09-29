@@ -33,7 +33,7 @@ export function DaySummary({
           style={{
             marginTop: 14,
             paddingTop: 12,
-            borderTop: '1px solid rgba(243,238,228,.14)',
+            borderTop: '1px solid rgba(255,255,255,.14)',
             display: 'grid',
             gridTemplateColumns: 'repeat(3,minmax(0,1fr))',
             gap: 10,

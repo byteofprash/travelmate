@@ -93,7 +93,7 @@ export function Home({
                         style={{
                           marginTop: 12,
                           paddingTop: 10,
-                          borderTop: `1px solid ${dark ? 'rgba(243,238,228,.14)' : rule(0.08)}`,
+                          borderTop: `1px solid ${dark ? 'rgba(255,255,255,.14)' : rule(0.08)}`,
                           display: 'flex',
                           justifyContent: 'space-between',
                           alignItems: 'center',

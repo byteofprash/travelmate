@@ -51,12 +51,18 @@ export function save(p: Persisted) {
   } catch {}
 }
 
-export const DEFAULT_SETTINGS: Settings = { accent: '#A8492A', cardStyle: 'cards', showTransport: true };
+export const DEFAULT_SETTINGS: Settings = { accent: '#EC0016', cardStyle: 'cards', showTransport: true };
+
+const LEGACY_ACCENTS: Record<string, string> = { '#A8492A': '#EC0016', '#2F6F73': '#408335', '#4A5B8C': '#1455C0', '#8A6A2F': '#814997' };
 
 export function loadSettings(): Settings {
   try {
     const raw = localStorage.getItem(SETTINGS_KEY);
-    if (raw) return { ...DEFAULT_SETTINGS, ...JSON.parse(raw) };
+    if (raw) {
+      const s = { ...DEFAULT_SETTINGS, ...JSON.parse(raw) } as Settings;
+      s.accent = LEGACY_ACCENTS[s.accent.toUpperCase()] ?? s.accent; // accents saved before the DB-style palette
+      return s;
+    }
   } catch {}
   return DEFAULT_SETTINGS;
 }

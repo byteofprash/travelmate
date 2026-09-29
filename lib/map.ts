@@ -32,8 +32,8 @@ export interface MapModel {
   bounds: LatLon[];
 }
 
-const STAY = '#2F6F73';
-const DARK = '#26211B';
+const STAY = '#408335';
+const DARK = '#222428';
 
 export function buildTripMap(trip: Trip, title: string): MapModel {
   const ex = EXTRAS[trip.id] || {};

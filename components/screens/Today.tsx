@@ -164,7 +164,7 @@ export const Today = forwardRef<HTMLDivElement, {
               <div key="now" style={{ display: 'grid', gridTemplateColumns: '62px 18px minmax(0,1fr)', alignItems: 'center', height: 22, margin: '2px 0' }}>
                 <div style={{ font: mono(600, 11.5), color: C.now, textAlign: 'right' }}>{r.time}</div>
                 <div style={{ display: 'flex', justifyContent: 'center' }}>
-                  <div style={{ width: 11, height: 11, borderRadius: 6, background: C.now, boxShadow: '0 0 0 3px rgba(210,59,46,.18)' }} />
+                  <div style={{ width: 11, height: 11, borderRadius: 6, background: C.now, boxShadow: '0 0 0 3px rgba(236,0,22,.18)' }} />
                 </div>
                 <div style={{ height: 2, background: C.now, borderRadius: 1, marginLeft: -4 }} />
               </div>

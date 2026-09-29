@@ -2,7 +2,7 @@
 
 The one app you open while travelling: where you're going today, how you're getting there and where you're sleeping tonight. Paste itineraries, booking emails or notes and Claude turns them into days, stops, commutes, stays and journeys, then edits them from plain-English requests.
 
-Built from the Claude Design handoff in [`docs/design/`](docs/design/HANDOFF.md). Colours, spacing, radii and copy follow the mockup; the typeface was changed to Nunito Sans at the owner's request (see Fonts).
+Built from the Claude Design handoff in [`docs/design/`](docs/design/HANDOFF.md). Spacing, radii and copy follow the mockup; the colours were changed to a Deutsche Bahn-style palette and the typeface to Nunito Sans at the owner's request (see Colours and Fonts).
 
 ## Stack
 
@@ -47,6 +47,12 @@ npm run dev
 - **Below 900px wide (phones):** the mobile design from the handoff, with a slim icon tab bar (Today, Trip, Map) pinned to the bottom edge.
 - **900px and wider (desktop):** the tab bar becomes a collapsible left sidebar with icons and names (Trips, then Today, Trip and Map for the open trip, and Settings). The centre column keeps the same cards but at the phone's size (1x, and 1.1x on screens 1400px and wider). Sheets open as a drawer on the right instead of from the bottom. The sidebar's collapsed state is remembered.
 - The breakpoint lives in two places that must match: `app/globals.css` and `DESKTOP_QUERY` in `components/App.tsx`.
+
+## Colours
+
+The palette is in the style of Deutsche Bahn's design system: signature red `#EC0016` (hover `#C00010`) on cool greys, with blue `#1455C0` for flights and arrivals, green `#408335` for stays and orange `#AD6600` for meals. It's defined in one place, `lib/theme.ts` (the `C` and `TAGC` objects and the Settings accent choices), so re-theming means editing that file. The map tiles are desaturated in `app/globals.css` to sit on the greys.
+
+This is inspired by DB's public colour values only. DB's brand assets (logo, fonts, icons) are licensed to DB contractors, so none are used here, and the app isn't affiliated with Deutsche Bahn. Accent colours saved in a browser before this change are mapped to their new equivalents on load.
 
 ## Fonts
 

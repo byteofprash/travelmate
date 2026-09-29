@@ -174,7 +174,7 @@ export function MapView({
 
       <div style={{ position: 'absolute', zIndex: 5, top: 'var(--top)', left: 16, right: 16, display: 'flex', flexDirection: 'column', gap: 10, pointerEvents: 'none' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ display: 'flex', padding: 3, borderRadius: 999, background: 'rgba(251,248,242,.92)', border: `1px solid ${rule(0.1)}`, pointerEvents: 'auto' }}>
+          <div style={{ display: 'flex', padding: 3, borderRadius: 999, background: 'rgba(255,255,255,.92)', border: `1px solid ${rule(0.1)}`, pointerEvents: 'auto' }}>
             <div onClick={() => onMode('day')} style={seg(mode === 'day')}>Day</div>
             <div onClick={() => onMode('trip')} style={seg(mode === 'trip')}>Whole trip</div>
           </div>
@@ -189,7 +189,7 @@ export function MapView({
                 color: C.muted,
                 padding: '8px 10px',
                 borderRadius: 999,
-                background: 'rgba(251,248,242,.92)',
+                background: 'rgba(255,255,255,.92)',
               }}
             >
               <span style={{ width: scale.width, height: 5, borderBottom: `1.5px solid ${C.muted}`, borderLeft: `1.5px solid ${C.muted}`, borderRight: `1.5px solid ${C.muted}` }} />
@@ -214,7 +214,7 @@ export function MapView({
                     borderRadius: 999,
                     font: mono(500, 11),
                     cursor: 'pointer',
-                    background: sel ? C.dark : 'rgba(251,248,242,.92)',
+                    background: sel ? C.dark : 'rgba(255,255,255,.92)',
                     color: sel ? C.darkText : C.ink,
                     border: `1px solid ${rule(0.1)}`,
                   }}
@@ -241,7 +241,7 @@ export function MapView({
                 borderRadius: 16,
                 background: C.card,
                 border: `1px solid ${rule(0.1)}`,
-                boxShadow: '0 6px 18px rgba(31,27,22,.08)',
+                boxShadow: '0 6px 18px rgba(34,36,40,.08)',
                 cursor: 'pointer',
                 display: 'flex',
                 gap: 11,
