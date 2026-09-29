@@ -11,7 +11,8 @@ const EXPECTED_WORKSPACE = process.env.ANTHROPIC_WORKSPACE_ID?.trim() || undefin
  * generates nothing, and reports whether the key works, which workspace served it and, if it fails,
  * why. It never returns the key.
  */
-export async function GET() {
+export async function GET(req: Request) {
+  const deep = new URL(req.url).searchParams.get('deep') === '1';
   if (!process.env.ANTHROPIC_API_KEY) {
     return Response.json(
       { ok: false, hasKey: false, problem: 'ANTHROPIC_API_KEY is not set on the server. Add it in Vercel, then redeploy.' },
@@ -20,15 +21,28 @@ export async function GET() {
   }
   try {
     const client = new Anthropic();
-    const { workspace_id, request_id } = await client.messages
-      .countTokens({ model: MODEL, messages: [{ role: 'user', content: 'ping' }] })
-      .withResponse();
+    // ?deep=1 sends a tiny real request with the same beta and fallback settings as /api/edit (costs a few
+    // tokens); the default is a free token count. If the default passes and deep fails, the problem is in
+    // the request settings rather than the key.
+    const { workspace_id, request_id } = deep
+      ? await client.beta.messages
+          .create({
+            model: MODEL,
+            max_tokens: 16,
+            betas: ['server-side-fallback-2026-07-01'],
+            fallbacks: 'default',
+            output_config: { effort: 'low' },
+            messages: [{ role: 'user', content: 'Reply with OK.' }],
+          })
+          .withResponse()
+      : await client.messages.countTokens({ model: MODEL, messages: [{ role: 'user', content: 'ping' }] }).withResponse();
     const workspaceMatches = EXPECTED_WORKSPACE ? (workspace_id ? workspace_id === EXPECTED_WORKSPACE : null) : null;
     const ok = workspaceMatches !== false;
     return Response.json(
       {
         ok,
         hasKey: true,
+        check: deep ? 'deep' : 'basic',
         model: MODEL,
         workspace: workspace_id ?? null,
         expectedWorkspace: EXPECTED_WORKSPACE ?? null,
@@ -46,8 +60,9 @@ export async function GET() {
         : status === 403 ? 'The key is valid but not permitted to do this (check its workspace and permissions).'
         : status === 404 ? `Model not found: check CLAUDE_MODEL (currently ${MODEL}).`
         : status === 429 ? 'Rate limited by Anthropic. Try again shortly.'
+        : status && status >= 500 ? `Anthropic's servers returned ${status} (${err.message}). That is on Anthropic's side and is usually temporary. Retry in a few minutes, and if it persists give Anthropic the requestId below.`
         : `Anthropic returned an error: ${err.message}`;
-      return Response.json({ ok: false, hasKey: true, model: MODEL, status, problem }, { status: 502 });
+      return Response.json({ ok: false, hasKey: true, check: deep ? 'deep' : 'basic', model: MODEL, status, requestId: err.requestID ?? null, problem }, { status: 502 });
     }
     return Response.json({ ok: false, hasKey: true, problem: 'Could not reach Anthropic from the server.' }, { status: 502 });
   }

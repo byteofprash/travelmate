@@ -104,8 +104,9 @@ export async function POST(req: Request) {
       return Response.json({ error: 'rate_limited' }, { status: 429 });
     }
     if (err instanceof Anthropic.APIError) {
-      console.error('Anthropic API error', err.status, err.message);
-      return Response.json({ error: 'upstream' }, { status: 502 });
+      console.error('Anthropic API error', err.status, err.message, `request-id=${err.requestID ?? 'none'}`);
+      // 5xx is Anthropic's side and worth retrying; anything else is a problem with the request or key.
+      return Response.json({ error: 'upstream', status: err.status ?? null }, { status: err.status && err.status >= 500 ? 503 : 502 });
     }
     console.error(err);
     return Response.json({ error: 'internal' }, { status: 500 });
