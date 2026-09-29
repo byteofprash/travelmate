@@ -323,7 +323,7 @@ export default function App() {
 
   return (
     <div className="stage">
-      <div className="phone" style={{ background: C.paper, color: C.ink }}>
+      <div className="phone" style={{ background: C.paper, color: C.ink, ['--accent' as string]: settings.accent }}>
         {desktop && (
           <Sidebar
             tab={effTab}
@@ -452,8 +452,8 @@ export default function App() {
             opacity: toast ? 1 : 0,
             transition: 'all .3s',
             padding: '10px 16px',
-            borderRadius: 999,
-            background: C.dark,
+            borderRadius: 8,
+            background: C.charcoal,
             color: C.darkText,
             font: sans(500, 12.5),
             whiteSpace: 'nowrap',

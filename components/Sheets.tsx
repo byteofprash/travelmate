@@ -12,8 +12,8 @@ const kicker = (color: string = C.muted): React.CSSProperties => ({ font: mono(5
 const h2: React.CSSProperties = { marginTop: 9, font: serif(30, 1.05), letterSpacing: '-.01em' };
 const subTxt: React.CSSProperties = { marginTop: 6, font: sans(400, 13, 1.35), color: C.muted };
 const label: React.CSSProperties = { font: mono(500, 10.5, 1.4), letterSpacing: '.07em', color: C.muted };
-const btnOutline: React.CSSProperties = { padding: 14, borderRadius: 14, border: `1px solid ${rule(0.18)}`, textAlign: 'center', font: sans(500, 14), cursor: 'pointer' };
-const btnDark: React.CSSProperties = { padding: 14, borderRadius: 14, background: C.dark, color: C.darkText, textAlign: 'center', font: sans(500, 14), cursor: 'pointer' };
+const btnOutline: React.CSSProperties = { padding: 14, borderRadius: 8, border: `1px solid ${rule(0.18)}`, textAlign: 'center', font: sans(500, 14), cursor: 'pointer' };
+const btnDark: React.CSSProperties = { padding: 14, borderRadius: 8, background: C.dark, color: C.darkText, textAlign: 'center', font: sans(500, 14), cursor: 'pointer' };
 
 function KV({ k, v, w = 96, size = 13 }: { k: string; v: ReactNode; w?: number; size?: number }) {
   return (
@@ -62,7 +62,7 @@ export function StopSheet({
       <div style={h2}>{stop.title}</div>
       <div style={subTxt}>{stop.sub}</div>
       <div style={{ marginTop: 18, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-        <label style={{ display: 'flex', flexDirection: 'column', gap: 6, padding: '10px 12px', borderRadius: 12, background: C.card, border: `1px solid ${rule(0.1)}` }}>
+        <label style={{ display: 'flex', flexDirection: 'column', gap: 6, padding: '10px 12px', borderRadius: 8, background: C.card, border: `1px solid ${rule(0.1)}` }}>
           <span style={{ font: mono(500, 10), letterSpacing: '.07em', color: C.muted }}>START</span>
           <input
             type="text"
@@ -75,7 +75,7 @@ export function StopSheet({
             style={{ border: 0, background: 'transparent', font: mono(500, 16), color: C.ink, padding: 0, outline: 'none' }}
           />
         </label>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, padding: '10px 12px', borderRadius: 12, background: C.card, border: `1px solid ${rule(0.1)}` }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, padding: '10px 12px', borderRadius: 8, background: C.card, border: `1px solid ${rule(0.1)}` }}>
           <span style={{ font: mono(500, 10), letterSpacing: '.07em', color: C.muted }}>DURATION</span>
           <span style={{ font: mono(500, 16) }}>{stop.dur || '—'}</span>
         </div>
@@ -91,7 +91,7 @@ export function StopSheet({
         onChange={(e) => onNote(e.target.value)}
         placeholder="Add a note: tickets, what to bring, who to call"
         rows={3}
-        style={{ marginTop: 8, width: '100%', resize: 'none', padding: 12, borderRadius: 12, border: `1px solid ${rule(0.14)}`, background: C.card, font: sans(400, 14, 1.4), color: C.ink, outline: 'none' }}
+        style={{ marginTop: 8, width: '100%', resize: 'none', padding: 12, borderRadius: 8, border: `1px solid ${rule(0.14)}`, background: C.card, font: sans(400, 14, 1.4), color: C.ink, outline: 'none' }}
       />
       <div style={{ marginTop: 16, display: 'grid', gridTemplateColumns: '1fr 1.4fr', gap: 10 }}>
         <div onClick={onMap} role="button" tabIndex={0} style={btnOutline}>Show on map</div>
@@ -116,7 +116,7 @@ export function StaySheet({ meta, trip, id, accent, onMap, onDone }: { meta: Tri
           const on = s.nights.includes(i);
           const b = dayBits(meta, d);
           return (
-            <div key={d.num} style={{ flex: 1, padding: '9px 0', borderRadius: 10, textAlign: 'center', background: on ? C.dark : C.card, color: on ? C.darkText : C.muted2, border: `1px solid ${rule(0.1)}` }}>
+            <div key={d.num} style={{ flex: 1, padding: '9px 0', borderRadius: 8, textAlign: 'center', background: on ? C.dark : C.card, color: on ? C.darkText : C.muted2, border: `1px solid ${rule(0.1)}` }}>
               <div style={{ font: mono(500, 9.5), letterSpacing: '.06em' }}>{b.wd.toUpperCase()}</div>
               <div style={{ marginTop: 4, font: serif(17, 1) }}>{b.d}</div>
             </div>
@@ -132,7 +132,7 @@ export function StaySheet({ meta, trip, id, accent, onMap, onDone }: { meta: Tri
         <KV w={104} size={13.5} k="BOOKED VIA" v={s.by} />
       </div>
       {s.notes && (
-        <div style={{ marginTop: 14, padding: '12px 14px', borderRadius: 12, background: C.sand, font: serif(14.5, 1.45, true), color: C.ink2 }}>{s.notes}</div>
+        <div style={{ marginTop: 14, padding: '12px 14px', borderRadius: 8, background: C.sand, font: serif(14.5, 1.45, true), color: C.ink2 }}>{s.notes}</div>
       )}
       <div style={{ marginTop: 16, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
         <div onClick={onMap} role="button" tabIndex={0} style={btnOutline}>Show on map</div>
@@ -159,7 +159,7 @@ export function DaySheet({ meta, trip, day, dayIdx, accent, onTonight }: { meta:
       <div style={{ marginTop: 10, font: serif(14.5, 1.5), color: C.ink2, textWrap: 'pretty' }}>{sum.story}</div>
       <div style={{ marginTop: 18, display: 'grid', gridTemplateColumns: 'repeat(3,minmax(0,1fr))', gap: 8 }}>
         {sum.stats.map((x) => (
-          <div key={x.k} style={{ padding: '10px 12px', borderRadius: 12, background: C.card, border: `1px solid ${rule(0.1)}`, minWidth: 0 }}>
+          <div key={x.k} style={{ padding: '10px 12px', borderRadius: 8, background: C.card, border: `1px solid ${rule(0.1)}`, minWidth: 0 }}>
             <div style={{ font: mono(500, 9.5), letterSpacing: '.07em', color: C.muted }}>{x.k}</div>
             <div style={{ marginTop: 6, font: sans(500, 14, 1.2) }}>{x.v}</div>
           </div>
@@ -179,12 +179,12 @@ export function DaySheet({ meta, trip, day, dayIdx, accent, onTonight }: { meta:
           <div style={{ marginTop: 18, font: mono(500, 10.5), letterSpacing: '.07em', color: C.muted }}>BRING</div>
           <div style={{ marginTop: 8, display: 'flex', flexWrap: 'wrap', gap: 6 }}>
             {sum.bring.map((x) => (
-              <div key={x} style={{ padding: '7px 11px', borderRadius: 999, border: `1px solid ${rule(0.16)}`, font: sans(400, 12.5) }}>{x}</div>
+              <div key={x} style={{ padding: '7px 11px', borderRadius: 8, border: `1px solid ${rule(0.16)}`, font: sans(400, 12.5) }}>{x}</div>
             ))}
           </div>
         </>
       )}
-      <div onClick={onTonight} role="button" tabIndex={0} style={{ marginTop: 18, padding: '14px 16px', borderRadius: 14, background: C.sand, display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer' }}>
+      <div onClick={onTonight} role="button" tabIndex={0} style={{ marginTop: 18, padding: '14px 16px', borderRadius: 8, background: C.sand, display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer' }}>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ font: mono(500, 10), letterSpacing: '.08em', color: C.nile }}>{tonight.kicker}</div>
           <div style={{ marginTop: 5, font: serif(17, 1.2) }}>{tonight.name}</div>
@@ -220,7 +220,7 @@ export function JourneysSheet({ meta, trip, dayIdx, onOpen }: { meta: TripMeta; 
                 gap: 12,
                 alignItems: 'center',
                 padding: '12px 14px',
-                borderRadius: 14,
+                borderRadius: 8,
                 background: j.day === dayIdx ? C.sand : C.card,
                 border: `1px solid ${rule(0.1)}`,
                 cursor: 'pointer',
@@ -260,7 +260,7 @@ export function StaysSheet({ trip, dayIdx, accent, onOpen }: { trip: Trip; dayId
             onClick={() => onOpen(s.id)}
             role="button"
             tabIndex={0}
-            style={{ padding: '14px 16px', borderRadius: 14, background: s.nights.includes(dayIdx) ? C.sand : C.card, border: `1px solid ${rule(0.1)}`, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12 }}
+            style={{ padding: '14px 16px', borderRadius: 8, background: s.nights.includes(dayIdx) ? C.sand : C.card, border: `1px solid ${rule(0.1)}`, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12 }}
           >
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10, font: mono(500, 10), letterSpacing: '.07em', textTransform: 'uppercase' }}>
@@ -307,7 +307,7 @@ export function EditSheet({
             role="button"
             tabIndex={0}
             className="chip-hov"
-            style={{ alignSelf: 'flex-start', padding: '8px 12px', borderRadius: 999, border: `1px solid ${rule(0.16)}`, font: sans(400, 12.5, 1.2), color: C.ink2, cursor: 'pointer' }}
+            style={{ alignSelf: 'flex-start', padding: '8px 12px', borderRadius: 8, border: `1px solid ${rule(0.16)}`, font: sans(400, 12.5, 1.2), color: C.ink2, cursor: 'pointer' }}
           >
             {t}
           </div>
@@ -318,7 +318,7 @@ export function EditSheet({
         onChange={(e) => onText(e.target.value)}
         placeholder={empty ? 'Paste a booking email, a tour itinerary or your notes' : 'e.g. Add a dinner cruise on the 26th at 19:00, back by 22:00'}
         rows={5}
-        style={{ marginTop: 12, width: '100%', resize: 'none', padding: 14, borderRadius: 14, border: `1px solid ${rule(0.14)}`, background: C.card, font: sans(400, 14, 1.45), color: C.ink, outline: 'none' }}
+        style={{ marginTop: 12, width: '100%', resize: 'none', padding: 14, borderRadius: 8, border: `1px solid ${rule(0.14)}`, background: C.card, font: sans(400, 14, 1.45), color: C.ink, outline: 'none' }}
       />
       {err && <div style={{ marginTop: 8, font: sans(400, 12.5, 1.4), color: C.error }}>{err}</div>}
       <div
@@ -326,12 +326,12 @@ export function EditSheet({
         role="button"
         aria-disabled={disabled}
         tabIndex={0}
-        style={{ marginTop: 12, padding: 15, borderRadius: 14, background: C.dark, color: C.darkText, textAlign: 'center', font: sans(500, 14.5), cursor: disabled ? 'default' : 'pointer', opacity: disabled ? 0.55 : 1 }}
+        style={{ marginTop: 12, padding: 15, borderRadius: 8, background: C.dark, color: C.darkText, textAlign: 'center', font: sans(500, 14.5), cursor: disabled ? 'default' : 'pointer', opacity: disabled ? 0.55 : 1 }}
       >
         {busy ? 'Updating your trip…' : 'Apply with Claude'}
       </div>
       {result && (
-        <div style={{ marginTop: 14, padding: '14px 16px', borderRadius: 14, background: C.sand }}>
+        <div style={{ marginTop: 14, padding: '14px 16px', borderRadius: 8, background: C.sand }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 10 }}>
             <div style={{ font: mono(500, 10.5), letterSpacing: '.08em', color: C.nile }}>
               {result.n ? `${result.n} ${result.n > 1 ? 'CHANGES' : 'CHANGE'}` : 'NO CHANGES'}
@@ -352,7 +352,7 @@ export function EditSheet({
         <div onClick={onReset} role="button" tabIndex={0} style={{ font: sans(400, 12.5), color: C.muted, cursor: 'pointer' }}>Reset to original</div>
       </div>
       {showData && (
-        <pre style={{ margin: '10px 0 0', maxHeight: 260, overflow: 'auto', padding: 12, borderRadius: 12, background: C.dark, color: '#E1E2E6', font: mono(400, 10.5, 1.5), whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+        <pre style={{ margin: '10px 0 0', maxHeight: 260, overflow: 'auto', padding: 12, borderRadius: 8, background: C.charcoal, color: '#E1E2E6', font: mono(400, 10.5, 1.5), whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
           {JSON.stringify(trip, null, 2)}
         </pre>
       )}
@@ -364,10 +364,10 @@ export function EditSheet({
 
 export function SettingsSheet({ settings, onChange }: { settings: Settings; onChange: (s: Settings) => void }) {
   const seg = (active: boolean): React.CSSProperties => ({
-    flex: 1, textAlign: 'center', whiteSpace: 'nowrap', padding: '9px 14px', borderRadius: 999, font: sans(500, 12.5), cursor: 'pointer',
+    flex: 1, textAlign: 'center', whiteSpace: 'nowrap', padding: '9px 14px', borderRadius: 6, font: sans(500, 12.5), cursor: 'pointer',
     background: active ? C.dark : 'transparent', color: active ? C.darkText : C.ink,
   });
-  const pill: React.CSSProperties = { display: 'flex', padding: 3, borderRadius: 999, background: C.card, border: `1px solid ${rule(0.1)}` };
+  const pill: React.CSSProperties = { display: 'flex', padding: 3, borderRadius: 8, background: C.card, border: `1px solid ${rule(0.1)}` };
   return (
     <>
       <div style={kicker()}>PREFERENCES</div>

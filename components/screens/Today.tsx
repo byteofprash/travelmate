@@ -11,7 +11,7 @@ import type { Day, Settings, Stop, Trip, TripMeta } from '@/lib/types';
 const iconBtn: React.CSSProperties = {
   width: 42,
   height: 42,
-  borderRadius: 21,
+  borderRadius: 8,
   border: `1px solid ${rule(0.16)}`,
   background: C.card,
   display: 'flex',
@@ -110,7 +110,7 @@ export const Today = forwardRef<HTMLDivElement, {
                 flex: 'none',
                 width: 44,
                 padding: '8px 0 9px',
-                borderRadius: 12,
+                borderRadius: 8,
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -123,7 +123,7 @@ export const Today = forwardRef<HTMLDivElement, {
             >
               <div style={{ font: mono(500, 10), letterSpacing: '.06em', textTransform: 'uppercase' }}>{s.wd}</div>
               <div style={{ font: `500 19px/1 ${F.serif}` }}>{s.d}</div>
-              <div style={{ width: 4, height: 4, borderRadius: 2, background: s.iso === p.todayISO ? accent : 'transparent' }} />
+              <div style={{ width: 4, height: 4, borderRadius: 2, background: s.iso === p.todayISO ? (sel ? C.darkText : accent) : 'transparent' }} />
             </div>
           );
         })}
@@ -142,7 +142,7 @@ export const Today = forwardRef<HTMLDivElement, {
               letterSpacing: '.06em',
               textTransform: 'uppercase',
               padding: '5px 8px',
-              borderRadius: 6,
+              borderRadius: 4,
               border: `1px solid ${rule(0.18)}`,
               color: C.ink2,
             }}

@@ -33,7 +33,7 @@ export interface MapModel {
 }
 
 const STAY = '#408335';
-const DARK = '#222428';
+const BRAND = 'var(--accent)'; // follows the accent colour
 
 export function buildTripMap(trip: Trip, title: string): MapModel {
   const ex = EXTRAS[trip.id] || {};
@@ -59,8 +59,8 @@ export function buildTripMap(trip: Trip, title: string): MapModel {
   return {
     title,
     routes,
-    markers: cities.map((c, i) => ({ ll: c.ll, n: String(i + 1), label: c.label, anchor: c.anchor, fill: DARK, day: c.day })),
-    cards: cities.map((c, i) => ({ n: String(i + 1), time: c.time, title: c.label, sub: c.sub, fill: DARK, day: c.day })),
+    markers: cities.map((c, i) => ({ ll: c.ll, n: String(i + 1), label: c.label, anchor: c.anchor, fill: BRAND, day: c.day })),
+    cards: cities.map((c, i) => ({ n: String(i + 1), time: c.time, title: c.label, sub: c.sub, fill: BRAND, day: c.day })),
     bounds: [...cities.map((c) => c.ll), ...routes.flatMap((r) => r.pts)],
   };
 }

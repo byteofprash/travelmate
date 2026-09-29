@@ -20,7 +20,7 @@ export function DaySummary({
       onClick={onOpen}
       role="button"
       tabIndex={0}
-      style={{ padding: '18px 18px 16px', borderRadius: 20, background: C.dark, color: C.darkText, cursor: 'pointer' }}
+      style={{ padding: '18px 18px 16px', borderRadius: 12, background: C.dark, color: C.darkText, cursor: 'pointer' }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 10 }}>
         <div style={{ font: mono(500, 10.5), letterSpacing: '.1em', color: C.darkMuted, textTransform: 'uppercase' }}>{kicker}</div>
@@ -33,7 +33,7 @@ export function DaySummary({
           style={{
             marginTop: 14,
             paddingTop: 12,
-            borderTop: '1px solid rgba(255,255,255,.14)',
+            borderTop: `1px solid ${C.onDarkRule}`,
             display: 'grid',
             gridTemplateColumns: 'repeat(3,minmax(0,1fr))',
             gap: 10,

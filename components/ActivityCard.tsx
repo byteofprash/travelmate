@@ -41,7 +41,7 @@ export function ActivityCard({
       className="hov-card"
       style={{
         padding: '13px 14px 14px',
-        borderRadius: 16,
+        borderRadius: 12,
         background: C.card,
         border: `1px solid ${rule(0.09)}`,
         cursor: 'pointer',

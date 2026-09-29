@@ -12,11 +12,15 @@ export const C = {
   ink2: '#3B3E44',
   muted: '#5A5E68',
   muted2: '#727782',
-  dark: '#222428',
+  // "Dark" surfaces (hero cards, primary buttons, active chips and tabs) follow the accent colour, set as
+  // the --accent CSS variable on the app root. Text on them is white.
+  dark: 'var(--accent)',
   darkText: '#FFFFFF',
-  darkMuted: '#C3C7CE',
-  darkBody: '#E1E2E6',
-  darkLabel: '#A6ABB6',
+  darkMuted: 'rgba(255,255,255,.88)',
+  darkBody: '#FFFFFF',
+  darkLabel: 'rgba(255,255,255,.8)',
+  onDarkRule: 'rgba(255,255,255,.3)',
+  charcoal: '#222428', // toast and the JSON viewer stay neutral
   accent: '#EC0016', // DB red
   nile: '#408335', // stays (green)
   flight: '#1455C0', // flights and arrivals (blue)

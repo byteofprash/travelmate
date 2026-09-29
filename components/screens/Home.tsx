@@ -67,7 +67,7 @@ export function Home({
                       gridTemplateColumns: '54px minmax(0,1fr)',
                       gap: 14,
                       padding: 16,
-                      borderRadius: 18,
+                      borderRadius: 12,
                       background: dark ? C.dark : C.card,
                       color: dark ? C.darkText : C.ink,
                       border: `1px solid ${rule(0.09)}`,
@@ -84,7 +84,7 @@ export function Home({
                           {rangeShort(t.start, t.end)} · {plural(t.nights, 'night')}
                         </div>
                         {t.id === nextId && (
-                          <div style={{ font: mono(500, 9.5), letterSpacing: '.08em', padding: '4px 7px', borderRadius: 5, background: accent, color: C.card }}>NEXT</div>
+                          <div style={{ font: mono(500, 9.5), letterSpacing: '.08em', padding: '4px 7px', borderRadius: 4, background: dark ? C.card : accent, color: dark ? accent : C.card }}>NEXT</div>
                         )}
                       </div>
                       <div style={{ marginTop: 6, font: serif(25, 1.05), letterSpacing: '-.01em' }}>{t.name}</div>
@@ -93,7 +93,7 @@ export function Home({
                         style={{
                           marginTop: 12,
                           paddingTop: 10,
-                          borderTop: `1px solid ${dark ? 'rgba(255,255,255,.14)' : rule(0.08)}`,
+                          borderTop: `1px solid ${dark ? C.onDarkRule : rule(0.08)}`,
                           display: 'flex',
                           justifyContent: 'space-between',
                           alignItems: 'center',
