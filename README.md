@@ -17,6 +17,8 @@ Built from the Claude Design handoff in [`docs/design/`](docs/design/HANDOFF.md)
 3. Optional: **`ANTHROPIC_WORKSPACE_ID`** (`wrkspc_...`). An API key belongs to exactly one Anthropic workspace, and each response says which workspace served it. If this is set, `/api/edit` returns an error (and logs it) when a response comes from any other workspace, which catches the wrong workspace's key being deployed. It checks the key; it can't choose the workspace, so to use a different workspace, create the API key in that workspace. The check happens after the request is sent, so it stops and flags a mismatch but can't prevent that one call.
 4. Optional: **`CLAUDE_MODEL`** overrides the model (default `claude-sonnet-5-5`, following the handoff's "sonnet").
 
+**Checking the setup:** after deploying, open `/api/health` on your site. It makes one free token-counting call and reports whether the key works, which workspace served it, and, if it fails, why (no key set, key rejected, wrong workspace, unknown model, rate limit). It never returns the key. Changing an environment variable in Vercel only takes effect after a redeploy.
+
 The Claude route sets `maxDuration = 300`, which fits Vercel's default Fluid Compute limits. Pasting a long itinerary into an empty trip can take a while.
 
 ## Local development
