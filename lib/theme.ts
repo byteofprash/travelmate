@@ -37,8 +37,9 @@ export const TAGC: Record<string, string> = {
 
 export const rule = (a: number) => `rgba(31,27,22,${a})`;
 
-// One family across the whole app: Liberation Sans (bundled, see globals.css), with Arial-metric fallbacks.
-const FAMILY = "'Liberation Sans', Arimo, Arial, Helvetica, sans-serif";
+// One family across the whole app: Sono (from @fontsource-variable/sono), falling back to the bundled
+// Liberation Sans and then Arial-metric fonts (Sono lacks some glyphs, such as the → arrow).
+const FAMILY = "'Sono Variable', 'Liberation Sans', Arimo, Arial, Helvetica, sans-serif";
 export const F = { serif: FAMILY, sans: FAMILY, mono: FAMILY };
 /** CSS `font` shorthand helpers. */
 export const mono = (w: number, size: number, lh: number | string = 1) => `${w} ${size}px/${lh} ${F.mono}`;

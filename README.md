@@ -2,7 +2,7 @@
 
 The one app you open while travelling: where you're going today, how you're getting there and where you're sleeping tonight. Paste itineraries, booking emails or notes and Claude turns them into days, stops, commutes, stays and journeys, then edits them from plain-English requests.
 
-Built from the Claude Design handoff in [`docs/design/`](docs/design/HANDOFF.md). Colours, spacing, radii and copy follow the mockup; the typeface was changed to Liberation Sans at the owner's request (see Fonts).
+Built from the Claude Design handoff in [`docs/design/`](docs/design/HANDOFF.md). Colours, spacing, radii and copy follow the mockup; the typeface was changed to Sono at the owner's request (see Fonts).
 
 ## Stack
 
@@ -17,6 +17,20 @@ Built from the Claude Design handoff in [`docs/design/`](docs/design/HANDOFF.md)
 3. Optional: **`CLAUDE_MODEL`** overrides the model (default `claude-sonnet-5-5`, following the handoff's "sonnet").
 
 The Claude route sets `maxDuration = 300`, which fits Vercel's default Fluid Compute limits. Pasting a long itinerary into an empty trip can take a while.
+
+## Authenticating to Anthropic
+
+`/api/edit` (see `lib/anthropic.ts`) uses the first of these that is configured:
+
+1. **API key:** set `ANTHROPIC_API_KEY`. It always wins if present.
+2. **Workload identity federation with Vercel's identity token:** no stored secret. The deployment presents Vercel's OIDC token, and Anthropic exchanges it for a short-lived access token that the client refreshes on its own.
+3. **Federation with your own identity token:** set `ANTHROPIC_IDENTITY_TOKEN_FILE` (or `ANTHROPIC_IDENTITY_TOKEN`) alongside the federation variables.
+
+To set up option 2:
+
+1. In the Anthropic Console (an org admin does this), add Vercel as a trusted identity issuer, create a service account, and create a federation rule that allows your Vercel project. As I understand Vercel's OIDC tokens, the issuer is `https://oidc.vercel.com/<team-slug>`, the audience is `https://vercel.com/<team-slug>`, and the subject looks like `owner:<team-slug>:project:<project-name>:environment:production`. Check Vercel's OIDC docs to confirm before you set the rule.
+2. In Vercel, set `ANTHROPIC_FEDERATION_RULE_ID`, `ANTHROPIC_ORGANIZATION_ID` and `ANTHROPIC_SERVICE_ACCOUNT_ID` (and `ANTHROPIC_WORKSPACE_ID` if the rule spans several workspaces). Leave `ANTHROPIC_API_KEY` unset.
+3. Redeploy. Locally, run `vercel env pull` so `VERCEL_OIDC_TOKEN` is available.
 
 ## Local development
 
@@ -50,15 +64,7 @@ npm run dev
 
 ## Fonts
 
-The whole app uses one family, **Liberation Sans** (SIL Open Font License 1.1, so it's fine to bundle). The web-font files and the licence are in `public/fonts/`, and `app/globals.css` loads them, using an installed copy first if there is one. Liberation Sans has no Medium weight, so the "500" weights in the design render as Regular and only 600+ renders as Bold. The family name is set in one place, `lib/theme.ts`, plus the `font-family` lines in `app/globals.css`.
-
-## Differences from the prototype
-
-- Tapping an empty trip opens **Plan this trip**, which uses the same Claude pipeline to build the trip from pasted text. The prototype only showed a toast here.
-- Dates come from each trip's ISO start date, so the day strip and labels are no longer hard-coded to December 2026. "Today" is the real date.
-- The prototype's design-tool tweaks (accent colour, cards or ledger timeline, show commutes) are under **Settings** at the bottom of the Trips screen.
-- The START time field is a 24-hour `HH:MM` text field, because browsers show `<input type="time">` in 12-hour format in some locales.
-- Placeholder values such as "Add confirmation" and "Add phone" are shown muted, as prompts.
+The whole app uses one family, **Sono** (SIL Open Font License 1.1), bundled through `@fontsource-variable/sono`. Sono is monospaced by default, so `app/globals.css` sets its `MONO` axis to 0 (proportional) with `!important`, because the inline `font:` styles used across the app would otherwise reset it. Sono has a real Medium weight, so the design's 500 weights render as designed. It lacks a few glyphs (such as the → arrow), so the stack falls back to the bundled Liberation Sans (`public/fonts/`, licence included) and then Arial-metric fonts. The family name is set in one place, `lib/theme.ts`, plus the `font-family` lines in `app/globals.css`.
 
 ## Maps
 
