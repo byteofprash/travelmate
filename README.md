@@ -66,6 +66,14 @@ npm run dev
 
 The whole app uses one family, **Sono** (SIL Open Font License 1.1), bundled through `@fontsource-variable/sono`. Sono is monospaced by default, so `app/globals.css` sets its `MONO` axis to 0 (proportional) with `!important`, because the inline `font:` styles used across the app would otherwise reset it. Sono has a real Medium weight, so the design's 500 weights render as designed. It lacks a few glyphs (such as the → arrow), so the stack falls back to the bundled Liberation Sans (`public/fonts/`, licence included) and then Arial-metric fonts. The family name is set in one place, `lib/theme.ts`, plus the `font-family` lines in `app/globals.css`.
 
+## Differences from the prototype
+
+- Tapping an empty trip opens **Plan this trip**, which uses the same Claude pipeline to build the trip from pasted text. The prototype only showed a toast here.
+- Dates come from each trip's ISO start date, so the day strip and labels are no longer hard-coded to December 2026. "Today" is the real date.
+- The prototype's design-tool tweaks (accent colour, cards or ledger timeline, show commutes) are under **Settings** at the bottom of the Trips screen.
+- The START time field is a 24-hour `HH:MM` text field, because browsers show `<input type="time">` in 12-hour format in some locales.
+- Placeholder values such as "Add confirmation" and "Add phone" are shown muted, as prompts.
+
 ## Maps
 
 The Map tab uses **OpenStreetMap** through Leaflet, with the tiles muted to match the paper palette. Google Maps was ruled out because it needs a billing account and API key and charges beyond a free allowance. There's no key to configure. Day mode fits the day's stops with dashed routes; Whole trip mode shows one marker per city, with road legs solid and flights dotted.
