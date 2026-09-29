@@ -1,6 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { z } from 'zod';
-import { authMode, getClient } from '@/lib/anthropic';
 import { EditResultSchema } from '@/lib/ops';
 import { SYSTEM_PROMPT } from '@/lib/prompt';
 
@@ -42,11 +41,8 @@ const TOOL: Anthropic.Beta.BetaTool = {
 };
 
 export async function POST(req: Request) {
-  if (authMode() === 'none') {
-    return Response.json(
-      { error: 'No Anthropic credentials on the server. Set ANTHROPIC_API_KEY, or the ANTHROPIC_FEDERATION_* variables.' },
-      { status: 500 },
-    );
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return Response.json({ error: 'ANTHROPIC_API_KEY is not set on the server.' }, { status: 500 });
   }
   const parsed = RequestSchema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return Response.json({ error: 'Bad request' }, { status: 400 });
@@ -54,7 +50,7 @@ export async function POST(req: Request) {
   const tripJson = JSON.stringify(trip);
   if (tripJson.length > 300_000) return Response.json({ error: 'Trip too large' }, { status: 413 });
 
-  const client = getClient();
+  const client = new Anthropic();
   const content =
     `Trip: ${meta.name}, ${meta.start} to ${meta.end} (${meta.nights} nights). Day 1 is ${meta.start}.\n\n` +
     `Current trip JSON:\n${tripJson}\n\nRequest:\n${request}`;

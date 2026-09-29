@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from 'next';
-// Sono (SIL OFL): variable weight plus a MONO axis. The app runs it proportional (MONO 0), see globals.css.
-import '@fontsource-variable/sono/mono.css';
+// Nunito Sans (SIL OFL), variable weight.
+import '@fontsource-variable/nunito-sans';
 import './globals.css';
 
 export const metadata: Metadata = {

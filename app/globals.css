@@ -14,13 +14,10 @@
 }
 
 * { box-sizing: border-box; }
-/* Sono defaults to monospaced (MONO 1); MONO 0 is its proportional setting. !important because the
-   inline `font:` shorthands used throughout the app reset font-variation-settings. */
-* { font-variation-settings: 'MONO' 0 !important; }
 html, body { margin: 0; height: 100%; }
 body {
   background: #E6E0D5;
-  font-family: 'Sono Variable', 'Liberation Sans', Arimo, Arial, Helvetica, sans-serif;
+  font-family: 'Nunito Sans Variable', 'Liberation Sans', Arimo, Arial, Helvetica, sans-serif;
   color: #1F1B16;
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
@@ -114,7 +111,7 @@ h1 { font-weight: 400; }
 .side-item {
   display: flex; align-items: center; gap: 12px; width: 100%; border: 0; background: transparent;
   border-radius: 12px; cursor: pointer; text-align: left; color: #4A443B;
-  font: 500 14px/1 'Sono Variable', 'Liberation Sans', Arimo, Arial, Helvetica, sans-serif; white-space: nowrap; transition: background .15s;
+  font: 500 14px/1 'Nunito Sans Variable', 'Liberation Sans', Arimo, Arial, Helvetica, sans-serif; white-space: nowrap; transition: background .15s;
 }
 .side-item:hover { background: rgba(31, 27, 22, .06); }
 .side-item.active { background: #26211B; color: #F3EEE4; }
