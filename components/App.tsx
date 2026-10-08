@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { Sidebar } from './Sidebar';
+import { useSync } from './useSync';
 import { CalendarDays, Map as MapIcon, Route, type LucideIcon } from 'lucide-react';
 import { Home } from './screens/Home';
 import { Today } from './screens/Today';
@@ -122,6 +123,8 @@ export default function App() {
     clearTimeout(toastTimer.current);
     toastTimer.current = setTimeout(() => setToast(''), 2200);
   }, []);
+
+  const sync = useSync(data, setData, flash);
 
   const setTrip = (id: string, next: Trip, pushHistory?: Trip) =>
     setData((d) => ({
@@ -311,7 +314,7 @@ export default function App() {
           />
         );
       case 'settings':
-        return <SettingsSheet settings={settings} onChange={setSettings} />;
+        return <SettingsSheet settings={settings} onChange={setSettings} sync={sync} />;
     }
   };
 

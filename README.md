@@ -8,18 +8,36 @@ Built from the Claude Design handoff in [`docs/design/`](docs/design/HANDOFF.md)
 
 - **Next.js (App Router) + TypeScript**, deployed on Vercel. A web-first, installable PWA shell.
 - **`/api/edit`**: a server route that calls Claude with the `@anthropic-ai/sdk`. It uses one `apply_trip_ops` tool, validates the returned ops with zod and returns a **patch** (`{ summary, ops }`), never the whole trip. The API key never reaches the browser.
-- Trips are stored in `localStorage` (`tc-trips-v1`), so the app keeps working without signal. Each Claude edit keeps a version in history, so Undo can step back several times.
+- Trips are stored in `localStorage` (`tc-trips-v1`), so the app keeps working without signal. They can also be synced to a Redis database so every device shows the same trips (see Syncing between devices). Each Claude edit keeps a version in history, so Undo can step back several times.
 
 ## Deploying on Vercel
 
 1. Import the repo into Vercel. The Next.js preset needs no config changes.
 2. Add the environment variable **`ANTHROPIC_API_KEY`** (Project → Settings → Environment Variables).
 3. Optional: **`ANTHROPIC_WORKSPACE_ID`** (`wrkspc_...`). An API key belongs to exactly one Anthropic workspace, and each response says which workspace served it. If this is set, `/api/edit` returns an error (and logs it) when a response comes from any other workspace, which catches the wrong workspace's key being deployed. It checks the key; it can't choose the workspace, so to use a different workspace, create the API key in that workspace. The check happens after the request is sent, so it stops and flags a mismatch but can't prevent that one call.
-4. Optional: **`CLAUDE_MODEL`** overrides the model (default `claude-sonnet-5-5`, following the handoff's "sonnet").
+4. Optional, to sync trips between devices (see below): connect a database and add **`APP_SECRET`**.
+5. Optional: **`CLAUDE_MODEL`** overrides the model (default `claude-sonnet-5-5`, following the handoff's "sonnet").
 
 **Checking the setup:** after deploying, open `/api/health` on your site. It makes one free token-counting call and reports whether the key works, which workspace served it, and, if it fails, why (no key set, key rejected, wrong workspace, unknown model, rate limit). Add `?deep=1` to send a tiny real request (a few tokens) with the same settings as the app's edit route: if the plain check passes but the deep one fails, the problem is in the request settings rather than the key. Replies also show `setup` (where requests are sent, and whether the key looks like a normal API key or has stray quotes or spaces) and, on errors, `answeredBy` (whether the reply carries Anthropic's request ID or came from some other proxy or gateway). Errors include Anthropic's `requestId`, which support needs; the server log carries it too. It never returns the key. Changing an environment variable in Vercel only takes effect after a redeploy.
 
 The Claude route sets `maxDuration = 300`, which fits Vercel's default Fluid Compute limits. Pasting a long itinerary into an empty trip can take a while.
+
+## Syncing between devices
+
+Without setup the app is local only: trips live in each browser's `localStorage`, so a phone and a laptop have separate copies and clearing the browser's data deletes them. To share them:
+
+1. **Add a database.** In the Vercel project: Storage → Marketplace → **Upstash Redis** → connect it to the project. (Vercel KV became this.) Vercel adds `KV_REST_API_URL` and `KV_REST_API_TOKEN`; a database made directly on Upstash uses `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`, which also work.
+2. **Set `APP_SECRET`** to a long random string (`openssl rand -base64 24`). The app has no user accounts, so this access code is what stops anyone who finds the URL from reading or overwriting your trips. Syncing stays off, and the API refuses requests, until it is set.
+3. **Redeploy**, then on each device open Settings → **Sync between devices**, enter the access code and press **Turn on**.
+
+How it behaves:
+
+- `localStorage` is still the working copy, so the app works offline. Changes are pushed about a second after you make them, and other devices pick them up when the app returns to the foreground or comes back online. Settings → Sync shows the state and has **Sync now** and **Turn off**.
+- The synced data is the trips and the trip list. Undo history and settings (colours, timeline style) stay on each device.
+- The first device to sync uploads its trips. A new device that has not changed the sample trips adopts what is in the cloud.
+- If this device and the cloud both changed (for example you edited offline on two devices), nothing is overwritten. A toast points you to Settings, which asks you to **Keep cloud copy** or **Keep this device**; the other one is replaced.
+- Storage is one JSON document under the key `travelmate:state:v1` with a revision number. `GET /api/state` returns it and `PUT /api/state` saves it only if the revision the client sent is still current (otherwise 409), both requiring the `x-access-code` header. The code is stored in the browser once entered, in `localStorage`.
+- `/api/edit` (the Claude calls) is not behind the access code; anyone who can reach the site can use it and spend your Anthropic credit.
 
 ## Local development
 
@@ -39,6 +57,8 @@ npm run dev
 | `components/screens/` | Trips (home), Today, Trip overview, Map |
 | `components/Sheets.tsx` | Activity, Stay, Day, Journeys, Stays, Edit trip, Settings sheets |
 | `components/{DaySummary,ActivityCard,CommuteLeg}.tsx` | The three reusable components from the handoff |
+| `app/api/state/route.ts`, `lib/server/state-store.ts` | Sync API: the trips in Redis, guarded by `APP_SECRET`, with a revision check |
+| `lib/sync.ts`, `components/useSync.ts` | Client side of syncing: change tracking, background push and pull, conflict choice |
 | `lib/ops.ts` | Op schema (zod) and `applyOps()` |
 | `lib/prompt.ts` | System prompt (from the handoff, adapted for tool use and "plan from pasted text") |
 | `lib/extras.ts` | Presentation data the mockup hard-coded for Egypt (route box, whole-trip map, sea/Nile) |

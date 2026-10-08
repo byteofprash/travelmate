@@ -1,4 +1,5 @@
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
+import type { SyncApi } from './useSync';
 import { X } from 'lucide-react';
 import { MODES } from './CommuteLeg';
 import { isPlaceholder, plural, rangeShort } from '@/lib/format';
@@ -362,7 +363,68 @@ export function EditSheet({
 
 /* ---------- Settings ---------- */
 
-export function SettingsSheet({ settings, onChange }: { settings: Settings; onChange: (s: Settings) => void }) {
+const SYNC_LABEL: Record<SyncApi['status'], string> = {
+  off: 'Not syncing',
+  syncing: 'Syncing…',
+  synced: 'Up to date',
+  offline: 'Offline: changes are saved on this device and will sync when you are back online',
+  conflict: 'Needs your choice',
+  error: 'Problem',
+};
+const SYNC_DOT: Record<SyncApi['status'], string> = { off: '#A8998E', syncing: '#C79A2E', synced: '#3E8A4F', offline: '#C79A2E', conflict: '#D8352A', error: '#D8352A' };
+
+/** Settings → Sync: the access code, the current state and, after a clash, the choice of which copy to keep. */
+function SyncSection({ sync }: { sync: SyncApi }) {
+  const [draft, setDraft] = useState(sync.code);
+  const smallBtn: React.CSSProperties = { padding: '10px 14px', borderRadius: R.pill, font: sans(700, 12.5), cursor: 'pointer', textAlign: 'center', boxShadow: CLAY.soft, background: C.card, color: C.ink, border: 0 };
+  return (
+    <div style={{ padding: '14px 0', borderBottom: `1px solid ${rule(0.1)}`, display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <div style={label}>SYNC BETWEEN DEVICES</div>
+      <div style={{ font: sans(400, 12.5, 1.4), color: C.muted }}>
+        Saves your trips to the cloud so every device shows the same plans. Enter the access code you set as APP_SECRET on the server.
+      </div>
+      <div style={{ display: 'flex', gap: 8 }}>
+        <input
+          type="password"
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          placeholder="Access code"
+          autoComplete="off"
+          aria-label="Access code"
+          style={{ flex: 1, minWidth: 0, border: 0, padding: '11px 14px', borderRadius: R.pill, background: C.sand, boxShadow: CLAY.inset, font: sans(400, 14), color: C.ink, outline: 'none' }}
+        />
+        <button type="button" onClick={() => sync.setCode(draft)} disabled={draft.trim() === sync.code} style={{ ...smallBtn, background: C.dark, color: C.darkText, opacity: draft.trim() === sync.code ? 0.5 : 1 }}>
+          {sync.code ? 'Update' : 'Turn on'}
+        </button>
+      </div>
+      {sync.code && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, font: sans(500, 12.5, 1.35), color: C.ink2 }} role="status">
+          <span style={{ flex: 'none', width: 9, height: 9, borderRadius: 5, background: SYNC_DOT[sync.status] }} />
+          <span>{sync.message && sync.status !== 'conflict' ? sync.message : SYNC_LABEL[sync.status]}</span>
+        </div>
+      )}
+      {sync.status === 'conflict' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div style={{ font: sans(400, 12.5, 1.4), color: C.ink2 }}>
+            {sync.message} Choose which copy to keep. The other one is replaced.
+          </div>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button type="button" onClick={sync.useCloud} style={{ ...smallBtn, flex: 1 }}>Keep cloud copy</button>
+            <button type="button" onClick={sync.useDevice} style={{ ...smallBtn, flex: 1 }}>Keep this device</button>
+          </div>
+        </div>
+      )}
+      {sync.code && sync.status !== 'conflict' && (
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button type="button" onClick={sync.syncNow} style={smallBtn}>Sync now</button>
+          <button type="button" onClick={() => { setDraft(''); sync.setCode(''); }} style={smallBtn}>Turn off</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function SettingsSheet({ settings, onChange, sync }: { settings: Settings; onChange: (s: Settings) => void; sync: SyncApi }) {
   const seg = (active: boolean): React.CSSProperties => ({
     flex: 1, textAlign: 'center', whiteSpace: 'nowrap', padding: '9px 14px', borderRadius: R.ctl, font: sans(500, 12.5), cursor: 'pointer',
     background: active ? C.dark : 'transparent', color: active ? C.darkText : C.ink,
@@ -373,6 +435,7 @@ export function SettingsSheet({ settings, onChange }: { settings: Settings; onCh
       <div style={kicker()}>PREFERENCES</div>
       <div style={{ marginTop: 9, font: serif(30, 1.05) }}>Settings</div>
       <div style={{ marginTop: 18, borderTop: `1px solid ${rule(0.1)}` }}>
+        <SyncSection sync={sync} />
         <div style={{ padding: '14px 0', borderBottom: `1px solid ${rule(0.1)}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>
           <div style={label}>COLOURS</div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 10, flex: 1, maxWidth: 300 }}>
