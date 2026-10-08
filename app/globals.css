@@ -28,9 +28,6 @@ input, textarea { font-family: inherit; }
 button { font: inherit; color: inherit; }
 h1 { font-weight: 400; }
 ::-webkit-scrollbar { width: 0; height: 0; }
-@keyframes slide-next { from { opacity: 0; transform: translateX(36px); } to { opacity: 1; transform: none; } }
-@keyframes slide-prev { from { opacity: 0; transform: translateX(-36px); } to { opacity: 1; transform: none; } }
-@media (prefers-reduced-motion: reduce) { .col { animation: none !important; } }
 .scroll { scrollbar-width: none; -webkit-overflow-scrolling: touch; overscroll-behavior: none; }
 
 :root {

@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useRef } from 'react';
+import { forwardRef, useEffect, useLayoutEffect, useRef } from 'react';
 import { Bed, Plane } from 'lucide-react';
 import { BackButton } from '../BackButton';
 import { ActivityCard } from '../ActivityCard';
@@ -75,14 +75,29 @@ export const Today = forwardRef<HTMLDivElement, {
     rows.splice(pos, 0, { k: 'now', time: fmtClock(nm) });
   }
 
-  // Swipe left for the next day, right for the previous one; the content slides in from that side.
-  const dir = useRef(0);
+  // Swipe left for the next day, right for the previous one. The content follows the finger (see useSwipe).
+  const colRef = useRef<HTMLDivElement>(null);
   const go = (to: number) => {
-    if (to < 0 || to >= trip.days.length || to === p.dayIdx) return;
-    dir.current = to > p.dayIdx ? 1 : -1;
-    p.onPickDay(to);
+    if (to >= 0 && to < trip.days.length && to !== p.dayIdx) p.onPickDay(to);
   };
-  const swipe = useSwipe(() => go(p.dayIdx + 1), () => go(p.dayIdx - 1));
+  const swipe = useSwipe({
+    target: colRef,
+    can: (d) => p.dayIdx + d >= 0 && p.dayIdx + d < trip.days.length,
+    onNext: () => go(p.dayIdx + 1),
+    onPrev: () => go(p.dayIdx - 1),
+  });
+
+  // Slide the new day in from the side it came from. Transform and opacity only, on the existing element (no remount).
+  const prevIdx = useRef(p.dayIdx);
+  useLayoutEffect(() => {
+    const was = prevIdx.current;
+    prevIdx.current = p.dayIdx;
+    if (was === p.dayIdx || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    colRef.current?.animate(
+      [{ transform: `translate3d(${was < p.dayIdx ? 48 : -48}px,0,0)`, opacity: 0 }, { transform: 'translate3d(0,0,0)', opacity: 1 }],
+      { duration: 260, easing: 'cubic-bezier(.2,.8,.2,1)' },
+    );
+  }, [p.dayIdx]);
 
   // Keep the selected date in view in the day strip.
   const stripRef = useRef<HTMLDivElement>(null);
@@ -96,7 +111,7 @@ export const Today = forwardRef<HTMLDivElement, {
 
   return (
     <div ref={ref} className="scroll" {...swipe} style={{ position: 'absolute', inset: '0 0 var(--tabbar) 0', overflowY: 'auto', padding: 'var(--top) 0 24px', touchAction: 'pan-y' }}>
-     <div className="col" key={p.dayIdx} style={dir.current ? { animation: `${dir.current > 0 ? 'slide-next' : 'slide-prev'} .28s cubic-bezier(.2,.8,.2,1)` } : undefined}>
+     <div className="col" ref={colRef} style={{ willChange: 'transform' }}>
       <div style={{ padding: '2px 16px 0 22px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-start' }}>
           <BackButton label="Trips" onClick={p.onHome} />
