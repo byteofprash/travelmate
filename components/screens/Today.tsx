@@ -1,9 +1,10 @@
-import { forwardRef } from 'react';
+import { forwardRef, useEffect, useRef } from 'react';
 import { Bed, Plane } from 'lucide-react';
 import { BackButton } from '../BackButton';
 import { ActivityCard } from '../ActivityCard';
 import { CommuteLeg } from '../CommuteLeg';
 import { DaySummary } from '../DaySummary';
+import { useSwipe } from '@/lib/useSwipe';
 import { WD, addDays, fmtClock, toISO, toMin } from '@/lib/format';
 import { dayBits, dayDate, daySummary, isStop } from '@/lib/derive';
 import { C, F, TAGC, mono, rule, sans, serif, CLAY, R } from '@/lib/theme';
@@ -74,12 +75,28 @@ export const Today = forwardRef<HTMLDivElement, {
     rows.splice(pos, 0, { k: 'now', time: fmtClock(nm) });
   }
 
+  // Swipe left for the next day, right for the previous one; the content slides in from that side.
+  const dir = useRef(0);
+  const go = (to: number) => {
+    if (to < 0 || to >= trip.days.length || to === p.dayIdx) return;
+    dir.current = to > p.dayIdx ? 1 : -1;
+    p.onPickDay(to);
+  };
+  const swipe = useSwipe(() => go(p.dayIdx + 1), () => go(p.dayIdx - 1));
+
+  // Keep the selected date in view in the day strip.
+  const stripRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = stripRef.current?.querySelector('[data-sel="1"]') as HTMLElement | null;
+    el?.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' });
+  }, [p.dayIdx]);
+
   const sum = daySummary(day);
   const cards = settings.cardStyle === 'cards';
 
   return (
-    <div ref={ref} className="scroll" style={{ position: 'absolute', inset: '0 0 var(--tabbar) 0', overflowY: 'auto', padding: 'var(--top) 0 24px' }}>
-     <div className="col">
+    <div ref={ref} className="scroll" {...swipe} style={{ position: 'absolute', inset: '0 0 var(--tabbar) 0', overflowY: 'auto', padding: 'var(--top) 0 24px', touchAction: 'pan-y' }}>
+     <div className="col" key={p.dayIdx} style={dir.current ? { animation: `${dir.current > 0 ? 'slide-next' : 'slide-prev'} .28s cubic-bezier(.2,.8,.2,1)` } : undefined}>
       <div style={{ padding: '2px 16px 0 22px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-start' }}>
           <BackButton label="Trips" onClick={p.onHome} />
@@ -97,14 +114,15 @@ export const Today = forwardRef<HTMLDivElement, {
         </div>
       </div>
 
-      <div className="scroll" style={{ display: 'flex', gap: 6, overflowX: 'auto', padding: '16px 22px 22px' }}>
+      <div ref={stripRef} data-noswipe className="scroll" style={{ display: 'flex', gap: 6, overflowX: 'auto', padding: '16px 22px 22px', touchAction: 'pan-x pan-y' }}>
         {strip.map((s) => {
           const sel = s.idx === p.dayIdx;
           const inT = s.idx >= 0;
           return (
             <div
               key={s.iso}
-              onClick={() => inT && p.onPickDay(s.idx)}
+              data-sel={sel ? '1' : undefined}
+              onClick={() => inT && go(s.idx)}
               style={{
                 flex: 'none',
                 width: 48,
