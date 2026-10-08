@@ -3,7 +3,7 @@
   "short_name": "Travel",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#F4EBDD",
-  "theme_color": "#F4EBDD",
+  "background_color": "#EAF0EE",
+  "theme_color": "#EAF0EE",
   "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml" }]
 }

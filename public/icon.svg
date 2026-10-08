@@ -5,7 +5,7 @@
 <filter id="h" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="22"/></filter>
 <filter id="s" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#0B4A42" flood-opacity=".45"/></filter>
 </defs>
-<rect width="512" height="512" fill="#F4EBDD"/>
+<rect width="512" height="512" fill="#EAF0EE"/>
 <g clip-path="url(#c)">
 <rect width="512" height="512" fill="url(#b)"/>
 <ellipse cx="150" cy="105" rx="150" ry="85" fill="#FFFFFF" opacity=".42" filter="url(#h)"/>
