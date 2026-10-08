@@ -164,11 +164,11 @@ export const Today = forwardRef<HTMLDivElement, {
           if (r.k === 'now')
             return (
               <div key="now" style={{ display: 'grid', gridTemplateColumns: '62px 18px minmax(0,1fr)', alignItems: 'center', height: 22, margin: '2px 0' }}>
-                <div style={{ font: mono(600, 11.5), color: C.now, textAlign: 'right' }}>{r.time}</div>
+                <div style={{ font: mono(600, 11.5), color: C.accent, textAlign: 'right' }}>{r.time}</div>
                 <div style={{ display: 'flex', justifyContent: 'center' }}>
-                  <div style={{ width: 11, height: 11, borderRadius: R.ctl, background: C.now, boxShadow: '0 0 0 3px rgba(236,0,22,.18)' }} />
+                  <div style={{ width: 11, height: 11, borderRadius: R.ctl, background: C.now, boxShadow: '0 0 0 4px color-mix(in srgb, var(--accent2) 45%, transparent)' }} />
                 </div>
-                <div style={{ height: 2, background: C.now, borderRadius: 1, marginLeft: -4 }} />
+                <div style={{ height: 3, background: C.now, borderRadius: 2, marginLeft: -4 }} />
               </div>
             );
           const it = day.items[r.i];

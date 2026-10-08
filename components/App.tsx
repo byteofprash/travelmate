@@ -323,7 +323,7 @@ export default function App() {
 
   return (
     <div className="stage">
-      <div className="phone" style={{ background: C.paper, color: C.ink, ['--accent' as string]: settings.accent }}>
+      <div className="phone" style={{ background: C.paper, color: C.ink, ['--accent' as string]: settings.accent, ['--accent2' as string]: settings.accent2 }}>
         {desktop && (
           <Sidebar
             tab={effTab}
@@ -427,7 +427,7 @@ export default function App() {
                 aria-label={l}
                 title={l}
                 aria-current={active ? 'page' : undefined}
-                style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4, cursor: 'pointer', borderRadius: 24, color: active ? settings.accent : C.muted, background: active ? C.paper : 'transparent', boxShadow: active ? CLAY.inset : 'none', transition: 'box-shadow .2s, background .2s' }}
+                style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4, cursor: 'pointer', borderRadius: 24, color: active ? settings.accent : C.muted, background: active ? 'color-mix(in srgb, var(--accent2) 40%, #FCF7EE)' : 'transparent', boxShadow: active ? CLAY.inset : 'none', transition: 'box-shadow .2s, background .2s' }}
               >
                 <Icon size={22} strokeWidth={active ? 2.1 : 1.8} />
               </div>

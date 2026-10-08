@@ -89,7 +89,8 @@ export interface TripMeta {
 }
 
 export interface Settings {
-  accent: string;
+  accent: string; // primary
+  accent2: string; // secondary
   cardStyle: 'cards' | 'ledger';
   showTransport: boolean;
 }

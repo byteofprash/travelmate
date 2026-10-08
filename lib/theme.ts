@@ -21,16 +21,24 @@ export const C = {
   darkLabel: 'rgba(255,255,255,.85)',
   onDarkRule: 'rgba(255,255,255,.3)',
   charcoal: '#2E2521', // toast and the JSON viewer
-  accent: '#D8352A',
+  accent: 'var(--accent)',
+  accent2: 'var(--accent2)', // secondary: light pastel fills, always paired with dark ink text
   nile: '#2F6B3A', // stays (green)
   flight: '#1F4E8C', // flights and arrivals (blue)
   meal: '#8A4B0B', // meals (orange)
-  now: '#D8352A',
+  now: 'var(--accent2)',
   error: '#B3261E',
   scrim: 'rgba(58,40,30,.4)',
 };
 
-export const ACCENTS = ['#D8352A', '#2F6FBF', '#3E8A4F', '#8A56B0'];
+/** Primary (white text on it) + secondary (pastel, dark text on it) presets offered in Settings. First is the default. */
+export const PRESETS = [
+  { id: 'teal-coral', name: 'Teal & coral', primary: '#1F8A7D', secondary: '#F4A58A' },
+  { id: 'indigo-peach', name: 'Indigo & peach', primary: '#5B5FD6', secondary: '#F7BE96' },
+  { id: 'terracotta-sage', name: 'Terracotta & sage', primary: '#C4512F', secondary: '#BBD2B8' },
+  { id: 'violet-mint', name: 'Violet & mint', primary: '#7A5FD0', secondary: '#BFE8D2' },
+] as const;
+export const DEFAULT_PRESET = PRESETS[0];
 
 /** Deep text colours for tags (AA on cream) and the matching pastel pill fills. */
 export const TAGC: Record<string, string> = {

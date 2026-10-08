@@ -84,7 +84,7 @@ export function Home({
                           {rangeShort(t.start, t.end)} · {plural(t.nights, 'night')}
                         </div>
                         {t.id === nextId && (
-                          <div style={{ font: mono(500, 9.5), letterSpacing: '.08em', padding: '4px 7px', borderRadius: R.pill, background: dark ? C.card : accent, color: dark ? accent : C.card }}>NEXT</div>
+                          <div style={{ font: mono(500, 9.5), letterSpacing: '.08em', padding: '4px 7px', borderRadius: R.pill, background: dark ? C.card : C.accent2, color: dark ? accent : C.ink, fontWeight: 700 }}>NEXT</div>
                         )}
                       </div>
                       <div style={{ marginTop: 6, font: serif(25, 1.05), letterSpacing: '-.01em' }}>{t.name}</div>

@@ -68,8 +68,9 @@ export function Sidebar({
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 11, minWidth: 0 }}>
-          <div style={{ flex: 'none', width: 34, height: 34, borderRadius: R.ctl, background: accent, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Plane size={18} strokeWidth={1.6} color={C.darkText} />
+          <div style={{ position: 'relative', flex: 'none', width: 38, height: 38, borderRadius: 14, background: accent, boxShadow: CLAY.accent, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Plane size={19} strokeWidth={2} color={C.darkText} />
+            <div style={{ position: 'absolute', right: 5, bottom: 5, width: 7, height: 7, borderRadius: 4, background: C.accent2, boxShadow: 'inset 1px 1px 2px rgba(255,255,255,.6)' }} />
           </div>
           {!collapsed && (
             <div style={{ minWidth: 0 }}>

@@ -3,7 +3,7 @@ import { X } from 'lucide-react';
 import { MODES } from './CommuteLeg';
 import { isPlaceholder, plural, rangeShort } from '@/lib/format';
 import { dayBits, daySummary, homeCity, nightCount, operator, staysInOrder } from '@/lib/derive';
-import { ACCENTS, C, TAGC, mono, rule, sans, serif, CLAY, R } from '@/lib/theme';
+import { PRESETS, C, TAGC, mono, rule, sans, serif, CLAY, R } from '@/lib/theme';
 import type { Day, Leg, Settings, Stop, Trip, TripMeta } from '@/lib/types';
 
 /* ---------- shared bits ---------- */
@@ -12,7 +12,7 @@ const kicker = (color: string = C.muted): React.CSSProperties => ({ font: mono(5
 const h2: React.CSSProperties = { marginTop: 9, font: serif(30, 1.05), letterSpacing: '-.01em' };
 const subTxt: React.CSSProperties = { marginTop: 6, font: sans(400, 13, 1.35), color: C.muted };
 const label: React.CSSProperties = { font: mono(500, 10.5, 1.4), letterSpacing: '.07em', color: C.muted };
-const btnOutline: React.CSSProperties = { padding: 14, borderRadius: R.ctl, boxShadow: CLAY.soft, textAlign: 'center', font: sans(500, 14), cursor: 'pointer' };
+const btnOutline: React.CSSProperties = { padding: 14, borderRadius: R.ctl, background: C.accent2, color: C.ink, boxShadow: CLAY.soft, textAlign: 'center', font: sans(500, 14), cursor: 'pointer' };
 const btnDark: React.CSSProperties = { padding: 14, borderRadius: R.ctl, background: C.dark, color: C.darkText, textAlign: 'center', font: sans(500, 14), cursor: 'pointer' };
 
 function KV({ k, v, w = 96, size = 13 }: { k: string; v: ReactNode; w?: number; size?: number }) {
@@ -374,18 +374,28 @@ export function SettingsSheet({ settings, onChange }: { settings: Settings; onCh
       <div style={{ marginTop: 9, font: serif(30, 1.05) }}>Settings</div>
       <div style={{ marginTop: 18, borderTop: `1px solid ${rule(0.1)}` }}>
         <div style={{ padding: '14px 0', borderBottom: `1px solid ${rule(0.1)}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>
-          <div style={label}>ACCENT</div>
-          <div style={{ display: 'flex', gap: 10 }}>
-            {ACCENTS.map((a) => (
-              <div
-                key={a}
-                onClick={() => onChange({ ...settings, accent: a })}
-                role="button"
-                aria-label={`Accent ${a}`}
-                tabIndex={0}
-                style={{ width: 28, height: 28, borderRadius: 14, background: a, cursor: 'pointer', border: `2.5px solid ${C.sheet}`, boxShadow: settings.accent === a ? `0 0 0 1.5px ${C.ink}` : 'none' }}
-              />
-            ))}
+          <div style={label}>COLOURS</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 10, flex: 1, maxWidth: 300 }}>
+            {PRESETS.map((p) => {
+              const on = settings.accent.toLowerCase() === p.primary.toLowerCase();
+              return (
+                <div
+                  key={p.id}
+                  onClick={() => onChange({ ...settings, accent: p.primary, accent2: p.secondary })}
+                  role="button"
+                  aria-label={`${p.name} colours`}
+                  aria-pressed={on}
+                  tabIndex={0}
+                  style={{ padding: '10px 10px 9px', borderRadius: R.ctl, background: on ? C.sand : C.card, boxShadow: on ? CLAY.inset : CLAY.soft, cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 7 }}
+                >
+                  <div style={{ display: 'flex' }}>
+                    <div style={{ width: 26, height: 26, borderRadius: 13, background: p.primary, boxShadow: '0 3px 6px rgba(90,60,40,.3), inset 2px 2px 4px rgba(255,255,255,.4), inset -2px -3px 4px rgba(0,0,0,.2)' }} />
+                    <div style={{ width: 26, height: 26, borderRadius: 13, background: p.secondary, marginLeft: -7, boxShadow: '0 3px 6px rgba(90,60,40,.25), inset 2px 2px 4px rgba(255,255,255,.55), inset -2px -3px 4px rgba(120,70,40,.18)' }} />
+                  </div>
+                  <div style={{ font: sans(on ? 700 : 500, 11.5, 1.2), color: C.ink2 }}>{p.name}</div>
+                </div>
+              );
+            })}
           </div>
         </div>
         <div style={{ padding: '14px 0', borderBottom: `1px solid ${rule(0.1)}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>

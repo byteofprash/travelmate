@@ -1,6 +1,7 @@
 import egypt from '@/data/egypt-trip.json';
 import tripsIndex from '@/data/trips-index.json';
 import { normalizeTrip } from './ops';
+import { DEFAULT_PRESET, PRESETS } from './theme';
 import type { Settings, Trip, TripMeta } from './types';
 
 const KEY = 'tc-trips-v1';
@@ -51,16 +52,25 @@ export function save(p: Persisted) {
   } catch {}
 }
 
-export const DEFAULT_SETTINGS: Settings = { accent: '#D8352A', cardStyle: 'cards', showTransport: true };
+export const DEFAULT_SETTINGS: Settings = { accent: DEFAULT_PRESET.primary, accent2: DEFAULT_PRESET.secondary, cardStyle: 'cards', showTransport: true };
 
-const LEGACY_ACCENTS: Record<string, string> = { '#A8492A': '#D8352A', '#2F6F73': '#3E8A4F', '#4A5B8C': '#2F6FBF', '#8A6A2F': '#8A56B0', '#EC0016': '#D8352A', '#408335': '#3E8A4F', '#1455C0': '#2F6FBF', '#814997': '#8A56B0' };
+const LEGACY_ACCENTS: Record<string, string> = {
+  '#A8492A': '#C4512F', '#8A6A2F': '#C4512F',
+  '#4A5B8C': '#5B5FD6', '#1455C0': '#5B5FD6', '#2F6FBF': '#5B5FD6',
+  '#2F6F73': '#1F8A7D', '#408335': '#1F8A7D', '#3E8A4F': '#1F8A7D',
+  '#814997': '#7A5FD0', '#8A56B0': '#7A5FD0',
+};
 
 export function loadSettings(): Settings {
   try {
     const raw = localStorage.getItem(SETTINGS_KEY);
     if (raw) {
       const s = { ...DEFAULT_SETTINGS, ...JSON.parse(raw) } as Settings;
-      s.accent = LEGACY_ACCENTS[s.accent.toUpperCase()] ?? s.accent; // accents saved before the clay palette
+      // Accents saved before the preset pairs: map each to the closest preset (primary and secondary together).
+      const legacy = LEGACY_ACCENTS[s.accent.toUpperCase()];
+      const preset = PRESETS.find((p) => p.primary.toLowerCase() === (legacy ?? s.accent).toLowerCase()) ?? DEFAULT_PRESET;
+      s.accent = preset.primary;
+      s.accent2 = preset.secondary;
       return s;
     }
   } catch {}
