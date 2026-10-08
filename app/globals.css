@@ -14,7 +14,7 @@
 }
 
 * { box-sizing: border-box; }
-html, body { margin: 0; height: 100%; }
+html, body { margin: 0; height: 100%; overscroll-behavior: none; } /* no pull-down bounce or pull-to-refresh */
 body {
   background: var(--bg);
   font-family: 'Nunito Sans Variable', 'Liberation Sans', Arimo, Arial, Helvetica, sans-serif;
@@ -28,7 +28,7 @@ input, textarea { font-family: inherit; }
 button { font: inherit; color: inherit; }
 h1 { font-weight: 400; }
 ::-webkit-scrollbar { width: 0; height: 0; }
-.scroll { scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.scroll { scrollbar-width: none; -webkit-overflow-scrolling: touch; overscroll-behavior: none; }
 
 :root {
   --accent: #1F8A7D;
@@ -85,6 +85,7 @@ h1 { font-weight: 400; }
 .sheet-scrim.open { opacity: 1; pointer-events: auto; }
 .sheet {
   position: absolute; left: 0; right: 0; bottom: 0; max-height: 86%; overflow-y: auto;
+  overscroll-behavior: contain;
   background: #F7EFE3; border-radius: 32px 32px 0 0; z-index: 31; padding: 10px 0 34px;
   box-shadow: 0 -10px 30px rgba(120, 84, 52, .2), inset 0 4px 8px rgba(255, 255, 255, .85);
   transition: transform .32s cubic-bezier(.2, .8, .2, 1); transform: translateY(105%);

@@ -1,5 +1,6 @@
 import { forwardRef } from 'react';
 import { Bed, Plane } from 'lucide-react';
+import { BackButton } from '../BackButton';
 import { ActivityCard } from '../ActivityCard';
 import { CommuteLeg } from '../CommuteLeg';
 import { DaySummary } from '../DaySummary';
@@ -80,12 +81,10 @@ export const Today = forwardRef<HTMLDivElement, {
     <div ref={ref} className="scroll" style={{ position: 'absolute', inset: '0 0 var(--tabbar) 0', overflowY: 'auto', padding: 'var(--top) 0 24px' }}>
      <div className="col">
       <div style={{ padding: '2px 16px 0 22px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-          <div onClick={p.onHome} role="button" tabIndex={0} style={{ font: mono(500, 11), letterSpacing: '.08em', textTransform: 'uppercase', color: C.muted, cursor: 'pointer' }}>
-            ‹ Trips · {meta.name}
-          </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-start' }}>
+          <BackButton label="Trips" onClick={p.onHome} />
           <div style={{ font: mono(500, 11), letterSpacing: '.08em', color: C.muted }}>
-            DAY {day.num} OF {trip.days.length}
+            {meta.name} · DAY {day.num} OF {trip.days.length}
           </div>
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
@@ -98,7 +97,7 @@ export const Today = forwardRef<HTMLDivElement, {
         </div>
       </div>
 
-      <div className="scroll" style={{ display: 'flex', gap: 6, overflowX: 'auto', padding: '10px 22px 22px' }}>
+      <div className="scroll" style={{ display: 'flex', gap: 6, overflowX: 'auto', padding: '16px 22px 22px' }}>
         {strip.map((s) => {
           const sel = s.idx === p.dayIdx;
           const inT = s.idx >= 0;

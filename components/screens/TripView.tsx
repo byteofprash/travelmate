@@ -1,3 +1,4 @@
+import { BackButton } from '../BackButton';
 import { rangeLong, plural } from '@/lib/format';
 import { cityCount, dayBits, isStop, routeRows } from '@/lib/derive';
 import { C, mono, rule, sans, serif, CLAY, R } from '@/lib/theme';
@@ -26,14 +27,12 @@ export function TripView({
     <div className="scroll" style={{ position: 'absolute', inset: '0 0 var(--tabbar) 0', overflowY: 'auto', padding: 'var(--top) 0 24px' }}>
      <div className="col">
       <div style={{ padding: '6px 22px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div onClick={onHome} role="button" tabIndex={0} style={{ font: mono(500, 11), letterSpacing: '.08em', textTransform: 'uppercase', color: C.muted, cursor: 'pointer' }}>
-          ‹ All trips
-        </div>
+        <BackButton label="Trips" onClick={onHome} />
         <div
           onClick={onEdit}
           role="button"
           tabIndex={0}
-          style={{ font: sans(500, 12.5), padding: '9px 12px', borderRadius: R.ctl, background: C.dark, color: C.darkText, cursor: 'pointer' }}
+          style={{ font: sans(500, 12.5), height: 44, display: 'inline-flex', alignItems: 'center', padding: '0 18px', borderRadius: R.pill, background: C.dark, color: C.darkText, boxShadow: CLAY.accent, cursor: 'pointer' }}
         >
           Edit trip
         </div>

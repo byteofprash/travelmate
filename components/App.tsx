@@ -382,6 +382,7 @@ export default function App() {
         )}
         {effTab === 'map' && day && (
           <MapView
+            onHome={() => go('home')}
             meta={meta}
             trip={trip}
             dayIdx={di}

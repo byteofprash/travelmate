@@ -1,3 +1,4 @@
+import { BackButton } from '../BackButton';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -49,6 +50,7 @@ export function MapView({
   onMode,
   onPickDay,
   onCity,
+  onHome,
   onStop,
 }: {
   meta: TripMeta;
@@ -59,6 +61,7 @@ export function MapView({
   onMode: (m: 'day' | 'trip') => void;
   onPickDay: (i: number) => void;
   onCity: (dayIdx: number) => void;
+  onHome: () => void;
   onStop: (s: Stop) => void;
 }) {
   const accent = settings.accent;
@@ -174,10 +177,13 @@ export function MapView({
       <div ref={elRef} className="map-root" style={{ position: 'absolute', inset: 0, zIndex: 0, isolation: 'isolate' }} />
 
       <div style={{ position: 'absolute', zIndex: 5, top: 'var(--top)', left: 16, right: 16, display: 'flex', flexDirection: 'column', gap: 10, pointerEvents: 'none' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, pointerEvents: 'auto' }}>
+          <BackButton label="Trips" iconOnly onClick={onHome} />
           <div style={{ display: 'flex', padding: 3, borderRadius: R.pill, background: C.card, boxShadow: CLAY.soft, pointerEvents: 'auto' }}>
             <div onClick={() => onMode('day')} style={seg(mode === 'day')}>Day</div>
             <div onClick={() => onMode('trip')} style={seg(mode === 'trip')}>Whole trip</div>
+          </div>
           </div>
           {scale.label && (
             <div
