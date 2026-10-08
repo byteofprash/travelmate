@@ -95,7 +95,7 @@ export interface Settings {
   showTransport: boolean;
 }
 
-export type SheetType = 'stop' | 'stay' | 'day' | 'journeys' | 'stays' | 'add' | 'settings';
+export type SheetType = 'stop' | 'stay' | 'day' | 'journeys' | 'stays' | 'add' | 'settings' | 'inbox';
 export interface Sheet {
   type: SheetType;
   id?: string;

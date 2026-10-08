@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from 'react';
 import type { SyncApi } from './useSync';
+import type { InboxItem } from '@/lib/inbox';
 import { X } from 'lucide-react';
 import { MODES } from './CommuteLeg';
 import { isPlaceholder, plural, rangeShort } from '@/lib/format';
@@ -357,6 +358,54 @@ export function EditSheet({
           {JSON.stringify(trip, null, 2)}
         </pre>
       )}
+    </>
+  );
+}
+
+/* ---------- Inbox ---------- */
+
+const snippet = (t: string) => t.replace(/\s+/g, ' ').slice(0, 170) + (t.length > 170 ? '…' : '');
+
+/** Emails forwarded to the app: choose which trip each one goes into, or dismiss it. Nothing changes until you press Apply. */
+export function InboxSheet({ items, trips, onPick, onDismiss }: { items: InboxItem[]; trips: TripMeta[]; onPick: (item: InboxItem, tripId: string) => void; onDismiss: (id: string) => void }) {
+  const sorted = [...trips].sort((a, b) => a.start.localeCompare(b.start));
+  return (
+    <>
+      <div style={kicker()}>FORWARDED EMAILS</div>
+      <div style={h2}>Inbox</div>
+      <div style={subTxt}>Pick a trip to add an email to. You will see the changes and can undo them.</div>
+      {items.length === 0 && <div style={{ ...subTxt, marginTop: 22 }}>Nothing waiting.</div>}
+      <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
+        {items.map((it) => (
+          <div key={it.id} style={{ padding: '14px 16px', borderRadius: R.card, background: C.card, boxShadow: CLAY.soft, display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div style={{ font: sans(700, 14.5, 1.3) }}>{it.subject}</div>
+            <div style={{ font: sans(400, 12, 1.3), color: C.muted }}>
+              {it.from} · {new Date(it.date ?? it.receivedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+            </div>
+            <div style={{ font: sans(400, 12.5, 1.4), color: C.ink2 }}>{snippet(it.text)}</div>
+            <div style={{ ...label, marginTop: 4 }}>ADD TO</div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+              {sorted.map((t) => (
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => onPick(it, t.id)}
+                  style={{ padding: '9px 14px', borderRadius: R.pill, border: 0, background: C.dark, color: C.darkText, boxShadow: CLAY.accent, font: sans(700, 12.5), cursor: 'pointer' }}
+                >
+                  {t.name}
+                </button>
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={() => onDismiss(it.id)}
+              style={{ alignSelf: 'flex-start', padding: '8px 4px', border: 0, background: 'transparent', color: C.muted, font: sans(500, 12.5), cursor: 'pointer', textDecoration: 'underline' }}
+            >
+              Dismiss
+            </button>
+          </div>
+        ))}
+      </div>
     </>
   );
 }

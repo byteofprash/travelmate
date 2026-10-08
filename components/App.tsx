@@ -3,12 +3,13 @@
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { Sidebar } from './Sidebar';
 import { useSync } from './useSync';
+import { useInbox } from './useInbox';
 import { CalendarDays, Map as MapIcon, Route, type LucideIcon } from 'lucide-react';
 import { Home } from './screens/Home';
 import { Today } from './screens/Today';
 import { TripView } from './screens/TripView';
 import { MapView } from './screens/MapView';
-import { DaySheet, EditSheet, JourneysSheet, SettingsSheet, SheetFrame, StaySheet, StaysSheet, StopSheet } from './Sheets';
+import { DaySheet, EditSheet, InboxSheet, JourneysSheet, SettingsSheet, SheetFrame, StaySheet, StaysSheet, StopSheet } from './Sheets';
 import { applyOps, type EditResult } from '@/lib/ops';
 import { DEFAULT_SETTINGS, load, loadSettings, sampleTrip, save, saveSettings, type Persisted } from '@/lib/store';
 import { todayIndex } from '@/lib/derive';
@@ -126,6 +127,21 @@ export default function App() {
 
   const sync = useSync(data, setData, flash);
 
+  // Forwarded emails (see /api/inbox). Adding one to a trip opens the usual edit sheet with the email text filled in;
+  // the email is removed from the inbox once that edit has been applied.
+  const inbox = useInbox(sync.code);
+  const pendingInbox = useRef<string | null>(null);
+  useEffect(() => {
+    if (!sheet) pendingInbox.current = null;
+  }, [sheet]);
+  const addFromInbox = (item: { id: string; subject: string; from: string; text: string }, id: string) => {
+    setTripId(id);
+    resetEditUi();
+    setEditText(`Booking email: ${item.subject}\nFrom: ${item.from}\n\n${item.text}`);
+    pendingInbox.current = item.id;
+    setSheet({ type: 'add', tripId: id });
+  };
+
   const setTrip = (id: string, next: Trip, pushHistory?: Trip) =>
     setData((d) => ({
       ...d,
@@ -212,6 +228,10 @@ export default function App() {
       if (n) {
         setTrip(id, applyOps(before, out.ops), before);
         flash('Trip updated');
+        if (pendingInbox.current) {
+          void inbox.dismiss(pendingInbox.current);
+          pendingInbox.current = null;
+        }
       }
       setEditResult({ summary: out.summary, n });
       setEditText(n ? '' : text);
@@ -313,6 +333,8 @@ export default function App() {
             onReset={resetTrip}
           />
         );
+      case 'inbox':
+        return <InboxSheet items={inbox.items} trips={data.index} onPick={addFromInbox} onDismiss={(id) => void inbox.dismiss(id)} />;
       case 'settings':
         return <SettingsSheet settings={settings} onChange={setSettings} sync={sync} />;
     }
@@ -348,6 +370,8 @@ export default function App() {
             accent={settings.accent}
             onOpen={openTrip}
             onSettings={() => setSheet({ type: 'settings' })}
+            inboxCount={inbox.items.length}
+            onInbox={() => setSheet({ type: 'inbox' })}
           />
         )}
         {effTab === 'today' && day && (

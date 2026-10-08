@@ -1,0 +1,12 @@
+name = "travelmate-email"
+main = "src/index.ts"
+compatibility_date = "2025-01-01"
+
+# The two settings below are plain variables. The secret is NOT stored here: set it with
+#   npx wrangler secret put INBOUND_SECRET
+[vars]
+# Where the app receives emails.
+INBOUND_URL = "https://YOUR-APP.vercel.app/api/inbound"
+# Comma-separated addresses allowed to send to this worker (the address you forward from). Empty allows anyone
+# who knows the routing address, so set it.
+ALLOWED_SENDERS = "you@example.com"

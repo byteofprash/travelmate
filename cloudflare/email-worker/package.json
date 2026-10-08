@@ -1,0 +1,16 @@
+{
+  "name": "travelmate-email-worker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Cloudflare Email Worker: turns a forwarded booking email into an inbox item in Travel Companion.",
+  "scripts": {
+    "deploy": "wrangler deploy"
+  },
+  "dependencies": {
+    "postal-mime": "^2.4.3"
+  },
+  "devDependencies": {
+    "wrangler": "^4"
+  }
+}

@@ -39,6 +39,26 @@ How it behaves:
 - Storage is one JSON document under the key `travelmate:state:v1` with a revision number. `GET /api/state` returns it and `PUT /api/state` saves it only if the revision the client sent is still current (otherwise 409), both requiring the `x-access-code` header. The code is stored in the browser once entered, in `localStorage`.
 - `/api/edit` (the Claude calls) is not behind the access code; anyone who can reach the site can use it and spend your Anthropic credit.
 
+## Forwarding booking emails
+
+Forward a booking confirmation (flight, train, hotel) to an address on your own domain and it shows up in the app, ready to add to a trip. It needs syncing set up first (the database and `APP_SECRET`), a domain on Cloudflare, and a free Cloudflare account.
+
+```
+you forward an email ─▶ trips@yourdomain ─▶ Cloudflare Email Routing ─▶ Email Worker ─▶ /api/inbound ─▶ inbox (Redis)
+app: "2 emails waiting" ─▶ pick a trip ─▶ the usual edit sheet, prefilled ─▶ Apply with Claude (Undo works)
+```
+
+1. Add `INBOUND_SECRET` on Vercel (any long random string) and redeploy.
+2. Deploy the worker and create the address: follow [`cloudflare/email-worker/README.md`](cloudflare/email-worker/README.md). The worker needs your app's URL, the same `INBOUND_SECRET` and the address you forward from.
+3. Forward an email to the new address. Within a few seconds the Trips screen shows a banner (the app checks on start-up, when it returns to the foreground and every minute).
+
+Notes:
+
+- **Nothing is applied automatically.** An email only sits in the inbox. You choose the trip, the change goes through the same edit sheet and Claude call as pasted text, and the email is removed once you apply it. **Dismiss** deletes one without using it. Email text is untrusted input, so the review step is the safeguard against a crafted email.
+- Only the email's text is read (HTML is converted to text). Attachments such as PDF tickets are ignored.
+- The worker accepts only senders listed in `ALLOWED_SENDERS`, drops emails over 5 MB and never forwards the email anywhere else. The inbox keeps the 50 newest.
+- Forwarding work bookings sends their contents to Cloudflare, your database and Anthropic. Check your company's rules first. Manually forwarding is usually allowed where automatic forwarding rules are blocked.
+
 ## Local development
 
 ```bash
@@ -58,6 +78,8 @@ npm run dev
 | `components/Sheets.tsx` | Activity, Stay, Day, Journeys, Stays, Edit trip, Settings sheets |
 | `components/{DaySummary,ActivityCard,CommuteLeg}.tsx` | The three reusable components from the handoff |
 | `app/api/state/route.ts`, `lib/server/state-store.ts` | Sync API: the trips in Redis, guarded by `APP_SECRET`, with a revision check |
+| `app/api/inbound/route.ts`, `app/api/inbox/route.ts`, `lib/server/inbox-store.ts`, `lib/inbox.ts`, `components/useInbox.ts` | Email inbox: receive from the worker, list and dismiss, in-app banner |
+| `cloudflare/email-worker/` | Cloudflare Email Worker that passes forwarded emails to `/api/inbound` (deployed separately) |
 | `lib/sync.ts`, `components/useSync.ts` | Client side of syncing: change tracking, background push and pull, conflict choice |
 | `lib/ops.ts` | Op schema (zod) and `applyOps()` |
 | `lib/prompt.ts` | System prompt (from the handoff, adapted for tool use and "plan from pasted text") |

@@ -34,10 +34,12 @@ export async function writeDoc(r: Redis, doc: StoredDoc) {
   await r.set(KEY, doc);
 }
 
-/** Constant-time comparison of the access code sent by the app with APP_SECRET. */
-export function codeMatches(sent: string | null): boolean {
-  const secret = process.env.APP_SECRET ?? '';
+/** Constant-time comparison of a secret sent by a caller with the one configured on the server. */
+export function secretMatches(sent: string | null, secret: string | undefined): boolean {
   if (!secret || !sent) return false;
   const h = (s: string) => createHash('sha256').update(s).digest();
   return timingSafeEqual(h(sent), h(secret));
 }
+
+/** The access code the app sends (header x-access-code) against APP_SECRET. */
+export const codeMatches = (sent: string | null) => secretMatches(sent, process.env.APP_SECRET);

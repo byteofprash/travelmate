@@ -10,6 +10,8 @@ export function Home({
   accent,
   onOpen,
   onSettings,
+  inboxCount = 0,
+  onInbox,
 }: {
   index: TripMeta[];
   trips: Record<string, Trip>;
@@ -17,6 +19,8 @@ export function Home({
   accent: string;
   onOpen: (id: string) => void;
   onSettings: () => void;
+  inboxCount?: number;
+  onInbox?: () => void;
 }) {
   const sorted = [...index].sort((a, b) => a.start.localeCompare(b.start));
   const upcoming = sorted.filter((t) => t.end >= todayISO);
@@ -38,6 +42,16 @@ export function Home({
       <div style={{ margin: '8px 22px 0', font: sans(400, 13.5, 1.4), color: C.muted }}>
         {upcoming.length} upcoming · {nights} nights away
       </div>
+      {inboxCount > 0 && onInbox && (
+        <button
+          type="button"
+          onClick={onInbox}
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, width: 'calc(100% - 32px)', margin: '16px 16px 0', padding: '14px 18px', border: 0, borderRadius: R.card, background: C.accent2, color: C.ink, boxShadow: CLAY.raised, font: sans(700, 14), textAlign: 'left', cursor: 'pointer' }}
+        >
+          <span>{inboxCount === 1 ? '1 email waiting' : `${inboxCount} emails waiting`}</span>
+          <span style={{ font: sans(700, 13) }}>Review ›</span>
+        </button>
+      )}
       <div style={{ padding: '10px 16px 0', display: 'flex', flexDirection: 'column' }}>
         {groups.map((g) => (
           <div key={g.name}>
