@@ -1,4 +1,4 @@
-import { C, mono, sans, serif } from '@/lib/theme';
+import { C, mono, sans, serif, CLAY, R } from '@/lib/theme';
 
 export interface Stat { k: string; v: string }
 
@@ -20,7 +20,7 @@ export function DaySummary({
       onClick={onOpen}
       role="button"
       tabIndex={0}
-      style={{ padding: '18px 18px 16px', borderRadius: 12, background: C.dark, color: C.darkText, cursor: 'pointer' }}
+      style={{ padding: '20px 20px 18px', borderRadius: R.card + 4, background: C.dark, color: C.darkText, cursor: 'pointer', boxShadow: CLAY.accent }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 10 }}>
         <div style={{ font: mono(500, 10.5), letterSpacing: '.1em', color: C.darkMuted, textTransform: 'uppercase' }}>{kicker}</div>

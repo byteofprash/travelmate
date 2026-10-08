@@ -1,5 +1,5 @@
 import { CalendarDays, Luggage, Map as MapIcon, PanelLeftClose, PanelLeftOpen, Plane, Route, Settings, type LucideIcon } from 'lucide-react';
-import { C, F, mono, rule, serif } from '@/lib/theme';
+import { C, F, mono, rule, serif, CLAY, R } from '@/lib/theme';
 
 export type NavTab = 'home' | 'today' | 'trip' | 'map';
 
@@ -68,7 +68,7 @@ export function Sidebar({
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 11, minWidth: 0 }}>
-          <div style={{ flex: 'none', width: 34, height: 34, borderRadius: 8, background: accent, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ flex: 'none', width: 34, height: 34, borderRadius: R.ctl, background: accent, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Plane size={18} strokeWidth={1.6} color={C.darkText} />
           </div>
           {!collapsed && (

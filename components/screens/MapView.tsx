@@ -3,7 +3,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { buildDayMap, buildTripMap, type MapModel } from '@/lib/map';
 import { rangeShort } from '@/lib/format';
-import { C, mono, rule, sans, serif } from '@/lib/theme';
+import { C, mono, rule, sans, serif, CLAY, R } from '@/lib/theme';
 import type { Settings, Stop, Trip, TripMeta } from '@/lib/types';
 
 // OpenStreetMap by default. The public OSM tile server is fine for light personal use; for real
@@ -157,8 +157,9 @@ export function MapView({
     flex: 'none',
     whiteSpace: 'nowrap',
     padding: '8px 16px',
-    borderRadius: 6,
+    borderRadius: R.pill,
     font: sans(500, 12.5),
+    boxShadow: active ? CLAY.accent : 'none',
     cursor: 'pointer',
     background: active ? C.dark : 'transparent',
     color: active ? C.darkText : C.ink,
@@ -174,7 +175,7 @@ export function MapView({
 
       <div style={{ position: 'absolute', zIndex: 5, top: 'var(--top)', left: 16, right: 16, display: 'flex', flexDirection: 'column', gap: 10, pointerEvents: 'none' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ display: 'flex', padding: 3, borderRadius: 8, background: 'rgba(255,255,255,.92)', border: `1px solid ${rule(0.1)}`, pointerEvents: 'auto' }}>
+          <div style={{ display: 'flex', padding: 3, borderRadius: R.pill, background: C.card, boxShadow: CLAY.soft, pointerEvents: 'auto' }}>
             <div onClick={() => onMode('day')} style={seg(mode === 'day')}>Day</div>
             <div onClick={() => onMode('trip')} style={seg(mode === 'trip')}>Whole trip</div>
           </div>
@@ -188,8 +189,8 @@ export function MapView({
                 letterSpacing: '.06em',
                 color: C.muted,
                 padding: '8px 10px',
-                borderRadius: 8,
-                background: 'rgba(255,255,255,.92)',
+                borderRadius: R.ctl,
+                background: C.card,
               }}
             >
               <span style={{ width: scale.width, height: 5, borderBottom: `1.5px solid ${C.muted}`, borderLeft: `1.5px solid ${C.muted}`, borderRight: `1.5px solid ${C.muted}` }} />
@@ -211,12 +212,12 @@ export function MapView({
                     flex: 'none',
                     whiteSpace: 'nowrap',
                     padding: '7px 10px',
-                    borderRadius: 8,
+                    borderRadius: R.ctl,
                     font: mono(500, 11),
                     cursor: 'pointer',
-                    background: sel ? C.dark : 'rgba(255,255,255,.92)',
+                    background: sel ? C.dark : C.card,
                     color: sel ? C.darkText : C.ink,
-                    border: `1px solid ${rule(0.1)}`,
+                    boxShadow: CLAY.soft,
                   }}
                 >
                   D{d.num} · {dd.getDate()}
@@ -238,10 +239,9 @@ export function MapView({
                 flex: 'none',
                 width: 210,
                 padding: '12px 14px',
-                borderRadius: 12,
+                borderRadius: R.card,
                 background: C.card,
-                border: `1px solid ${rule(0.1)}`,
-                boxShadow: '0 6px 18px rgba(34,36,40,.08)',
+                boxShadow: CLAY.raised,
                 cursor: 'pointer',
                 display: 'flex',
                 gap: 11,

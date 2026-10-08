@@ -1,5 +1,5 @@
 import { MON, MONTHS, parseISO, rangeShort, plural } from '@/lib/format';
-import { C, mono, rule, sans, serif } from '@/lib/theme';
+import { C, mono, rule, sans, serif, CLAY, R } from '@/lib/theme';
 import { seasonKicker } from '@/lib/derive';
 import type { Trip, TripMeta } from '@/lib/types';
 
@@ -67,10 +67,10 @@ export function Home({
                       gridTemplateColumns: '54px minmax(0,1fr)',
                       gap: 14,
                       padding: 16,
-                      borderRadius: 12,
+                      borderRadius: R.card,
                       background: dark ? C.dark : C.card,
                       color: dark ? C.darkText : C.ink,
-                      border: `1px solid ${rule(0.09)}`,
+                      boxShadow: dark ? CLAY.accent : CLAY.raised,
                       cursor: 'pointer',
                     }}
                   >
@@ -84,7 +84,7 @@ export function Home({
                           {rangeShort(t.start, t.end)} · {plural(t.nights, 'night')}
                         </div>
                         {t.id === nextId && (
-                          <div style={{ font: mono(500, 9.5), letterSpacing: '.08em', padding: '4px 7px', borderRadius: 4, background: dark ? C.card : accent, color: dark ? accent : C.card }}>NEXT</div>
+                          <div style={{ font: mono(500, 9.5), letterSpacing: '.08em', padding: '4px 7px', borderRadius: R.pill, background: dark ? C.card : accent, color: dark ? accent : C.card }}>NEXT</div>
                         )}
                       </div>
                       <div style={{ marginTop: 6, font: serif(25, 1.05), letterSpacing: '-.01em' }}>{t.name}</div>

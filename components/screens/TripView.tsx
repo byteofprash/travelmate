@@ -1,6 +1,6 @@
 import { rangeLong, plural } from '@/lib/format';
 import { cityCount, dayBits, isStop, routeRows } from '@/lib/derive';
-import { C, mono, rule, sans, serif } from '@/lib/theme';
+import { C, mono, rule, sans, serif, CLAY, R } from '@/lib/theme';
 import type { Settings, Trip, TripMeta } from '@/lib/types';
 
 export function TripView({
@@ -33,7 +33,7 @@ export function TripView({
           onClick={onEdit}
           role="button"
           tabIndex={0}
-          style={{ font: sans(500, 12.5), padding: '9px 12px', borderRadius: 8, background: C.dark, color: C.darkText, cursor: 'pointer' }}
+          style={{ font: sans(500, 12.5), padding: '9px 12px', borderRadius: R.ctl, background: C.dark, color: C.darkText, cursor: 'pointer' }}
         >
           Edit trip
         </div>
@@ -43,7 +43,7 @@ export function TripView({
         {rangeLong(meta.start, meta.end)} · {plural(trip.days.length, 'day')} · {plural(cityCount(trip), 'city', 'cities')} · {plural(Object.keys(trip.stays).length, 'stay')}
       </div>
       {rows.length > 0 && (
-        <div style={{ margin: '20px 16px 0', padding: '16px 18px', borderRadius: 12, border: `1px solid ${rule(0.12)}`, display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div style={{ margin: '20px 16px 0', padding: '16px 18px', borderRadius: R.card, boxShadow: CLAY.soft, display: 'flex', flexDirection: 'column', gap: 10 }}>
           {rows.map((r, i) => (
             <div key={i} style={{ display: 'contents' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -73,9 +73,9 @@ export function TripView({
                 gridTemplateColumns: '52px minmax(0,1fr)',
                 gap: 14,
                 padding: '14px 16px',
-                borderRadius: 12,
+                borderRadius: R.card,
                 background: C.card,
-                border: `1px solid ${rule(0.09)}`,
+                boxShadow: CLAY.soft,
                 cursor: 'pointer',
               }}
             >
@@ -90,7 +90,7 @@ export function TripView({
                     Day {d.num} · {d.mode}
                   </span>
                   {d.draft && (
-                    <span style={{ font: mono(500, 10), letterSpacing: '.06em', textTransform: 'uppercase', padding: '3px 6px', borderRadius: 4, background: C.draftBg, color: C.draftFg }}>
+                    <span style={{ font: mono(500, 10), letterSpacing: '.06em', textTransform: 'uppercase', padding: '3px 6px', borderRadius: R.pill, background: C.draftBg, color: C.draftFg }}>
                       Draft
                     </span>
                   )}

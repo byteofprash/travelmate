@@ -51,16 +51,16 @@ export function save(p: Persisted) {
   } catch {}
 }
 
-export const DEFAULT_SETTINGS: Settings = { accent: '#EC0016', cardStyle: 'cards', showTransport: true };
+export const DEFAULT_SETTINGS: Settings = { accent: '#D8352A', cardStyle: 'cards', showTransport: true };
 
-const LEGACY_ACCENTS: Record<string, string> = { '#A8492A': '#EC0016', '#2F6F73': '#408335', '#4A5B8C': '#1455C0', '#8A6A2F': '#814997' };
+const LEGACY_ACCENTS: Record<string, string> = { '#A8492A': '#D8352A', '#2F6F73': '#3E8A4F', '#4A5B8C': '#2F6FBF', '#8A6A2F': '#8A56B0', '#EC0016': '#D8352A', '#408335': '#3E8A4F', '#1455C0': '#2F6FBF', '#814997': '#8A56B0' };
 
 export function loadSettings(): Settings {
   try {
     const raw = localStorage.getItem(SETTINGS_KEY);
     if (raw) {
       const s = { ...DEFAULT_SETTINGS, ...JSON.parse(raw) } as Settings;
-      s.accent = LEGACY_ACCENTS[s.accent.toUpperCase()] ?? s.accent; // accents saved before the DB-style palette
+      s.accent = LEGACY_ACCENTS[s.accent.toUpperCase()] ?? s.accent; // accents saved before the clay palette
       return s;
     }
   } catch {}

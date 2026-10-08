@@ -2,7 +2,7 @@
 
 The one app you open while travelling: where you're going today, how you're getting there and where you're sleeping tonight. Paste itineraries, booking emails or notes and Claude turns them into days, stops, commutes, stays and journeys, then edits them from plain-English requests.
 
-Built from the Claude Design handoff in [`docs/design/`](docs/design/HANDOFF.md). Spacing and copy follow the mockup; the colours were changed to a Deutsche Bahn-style palette and the typeface to Nunito Sans at the owner's request (see Colours and Fonts).
+Built from the Claude Design handoff in [`docs/design/`](docs/design/HANDOFF.md). Spacing and copy follow the mockup; the visual style is claymorphism and the typeface is Nunito Sans at the owner's request (see Design and Fonts).
 
 ## Stack
 
@@ -51,15 +51,16 @@ npm run dev
 - **900px and wider (desktop):** the tab bar becomes a collapsible left sidebar with icons and names (Trips, then Today, Trip and Map for the open trip, and Settings). The centre column keeps the same cards but at the phone's size (1x, and 1.1x on screens 1400px and wider). Sheets open as a drawer on the right instead of from the bottom. The sidebar's collapsed state is remembered.
 - The breakpoint lives in two places that must match: `app/globals.css` and `DESKTOP_QUERY` in `components/App.tsx`.
 
-## Colours
+## Design: claymorphism
 
-The palette is in the style of Deutsche Bahn's design system: signature red `#EC0016` (hover `#C00010`) on cool greys, with blue `#1455C0` for flights and arrivals, green `#408335` for stays and orange `#AD6600` for meals. It's defined in one place, `lib/theme.ts` (the `C` and `TAGC` objects and the Settings accent choices), so re-theming means editing that file. The map tiles are desaturated in `app/globals.css` to sit on the greys.
+The app uses a claymorphic look: soft, puffy, borderless objects on a warm cream base, lit from the top-left. Everything is defined in `lib/theme.ts` (the `C`, `TAGC`, `TAGBG`, `CLAY` and `R` objects) plus the matching rules in `app/globals.css`, so re-theming means editing those two files.
 
-The formerly charcoal surfaces (the theme card, planned-trip cards, primary buttons, active tabs and chips, selected days and stay nights) use the accent colour, so they are DB red by default and follow whatever accent is chosen in Settings. It is set as the `--accent` CSS variable on the app root. The toast and the JSON viewer stay neutral charcoal.
-
-Corner radii follow DB's scale (8px for controls, 12px for cards, 16px for sheets, 4px for small tags). Icon-only buttons are rounded squares, while map markers, timeline dots and the accent swatches stay round.
-
-This is inspired by DB's public colour values only. DB's brand assets (logo, fonts, icons) are licensed to DB contractors, so none are used here, and the app isn't affiliated with Deutsche Bahn. Accent colours saved in a browser before this change are mapped to their new equivalents on load.
+- **Palette:** cream base `#F4EBDD`, clay cards `#FCF7EE`, warm brown ink `#3A2F2A`. Tags are deep text on a pastel pill (blue for flights and arrivals, green for stays, orange for meals, red for visits). Text colours are chosen to stay readable on cream.
+- **Clay shadows (`CLAY`):** `raised` and `soft` combine an outer drop shadow with an inner top-left highlight and an inner bottom-right shade; `inset` is the pressed or well look (inputs, the "guided" pill, the active tab); `accent` is the same raised shadow tinted from `--accent`.
+- **Shapes (`R`):** 24px cards, 16px controls, pill buttons and chips, 32px sheets. No hairline borders; depth comes from shadow. The phone tab bar floats as a rounded clay pill.
+- **Accent:** the accent picker in Settings still works. It sets `--accent`, which drives the hero card, primary buttons, selected days and the tinted shadows. The defaults are a clay red `#D8352A` and three alternatives; accents saved from earlier palettes are mapped on load.
+- **Map:** Leaflet tiles are tinted warm, markers are shaded "beads" and the zoom control is a clay pill.
+- Cards lift on hover and press down when tapped; this is switched off for `prefers-reduced-motion`.
 
 ## Fonts
 
@@ -75,7 +76,7 @@ The whole app uses one family, **Nunito Sans** (SIL Open Font License 1.1), bund
 
 ## Maps
 
-The Map tab uses **OpenStreetMap** through Leaflet, with the tiles muted to match the paper palette. Google Maps was ruled out because it needs a billing account and API key and charges beyond a free allowance. There's no key to configure. Day mode fits the day's stops with dashed routes; Whole trip mode shows one marker per city, with road legs solid and flights dotted.
+The Map tab uses **OpenStreetMap** through Leaflet, with the tiles tinted warm to match the cream palette. Google Maps was ruled out because it needs a billing account and API key and charges beyond a free allowance. There's no key to configure. Day mode fits the day's stops with dashed routes; Whole trip mode shows one marker per city, with road legs solid and flights dotted.
 
 The public OpenStreetMap tile server has a [usage policy](https://operations.osmfoundation.org/policies/tiles/) meant for light use. If the app gets real traffic, point `NEXT_PUBLIC_MAP_TILES` (and `NEXT_PUBLIC_MAP_ATTRIBUTION`) at a tile provider such as MapTiler or Stadia, whose free tiers need a key.
 

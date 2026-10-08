@@ -12,7 +12,7 @@ import { applyOps, type EditResult } from '@/lib/ops';
 import { DEFAULT_SETTINGS, load, loadSettings, sampleTrip, save, saveSettings, type Persisted } from '@/lib/store';
 import { todayIndex } from '@/lib/derive';
 import { toISO, toMin } from '@/lib/format';
-import { C, rule, sans } from '@/lib/theme';
+import { C, rule, sans, CLAY, R } from '@/lib/theme';
 import type { Settings, Sheet, Stop, Trip } from '@/lib/types';
 
 type Tab = 'home' | 'today' | 'trip' | 'map';
@@ -403,17 +403,17 @@ export default function App() {
           style={{
             display: effTab === 'home' || desktop ? 'none' : 'grid',
             position: 'absolute',
-            left: 0,
-            right: 0,
-            bottom: 0,
+            left: 16,
+            right: 16,
+            bottom: 'calc(12px + var(--safe-bottom))',
             zIndex: 20,
-            height: 'var(--tabbar)',
-            background: 'rgba(255,255,255,.96)',
-            backdropFilter: 'blur(12px)',
-            WebkitBackdropFilter: 'blur(12px)',
-            borderTop: `1px solid ${rule(0.1)}`,
+            height: 60,
+            borderRadius: 30,
+            background: C.card,
+            boxShadow: CLAY.raised,
             gridTemplateColumns: 'repeat(3,1fr)',
-            padding: '0 8px var(--safe-bottom)',
+            padding: 6,
+            gap: 6,
           }}
         >
           {tabs.map(([k, l, Icon]) => {
@@ -427,10 +427,9 @@ export default function App() {
                 aria-label={l}
                 title={l}
                 aria-current={active ? 'page' : undefined}
-                style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 5, cursor: 'pointer', color: active ? C.ink : C.muted2 }}
+                style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4, cursor: 'pointer', borderRadius: 24, color: active ? settings.accent : C.muted, background: active ? C.paper : 'transparent', boxShadow: active ? CLAY.inset : 'none', transition: 'box-shadow .2s, background .2s' }}
               >
-                <Icon size={22} strokeWidth={active ? 1.9 : 1.6} />
-                <div style={{ width: 4, height: 4, borderRadius: 2, background: active ? settings.accent : 'transparent' }} />
+                <Icon size={22} strokeWidth={active ? 2.1 : 1.8} />
               </div>
             );
           })}
@@ -452,7 +451,7 @@ export default function App() {
             opacity: toast ? 1 : 0,
             transition: 'all .3s',
             padding: '10px 16px',
-            borderRadius: 8,
+            borderRadius: R.ctl,
             background: C.charcoal,
             color: C.darkText,
             font: sans(500, 12.5),

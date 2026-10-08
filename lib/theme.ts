@@ -1,47 +1,66 @@
-// Colour palette in the style of Deutsche Bahn's design system: signature red on cool neutrals,
-// with blue, green and orange signal colours. (Inspired by DB's public colour values; no DB assets used.)
+// Claymorphism: a warm cream base with soft pastel objects. Surfaces are puffy, borderless and lit from the
+// top-left (see CLAY below and the .clay classes in app/globals.css). Text stays dark warm brown for contrast.
 export const C = {
-  paper: '#EDEEF0', // page background
-  sheet: '#F3F3F5',
-  card: '#FFFFFF',
-  cardHover: '#F8F8FA',
-  sand: '#E1E2E6', // info boxes, map background
-  draftBg: '#FFEADF',
-  draftFg: '#6F4000',
-  ink: '#16181B',
-  ink2: '#3B3E44',
-  muted: '#5A5E68',
-  muted2: '#727782',
+  paper: '#F4EBDD', // page background
+  sheet: '#F7EFE3',
+  card: '#FCF7EE',
+  cardHover: '#FFFBF4',
+  sand: '#EADDCB', // info boxes, map background
+  draftBg: '#F8D3B0',
+  draftFg: '#6B3A08',
+  ink: '#3A2F2A',
+  ink2: '#52443C',
+  muted: '#6F6058',
+  muted2: '#85766D',
   // "Dark" surfaces (hero cards, primary buttons, active chips and tabs) follow the accent colour, set as
   // the --accent CSS variable on the app root. Text on them is white.
   dark: 'var(--accent)',
   darkText: '#FFFFFF',
-  darkMuted: 'rgba(255,255,255,.88)',
+  darkMuted: 'rgba(255,255,255,.9)',
   darkBody: '#FFFFFF',
-  darkLabel: 'rgba(255,255,255,.8)',
+  darkLabel: 'rgba(255,255,255,.85)',
   onDarkRule: 'rgba(255,255,255,.3)',
-  charcoal: '#222428', // toast and the JSON viewer stay neutral
-  accent: '#EC0016', // DB red
-  nile: '#408335', // stays (green)
-  flight: '#1455C0', // flights and arrivals (blue)
-  meal: '#AD6600', // meals (orange)
-  now: '#EC0016',
-  error: '#C00010',
-  scrim: 'rgba(13,14,17,.45)',
+  charcoal: '#2E2521', // toast and the JSON viewer
+  accent: '#D8352A',
+  nile: '#2F6B3A', // stays (green)
+  flight: '#1F4E8C', // flights and arrivals (blue)
+  meal: '#8A4B0B', // meals (orange)
+  now: '#D8352A',
+  error: '#B3261E',
+  scrim: 'rgba(58,40,30,.4)',
 };
 
-export const ACCENTS = ['#EC0016', '#1455C0', '#408335', '#814997'];
+export const ACCENTS = ['#D8352A', '#2F6FBF', '#3E8A4F', '#8A56B0'];
 
+/** Deep text colours for tags (AA on cream) and the matching pastel pill fills. */
 export const TAGC: Record<string, string> = {
-  'Pick-up': '#3B3E44',
-  Visit: '#EC0016',
-  Meal: '#AD6600',
-  Stay: '#408335',
-  Flight: '#1455C0',
-  Arrival: '#1455C0',
+  'Pick-up': '#52443C',
+  Visit: '#B3261E',
+  Meal: '#8A4B0B',
+  Stay: '#2F6B3A',
+  Flight: '#1F4E8C',
+  Arrival: '#1F4E8C',
+};
+export const TAGBG: Record<string, string> = {
+  'Pick-up': '#E6DACA',
+  Visit: '#F7CFC8',
+  Meal: '#F8D3B0',
+  Stay: '#CBE7CC',
+  Flight: '#C3DBF3',
+  Arrival: '#C3DBF3',
 };
 
-export const rule = (a: number) => `rgba(34,36,40,${a})`;
+export const rule = (a: number) => `rgba(90,60,40,${a})`;
+
+/** Clay shadows: outer drop + top-left highlight + bottom-right shade. */
+export const CLAY = {
+  raised: '0 10px 22px rgba(120,84,52,.20), inset 4px 4px 9px rgba(255,255,255,.85), inset -4px -5px 10px rgba(168,128,92,.22)',
+  soft: '0 5px 12px rgba(120,84,52,.16), inset 3px 3px 6px rgba(255,255,255,.8), inset -3px -3px 7px rgba(168,128,92,.2)',
+  inset: 'inset 4px 4px 9px rgba(150,110,76,.28), inset -3px -3px 7px rgba(255,255,255,.8)',
+  /** Accent-tinted raised surface (primary buttons, selected chips, hero card). */
+  accent: '0 10px 22px color-mix(in srgb, var(--accent) 38%, transparent), inset 4px 4px 9px rgba(255,255,255,.38), inset -4px -5px 10px rgba(0,0,0,.2)',
+};
+export const R = { card: 24, ctl: 16, pill: 999, tag: 999, sheet: 32 };
 
 // One family across the whole app: Nunito Sans (from @fontsource-variable/nunito-sans), falling back to the
 // bundled Liberation Sans and then Arial-metric fonts (for glyphs Nunito Sans lacks, such as the → arrow).

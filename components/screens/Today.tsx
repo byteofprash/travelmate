@@ -5,14 +5,14 @@ import { CommuteLeg } from '../CommuteLeg';
 import { DaySummary } from '../DaySummary';
 import { WD, addDays, fmtClock, toISO, toMin } from '@/lib/format';
 import { dayBits, dayDate, daySummary, isStop } from '@/lib/derive';
-import { C, F, TAGC, mono, rule, sans, serif } from '@/lib/theme';
+import { C, F, TAGC, mono, rule, sans, serif, CLAY, R } from '@/lib/theme';
 import type { Day, Settings, Stop, Trip, TripMeta } from '@/lib/types';
 
 const iconBtn: React.CSSProperties = {
-  width: 42,
-  height: 42,
-  borderRadius: 8,
-  border: `1px solid ${rule(0.16)}`,
+  width: 46,
+  height: 46,
+  borderRadius: 23,
+  boxShadow: CLAY.soft,
   background: C.card,
   display: 'flex',
   alignItems: 'center',
@@ -98,7 +98,7 @@ export const Today = forwardRef<HTMLDivElement, {
         </div>
       </div>
 
-      <div className="scroll" style={{ display: 'flex', gap: 6, overflowX: 'auto', padding: '14px 22px 4px' }}>
+      <div className="scroll" style={{ display: 'flex', gap: 6, overflowX: 'auto', padding: '10px 22px 22px' }}>
         {strip.map((s) => {
           const sel = s.idx === p.dayIdx;
           const inT = s.idx >= 0;
@@ -108,9 +108,10 @@ export const Today = forwardRef<HTMLDivElement, {
               onClick={() => inT && p.onPickDay(s.idx)}
               style={{
                 flex: 'none',
-                width: 44,
-                padding: '8px 0 9px',
-                borderRadius: 8,
+                width: 48,
+                padding: '10px 0 11px',
+                borderRadius: 24,
+                boxShadow: sel ? CLAY.accent : inT ? CLAY.soft : 'none',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -129,7 +130,7 @@ export const Today = forwardRef<HTMLDivElement, {
         })}
       </div>
 
-      <div style={{ padding: '22px 22px 0' }}>
+      <div style={{ padding: '6px 22px 0' }}>
         <div style={{ font: sans(500, 12), color: accent, letterSpacing: '.02em' }}>
           {p.dayIdx === p.todayIdx ? 'Today · ' : ''}
           {bits.wd} {bits.d} {bits.month}
@@ -141,9 +142,10 @@ export const Today = forwardRef<HTMLDivElement, {
               font: mono(500, 10.5),
               letterSpacing: '.06em',
               textTransform: 'uppercase',
-              padding: '5px 8px',
-              borderRadius: 4,
-              border: `1px solid ${rule(0.18)}`,
+              padding: '5px 12px',
+              borderRadius: R.pill,
+              background: C.sand,
+              boxShadow: CLAY.inset,
               color: C.ink2,
             }}
           >
@@ -164,7 +166,7 @@ export const Today = forwardRef<HTMLDivElement, {
               <div key="now" style={{ display: 'grid', gridTemplateColumns: '62px 18px minmax(0,1fr)', alignItems: 'center', height: 22, margin: '2px 0' }}>
                 <div style={{ font: mono(600, 11.5), color: C.now, textAlign: 'right' }}>{r.time}</div>
                 <div style={{ display: 'flex', justifyContent: 'center' }}>
-                  <div style={{ width: 11, height: 11, borderRadius: 6, background: C.now, boxShadow: '0 0 0 3px rgba(236,0,22,.18)' }} />
+                  <div style={{ width: 11, height: 11, borderRadius: R.ctl, background: C.now, boxShadow: '0 0 0 3px rgba(236,0,22,.18)' }} />
                 </div>
                 <div style={{ height: 2, background: C.now, borderRadius: 1, marginLeft: -4 }} />
               </div>
@@ -177,7 +179,7 @@ export const Today = forwardRef<HTMLDivElement, {
             <div key={it.id} style={{ display: 'grid', gridTemplateColumns: '62px 18px minmax(0,1fr)', alignItems: 'start' }}>
               <div style={{ font: mono(500, 13), textAlign: 'right', paddingTop: cards ? 22 : 6 }}>{it.time}</div>
               <div style={{ display: 'flex', justifyContent: 'center', paddingTop: cards ? 21 : 5 }}>
-                <div style={{ width: 11, height: 11, borderRadius: 6, border: `2px solid ${tc}`, background: C.paper }} />
+                <div style={{ width: 13, height: 13, borderRadius: 7, border: `3px solid ${tc}`, background: C.card, boxShadow: CLAY.soft }} />
               </div>
               <div style={{ margin: cards ? '4px 0 4px 8px' : '0 0 0 8px' }}>
                 <ActivityCard
