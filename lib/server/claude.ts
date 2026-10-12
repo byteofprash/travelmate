@@ -46,10 +46,19 @@ export async function callTool(opts: { system: string; tool: Anthropic.Beta.Beta
     return { input: call.input };
   } catch (err) {
     if (err instanceof Anthropic.RateLimitError) return Response.json({ error: 'rate_limited' }, { status: 429 });
+    if (err instanceof Anthropic.APIConnectionError) {
+      // The server could not reach Anthropic at all (network, DNS, a timeout).
+      console.error('Anthropic connection error', err.message);
+      return Response.json({ error: 'connection' }, { status: 503 });
+    }
     if (err instanceof Anthropic.APIError) {
       console.error('Anthropic API error', err.status, err.message, `request-id=${err.requestID ?? 'none'}`);
-      // 5xx is Anthropic's side and worth retrying; anything else is a problem with the request or key.
-      return Response.json({ error: 'upstream', status: err.status ?? null }, { status: err.status && err.status >= 500 ? 503 : 502 });
+      // 5xx is Anthropic's side and worth retrying; anything else is a problem with the request or key. `detail` is
+      // Anthropic's own error message (it never contains the key), so the app can say what is wrong.
+      return Response.json(
+        { error: 'upstream', status: err.status ?? null, detail: String(err.message).slice(0, 300), requestId: err.requestID ?? null },
+        { status: err.status && err.status >= 500 ? 503 : 502 },
+      );
     }
     console.error(err);
     return Response.json({ error: 'internal' }, { status: 500 });

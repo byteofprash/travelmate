@@ -12,6 +12,7 @@ import { MapView } from './screens/MapView';
 import { DaySheet, EditSheet, InboxSheet, JourneysSheet, NewTripSheet, SettingsSheet, SheetFrame, StaySheet, StaysSheet, StopSheet } from './Sheets';
 import { applyOps, type EditResult } from '@/lib/ops';
 import { authedFetch } from '@/lib/access';
+import { explainFailure } from '@/lib/errors';
 import { buildNewTrip, NewTripResultSchema } from '@/lib/newtrip';
 import { DEFAULT_SETTINGS, emptyTrip, load, loadSettings, sampleTrip, save, saveSettings, type Persisted } from '@/lib/store';
 import { todayIndex } from '@/lib/derive';
@@ -217,10 +218,15 @@ export default function App({ onLock }: { onLock: () => void }) {
     setNewBusy(true);
     setNewErr('');
     try {
+      let res: Response | null = null;
+      try {
+        res = await authedFetch('/api/new-trip', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text, today: todayISO }) });
+      } catch {
+        // No connection: explainFailure(null) says so.
+      }
+      if (!res || !res.ok) return setNewErr(await explainFailure(res, 'Couldn’t create the trip'));
       let out;
       try {
-        const res = await authedFetch('/api/new-trip', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text, today: todayISO }) });
-        if (!res.ok) throw new Error(String(res.status));
         out = NewTripResultSchema.parse(await res.json());
       } catch {
         return setNewErr(NEW_ERR);
@@ -285,12 +291,17 @@ export default function App({ onLock }: { onLock: () => void }) {
     setEditErr('');
     setEditResult(null);
     try {
-      const res = await authedFetch('/api/edit', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ request: text, trip: before, meta: { name: meta.name, start: meta.start, end: meta.end, nights: meta.nights } }),
-      });
-      if (!res.ok) throw new Error(String(res.status));
+      let res: Response | null = null;
+      try {
+        res = await authedFetch('/api/edit', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ request: text, trip: before, meta: { name: meta.name, start: meta.start, end: meta.end, nights: meta.nights } }),
+        });
+      } catch {
+        // No connection: explainFailure(null) says so.
+      }
+      if (!res || !res.ok) return setEditErr(await explainFailure(res, 'Couldn’t update the trip'));
       const out = (await res.json()) as EditResult;
       const n = out.ops.length;
       if (n) {
