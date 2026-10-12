@@ -1,9 +1,9 @@
-import type Anthropic from '@anthropic-ai/sdk';
 import { z } from 'zod';
 import { EditResultSchema } from '@/lib/ops';
 import { SYSTEM_PROMPT } from '@/lib/prompt';
 import { checkAccess } from '@/lib/server/access';
 import { callValidated } from '@/lib/server/claude';
+import { EDIT_TOOL } from '@/lib/server/tool-schemas';
 
 export const runtime = 'nodejs';
 export const maxDuration = 300;
@@ -13,32 +13,6 @@ const RequestSchema = z.object({
   trip: z.unknown(),
   meta: z.object({ name: z.string(), start: z.string(), end: z.string(), nights: z.number() }),
 });
-
-const TOOL: Anthropic.Beta.BetaTool = {
-  name: 'apply_trip_ops',
-  description:
-    'Apply a patch to the trip. summary: one short human-readable sentence per change. ops: the list of operations, in order.',
-  input_schema: {
-    type: 'object',
-    properties: {
-      summary: { type: 'array', items: { type: 'string' } },
-      ops: {
-        type: 'array',
-        items: {
-          type: 'object',
-          properties: {
-            op: {
-              type: 'string',
-              enum: ['update_item', 'add_item', 'remove_item', 'update_day', 'add_day', 'remove_day', 'update_stay', 'add_stay', 'remove_stay', 'add_journey', 'update_journey', 'remove_journey'],
-            },
-          },
-          required: ['op'],
-        },
-      },
-    },
-    required: ['summary', 'ops'],
-  },
-};
 
 export async function POST(req: Request) {
   const denied = await checkAccess(req);
@@ -56,7 +30,7 @@ export async function POST(req: Request) {
     `Trip: ${meta.name}, ${meta.start} to ${meta.end} (${meta.nights} nights). Day 1 is ${meta.start}.\n\n` +
     `Current trip JSON:\n${tripJson}\n\nRequest:\n${request}`;
 
-  const out = await callValidated({ system: SYSTEM_PROMPT, tool: TOOL, content, schema: EditResultSchema });
+  const out = await callValidated({ system: SYSTEM_PROMPT, tool: EDIT_TOOL, content, schema: EditResultSchema });
   if (out instanceof Response) return out;
   return Response.json(out.data);
 }

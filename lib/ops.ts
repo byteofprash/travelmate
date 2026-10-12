@@ -12,6 +12,28 @@ const dropNulls = (v: unknown): unknown =>
     : v && typeof v === 'object'
       ? Object.fromEntries(Object.entries(v).filter(([, x]) => x !== null).map(([k, x]) => [k, dropNulls(x)]))
       : v;
+
+// Models sometimes send a nested list or object as JSON *text* inside a string (for example `"ops": "[{...}]"`). For the
+// keys that are always lists or objects, parse such text (also when wrapped in a ```json fence) and carry on.
+const STRUCT_KEYS = new Set(['ops', 'item', 'day', 'stay', 'journey', 'fields', 'bring', 'nights', 'll', 'via', 'items', 'changes']);
+export function reviveJson(v: unknown, key?: string): unknown {
+  if (typeof v === 'string') {
+    if (!key || !STRUCT_KEYS.has(key)) return v;
+    const t = v.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
+    if (t.startsWith('[') || t.startsWith('{')) {
+      try {
+        return reviveJson(JSON.parse(t), key);
+      } catch {
+        return v; // not JSON after all: let validation report it
+      }
+    }
+    return v;
+  }
+  // Entries of ops / items lists are objects, so an entry sent as JSON text is parsed too.
+  if (Array.isArray(v)) return v.map((x) => reviveJson(x, key === 'ops' || key === 'items' ? key : undefined));
+  if (v && typeof v === 'object') return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, reviveJson(x, k)]));
+  return v;
+}
 const toNum = (v: unknown) => (typeof v === 'string' && v.trim() !== '' && Number.isFinite(Number(v)) ? Number(v) : v);
 const num = () => z.preprocess(toNum, z.number());
 const int = () => z.preprocess(toNum, z.number().int());
@@ -102,10 +124,23 @@ export const OpSchema = z.discriminatedUnion('op', [
 ]);
 export type Op = z.infer<typeof OpSchema>;
 
-export const EditResultSchema = z.object({
-  summary: z.preprocess((v) => (typeof v === 'string' ? [v] : v), z.array(z.string())),
-  ops: z.array(OpSchema),
-});
+const asList = (v: unknown) => {
+  if (typeof v !== 'string') return v;
+  try {
+    const p = JSON.parse(v);
+    if (Array.isArray(p)) return p;
+  } catch {
+    // plain text: a list of one
+  }
+  return [v];
+};
+export const EditResultSchema = z.preprocess(
+  (v) => reviveJson(v),
+  z.object({
+    summary: z.preprocess(asList, z.array(z.string())),
+    ops: z.array(OpSchema),
+  }),
+);
 export type EditResult = z.infer<typeof EditResultSchema>;
 
 const clone = <T,>(o: T): T => JSON.parse(JSON.stringify(o));

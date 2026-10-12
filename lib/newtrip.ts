@@ -1,20 +1,23 @@
 import { z } from 'zod';
 import { addDays, parseISO, toISO, WD } from './format';
-import { applyOps, OpSchema } from './ops';
+import { applyOps, OpSchema, reviveJson } from './ops';
 import type { Trip, TripMeta } from './types';
 
 const ISO = /^\d{4}-\d{2}-\d{2}$/;
 
 /** What Claude returns when asked to create a trip from text (the create_trip tool's input). */
-export const NewTripResultSchema = z.object({
-  missing: z.string().nullable().optional(),
-  name: z.string().default(''),
-  start: z.string().default(''),
-  end: z.string().default(''),
-  summary: z.string().default(''),
-  changes: z.array(z.string()).default([]),
-  ops: z.array(OpSchema).default([]),
-});
+export const NewTripResultSchema = z.preprocess(
+  (v) => reviveJson(v),
+  z.object({
+    missing: z.string().nullable().optional(),
+    name: z.string().default(''),
+    start: z.string().default(''),
+    end: z.string().default(''),
+    summary: z.string().default(''),
+    changes: z.array(z.string()).default([]),
+    ops: z.array(OpSchema).default([]),
+  }),
+);
 export type NewTripResult = z.infer<typeof NewTripResultSchema>;
 
 const MAX_DAYS = 120;
