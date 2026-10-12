@@ -88,6 +88,7 @@ const StayShape = z
     phone: z.string().optional(),
     by: z.string().optional(),
     notes: z.string().optional(),
+    address: z.string().optional(),
     ll: LL.optional(),
     day: int().optional(),
   })

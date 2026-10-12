@@ -71,6 +71,7 @@ const stayProps = {
   phone: str('Phone number, or "Add phone"'),
   by: str(),
   notes: str(),
+  address: str('Street address exactly as on the booking, e.g. "Rua Augusta 1, 1100-053 Lisboa". Omit unless the text states it.'),
   ll,
   day: int('0-based index of a representative day'),
 };

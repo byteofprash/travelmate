@@ -1,6 +1,6 @@
 import { EXTRAS } from './extras';
 import { MON, MONTHS, WD, addDays, durMin, fmtDur, isPlaceholder, parseISO, plural, toISO, toMin } from './format';
-import type { Day, Journey, Leg, Stop, Trip, TripMeta } from './types';
+import type { Day, Journey, Leg, Stay, Stop, Trip, TripMeta } from './types';
 
 export const isStop = (i: { kind: string }): i is Stop => i.kind === 'stop';
 export const isLeg = (i: { kind: string }): i is Leg => i.kind === 'leg';
@@ -131,4 +131,21 @@ export function flightStatus(trip: Trip): FlightStatus {
   const missing = order.filter((m) => flights.some((f) => f.missing.includes(m)));
   const state = flights.length === 0 ? 'none' : complete === flights.length ? 'complete' : 'partial';
   return { state, total: flights.length, complete, missing, flights };
+}
+
+/* ---------- Stay addresses and Google Maps ---------- */
+
+/** A Google Maps search link for any text (an address, a place name). */
+export const mapsSearchUrl = (query: string) => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+
+/** The stay's street address, or null while it is missing or a placeholder. */
+export function stayAddress(s: Stay): string | null {
+  const a = (s.address ?? '').trim();
+  return isPlaceholder(a) ? null : a;
+}
+
+/** Google Maps link for a stay: the hotel's name plus its address, which lands on the right listing. Null without an address. */
+export function stayMapsUrl(s: Stay): string | null {
+  const a = stayAddress(s);
+  return a ? mapsSearchUrl(`${s.name}, ${a}`) : null;
 }

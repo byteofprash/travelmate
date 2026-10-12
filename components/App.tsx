@@ -282,6 +282,15 @@ export default function App({ onLock }: { onLock: () => void }) {
     setSheet({ type: 'add', tripId: trip.id });
   };
 
+  /** Open the editor ready for the address of one stay, with the hotel already named. */
+  const addAddress = (id: string) => {
+    const name = trip.stays[id]?.name ?? 'the stay';
+    resetEditUi();
+    setEditHint('stays');
+    setEditText(`Address of ${name}: `);
+    setSheet({ type: 'add', tripId: trip.id });
+  };
+
   const openStop = (s: Stop) => {
     if (s.stay && trip.stays[s.stay]) return setSheet({ type: 'stay', id: s.stay });
     setDraftTime(toMin(s.time) != null ? s.time : '');
@@ -441,7 +450,7 @@ export default function App({ onLock }: { onLock: () => void }) {
       case 'journeys':
         return <JourneysSheet meta={meta} trip={trip} dayIdx={di} onOpen={(d) => go('today', { dayIdx: d })} />;
       case 'stays':
-        return <StaysSheet trip={trip} dayIdx={di} accent={settings.accent} onOpen={(id) => setSheet({ type: 'stay', id })} />;
+        return <StaysSheet trip={trip} dayIdx={di} accent={settings.accent} onOpen={(id) => setSheet({ type: 'stay', id })} onAddAddress={addAddress} />;
       case 'add':
         return (
           <EditSheet

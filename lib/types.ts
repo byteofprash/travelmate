@@ -56,6 +56,8 @@ export interface Stay {
   phone: string;
   by: string;
   notes: string;
+  /** Street address as on the booking; shown in the Stays list and linked to Google Maps. */
+  address?: string;
   ll?: LatLon;
   day?: number;
 }

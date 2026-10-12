@@ -1,12 +1,12 @@
 import { useState, type ReactNode } from 'react';
 import type { SyncApi } from './useSync';
 import type { InboxItem } from '@/lib/inbox';
-import { Check, X } from 'lucide-react';
+import { ArrowUpRight, Check, MapPin, X } from 'lucide-react';
 import { MODES } from './CommuteLeg';
 import { isPlaceholder, plural, rangeShort } from '@/lib/format';
-import { dayBits, daySummary, flightGaps, homeCity, isFlight, nightCount, operator, staysInOrder } from '@/lib/derive';
+import { dayBits, daySummary, flightGaps, homeCity, isFlight, nightCount, operator, stayAddress, stayMapsUrl, staysInOrder } from '@/lib/derive';
 import { PRESETS, C, TAGC, mono, rule, sans, serif, CLAY, R } from '@/lib/theme';
-import type { Day, Leg, Settings, Stop, Trip, TripMeta } from '@/lib/types';
+import type { Day, Leg, Settings, Stay, Stop, Trip, TripMeta } from '@/lib/types';
 
 /* ---------- shared bits ---------- */
 
@@ -126,6 +126,7 @@ export function StaySheet({ meta, trip, id, accent, onMap, onDone }: { meta: Tri
         })}
       </div>
       <div style={{ marginTop: 18, borderTop: `1px solid ${rule(0.1)}` }}>
+        <KV w={104} size={13.5} k="ADDRESS" v={stayAddress(s) ? <MapsLink stay={s} /> : val('Add address')} />
         <KV w={104} size={13.5} k="CHECK-IN" v={val(s.inShort)} />
         <KV w={104} size={13.5} k="CHECK-OUT" v={val(s.outShort)} />
         <KV w={104} size={13.5} k="NIGHTS" v={String(s.nights.length)} />
@@ -263,7 +264,7 @@ export function JourneysSheet({ meta, trip, dayIdx, onOpen }: { meta: TripMeta; 
 
 /* ---------- Stays ---------- */
 
-export function StaysSheet({ trip, dayIdx, accent, onOpen }: { trip: Trip; dayIdx: number; accent: string; onOpen: (id: string) => void }) {
+export function StaysSheet({ trip, dayIdx, accent, onOpen, onAddAddress }: { trip: Trip; dayIdx: number; accent: string; onOpen: (id: string) => void; onAddAddress: (id: string) => void }) {
   const stays = staysInOrder(trip);
   return (
     <>
@@ -286,12 +287,57 @@ export function StaysSheet({ trip, dayIdx, accent, onOpen }: { trip: Trip; dayId
               </div>
               <div style={{ marginTop: 6, font: serif(18, 1.2) }}>{s.name}</div>
               <div style={{ marginTop: 3, font: sans(400, 12, 1.3), color: C.muted }}>{s.inShort} → {s.outShort}</div>
+              <AddressLine stay={s} onAdd={() => onAddAddress(s.id)} />
             </div>
             <div style={{ font: serif(18, 1), color: C.muted }}>→</div>
           </div>
         ))}
       </div>
     </>
+  );
+}
+
+/** The stay's address as a Google Maps link (opens in a new tab); it does not open the card it sits in. */
+function MapsLink({ stay }: { stay: Stay }) {
+  const url = stayMapsUrl(stay);
+  const address = stayAddress(stay);
+  if (!url || !address) return null;
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      onClick={(e) => e.stopPropagation()}
+      aria-label={`Open ${stay.name} in Google Maps: ${address}`}
+      style={{ color: C.ink, textDecoration: 'underline', textDecorationColor: 'color-mix(in srgb, var(--accent) 60%, transparent)', textUnderlineOffset: 3, textDecorationThickness: 2, overflowWrap: 'anywhere' }}
+    >
+      {address}
+      <ArrowUpRight size={13} strokeWidth={2.4} color="var(--accent)" style={{ marginLeft: 3, verticalAlign: '-1px' }} />
+    </a>
+  );
+}
+
+/** One line on a stay card: the address (linked to Google Maps), or an "Add address" prompt while it is missing. */
+function AddressLine({ stay, onAdd }: { stay: Stay; onAdd: () => void }) {
+  const has = !!stayAddress(stay);
+  return (
+    <div style={{ marginTop: 8, display: 'flex', alignItems: 'flex-start', gap: 6, font: sans(500, 12.5, 1.4) }}>
+      <MapPin size={14} strokeWidth={2.2} color={has ? 'var(--accent)' : C.muted2} style={{ flex: 'none', marginTop: 2 }} />
+      {has ? (
+        <MapsLink stay={stay} />
+      ) : (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onAdd();
+          }}
+          style={{ border: 0, background: 'transparent', padding: 0, font: 'inherit', color: C.muted, cursor: 'pointer', textAlign: 'left', textDecoration: 'underline dashed', textUnderlineOffset: 3 }}
+        >
+          Add address
+        </button>
+      )}
+    </div>
   );
 }
 
