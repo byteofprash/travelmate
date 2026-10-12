@@ -36,8 +36,8 @@ export async function writeDoc(r: Redis, doc: StoredDoc) {
 
 /** Constant-time comparison of a secret sent by a caller with the one configured on the server. */
 export function secretMatches(sent: string | null, secret: string | undefined): boolean {
-  if (!secret || !sent) return false;
-  const h = (s: string) => createHash('sha256').update(s).digest();
+  if (!secret?.trim() || !sent) return false;
+  const h = (s: string) => createHash('sha256').update(s.trim()).digest();
   return timingSafeEqual(h(sent), h(secret));
 }
 

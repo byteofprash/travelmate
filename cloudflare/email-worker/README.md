@@ -9,11 +9,15 @@ which puts them in the in-app inbox. Nothing is added to a trip until you choose
    ```bash
    cd cloudflare/email-worker
    npm install
-   # edit wrangler.toml: INBOUND_URL (your Vercel URL + /api/inbound) and ALLOWED_SENDERS (the address you forward from)
    npx wrangler login
-   npx wrangler secret put INBOUND_SECRET     # paste the same value you set as INBOUND_SECRET on Vercel
    npx wrangler deploy
+   npx wrangler secret put INBOUND_SECRET     # paste the same value you set as INBOUND_SECRET on Vercel
    ```
+   Then add the two plain variables, `INBOUND_URL` (your app's address plus `/api/inbound`) and `ALLOWED_SENDERS` (the address you
+   forward from), in the dashboard: Worker → Settings → Variables and Secrets. (The deploy keeps dashboard values: see `keep_vars` in
+   `wrangler.toml`. You can also put them in `wrangler.toml` under `[vars]`, but then they are committed to the repo.)
+   If you deploy from GitHub instead of the command line, skip the commands and set `INBOUND_URL`, `ALLOWED_SENDERS` and the
+   `INBOUND_SECRET` secret in the same place.
 2. **Turn on Email Routing** for your domain: Cloudflare dashboard → your domain → Email → Email Routing → Enable
    (it adds the MX and SPF records for you).
 3. **Create the address:** Email Routing → Routing rules → Create address → e.g. `trips@yourdomain.com` →
@@ -37,8 +41,11 @@ Sending to this address does not forward the email anywhere else; the worker onl
 | Message | Meaning |
 | --- | --- |
 | `Sender not allowed` | The sender is not in `ALLOWED_SENDERS`. Use exactly the address you forward from. |
-| `Could not deliver (401)` | `INBOUND_SECRET` on Cloudflare does not match the one on Vercel. |
-| `Could not deliver (503)` | `INBOUND_SECRET` or the database is not set on Vercel, or the app was not redeployed after adding them. |
+| `Could not deliver (401 bad-secret)` | The app got the request but `INBOUND_SECRET` on Cloudflare does not match the one on Vercel (check for typos, extra characters, and that it is the Vercel Production environment, then redeploy Vercel). |
+| `Could not deliver (401 blocked-by-vercel-protection)` | Vercel is blocking the request before it reaches the app. `INBOUND_URL` points at a protected deployment (often a preview URL). Use the production URL, or turn off Deployment Protection for it. |
+| `Could not deliver (404)` | `INBOUND_URL` has the wrong address or path. It must end in `/api/inbound`. |
+| `Worker setting INBOUND_URL is not set` / `Worker secret INBOUND_SECRET is not set` | The worker is missing that setting. Add it in the dashboard (Worker → Settings → Variables and Secrets). |
+| `Could not deliver (503 …)` | `no-secret`: `INBOUND_SECRET` is not set on Vercel. `no-storage`: no database is connected. Add them and redeploy. (503 is retried, so the sender sees a temporary failure rather than a bounce.) |
 | `The email has no readable text` | The email has no text part (for example, image only). |
 | `Message too large` | Over 5 MB. |
 

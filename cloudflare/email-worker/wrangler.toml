@@ -2,11 +2,17 @@ name = "travelmate-email"
 main = "src/index.ts"
 compatibility_date = "2025-01-01"
 
-# The two settings below are plain variables. The secret is NOT stored here: set it with
-#   npx wrangler secret put INBOUND_SECRET
-[vars]
-# Where the app receives emails.
-INBOUND_URL = "https://YOUR-APP.vercel.app/api/inbound"
-# Comma-separated addresses allowed to send to this worker (the address you forward from). Empty allows anyone
-# who knows the routing address, so set it.
-ALLOWED_SENDERS = "you@example.com"
+# Keep the settings you enter in the Cloudflare dashboard (Worker → Settings → Variables and Secrets) when the worker
+# is deployed again. Without this, a deploy replaces dashboard values with whatever is in this file.
+keep_vars = true
+
+# Set these in the dashboard as plain variables (or uncomment and fill them in here, but then they are committed
+# to the repo and override the dashboard):
+#   INBOUND_URL      your app's address plus /api/inbound, e.g. https://your-app.vercel.app/api/inbound
+#   ALLOWED_SENDERS  comma-separated addresses allowed to send to this worker (the address you forward from)
+# And this one as a Secret, never in this file:
+#   INBOUND_SECRET   the same value as INBOUND_SECRET on Vercel
+#
+# [vars]
+# INBOUND_URL = "https://YOUR-APP.vercel.app/api/inbound"
+# ALLOWED_SENDERS = "you@example.com"

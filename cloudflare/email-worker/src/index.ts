@@ -39,6 +39,10 @@ const norm = (s: string) => s.trim().toLowerCase();
 
 export default {
   async email(message: ForwardableEmailMessage, env: Env): Promise<void> {
+    // Say plainly when the worker itself is not set up, instead of failing later with a confusing error.
+    if (!env.INBOUND_URL || /YOUR-APP/i.test(env.INBOUND_URL)) return message.setReject('Worker setting INBOUND_URL is not set');
+    if (!env.INBOUND_SECRET?.trim()) return message.setReject('Worker secret INBOUND_SECRET is not set');
+
     const allowed = (env.ALLOWED_SENDERS ?? '').split(',').map(norm).filter(Boolean);
     if (message.rawSize > MAX_RAW) return message.setReject('Message too large');
 
@@ -54,11 +58,22 @@ export default {
 
     const res = await fetch(env.INBOUND_URL, {
       method: 'POST',
-      headers: { 'content-type': 'application/json', 'x-inbound-secret': env.INBOUND_SECRET },
+      headers: { 'content-type': 'application/json', 'x-inbound-secret': env.INBOUND_SECRET.trim() },
       body: JSON.stringify({ from: mail.from?.address ?? message.from, subject: mail.subject ?? '', date: mail.date ?? null, text }),
     });
+    if (res.ok) return;
+
+    // Work out why the app said no, so the bounce (and the worker logs) name the cause.
+    const body = await res.text().catch(() => '');
+    let why = '';
+    try {
+      why = (JSON.parse(body) as { code?: string }).code ?? ''; // the app's own error code, e.g. bad-secret
+    } catch {
+      if (/authentication required|vercel authentication|deployment protection/i.test(body)) why = 'blocked-by-vercel-protection';
+    }
+    console.log(`inbound ${res.status} ${why} ${body.slice(0, 200)}`);
     // A server problem is worth retrying (throwing makes Cloudflare report a temporary failure); anything else is final.
-    if (res.status >= 500) throw new Error(`App returned ${res.status}`);
-    if (!res.ok) message.setReject(`Could not deliver (${res.status})`);
+    if (res.status >= 500) throw new Error(`App returned ${res.status} ${why}`.trim());
+    message.setReject(`Could not deliver (${res.status}${why ? ' ' + why : ''})`);
   },
 };
