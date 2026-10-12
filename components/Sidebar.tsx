@@ -106,8 +106,8 @@ export function Sidebar({
                 </div>
               </div>
             )}
-            <Item icon={CalendarDays} label="Today" active={tab === 'today'} collapsed={collapsed} onClick={() => onGo('today')} />
             <Item icon={Route} label="Trip" active={tab === 'trip'} collapsed={collapsed} onClick={() => onGo('trip')} />
+            <Item icon={CalendarDays} label="Today" active={tab === 'today'} collapsed={collapsed} onClick={() => onGo('today')} />
             <Item icon={MapIcon} label="Map" active={tab === 'map'} collapsed={collapsed} onClick={() => onGo('map')} />
           </>
         )}

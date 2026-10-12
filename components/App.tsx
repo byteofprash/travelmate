@@ -187,7 +187,7 @@ export default function App({ onLock }: { onLock: () => void }) {
     resetEditUi();
     if (t.days.length) {
       const ti = todayIndex(m, t, todayISO);
-      go('today', { dayIdx: ti >= 0 ? ti : 0 });
+      go('trip', { dayIdx: ti >= 0 ? ti : 0 });
     } else {
       setEditText('');
       setSheet({ type: 'add', tripId: id });
@@ -203,7 +203,7 @@ export default function App({ onLock }: { onLock: () => void }) {
     setNewErr('');
     if (t.days.length) {
       const ti = todayIndex(m, t, todayISO);
-      go('today', { dayIdx: ti >= 0 ? ti : 0 });
+      go('trip', { dayIdx: ti >= 0 ? ti : 0 });
       flash('Trip created');
     } else {
       setEditText('');
@@ -446,8 +446,8 @@ export default function App({ onLock }: { onLock: () => void }) {
   };
 
   const tabs: [Tab, string, LucideIcon][] = [
-    ['today', 'Today', CalendarDays],
     ['trip', 'Trip', Route],
+    ['today', 'Today', CalendarDays],
     ['map', 'Map', MapIcon],
   ];
 
