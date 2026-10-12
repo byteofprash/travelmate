@@ -1,3 +1,4 @@
+import { authedFetch } from './access';
 import type { Persisted } from './store';
 
 /** What is synced: the trips and their index. Undo history and settings stay on each device. */
@@ -13,7 +14,6 @@ export function hash(s: string): string {
   return (h >>> 0).toString(36) + ':' + s.length;
 }
 
-const CODE_KEY = 'tc-access-v1';
 const META_KEY = 'tc-sync-v1';
 
 export interface SyncMeta {
@@ -21,19 +21,6 @@ export interface SyncMeta {
   hash: string; // hash of the trips as they were at that moment
 }
 
-export const readCode = () => {
-  try {
-    return localStorage.getItem(CODE_KEY) ?? '';
-  } catch {
-    return '';
-  }
-};
-export const writeCode = (c: string) => {
-  try {
-    if (c) localStorage.setItem(CODE_KEY, c);
-    else localStorage.removeItem(CODE_KEY);
-  } catch {}
-};
 export const readMeta = (): SyncMeta | null => {
   try {
     const raw = localStorage.getItem(META_KEY);
@@ -60,9 +47,9 @@ export class SyncError extends Error {
   }
 }
 
-async function call(code: string, init: RequestInit): Promise<Response> {
+async function call(init: RequestInit): Promise<Response> {
   try {
-    return await fetch('/api/state', { ...init, cache: 'no-store', headers: { 'content-type': 'application/json', 'x-access-code': code } });
+    return await authedFetch('/api/state', { ...init, cache: 'no-store', headers: { 'content-type': 'application/json' } });
   } catch {
     throw new SyncError('No connection.', 'offline');
   }
@@ -79,15 +66,15 @@ async function fail(res: Response): Promise<never> {
   throw new SyncError(msg, 'server');
 }
 
-export async function pull(code: string): Promise<RemoteDoc> {
-  const res = await call(code, { method: 'GET' });
+export async function pull(): Promise<RemoteDoc> {
+  const res = await call({ method: 'GET' });
   if (!res.ok) await fail(res);
   return res.json();
 }
 
 /** Save. Resolves `{ ok: true, rev }`, or `{ ok: false, remote }` if the server moved on since `baseRev`. */
-export async function push(code: string, baseRev: number, p: Pick<Persisted, 'index' | 'trips'>) {
-  const res = await call(code, { method: 'PUT', body: JSON.stringify({ baseRev, data: { index: p.index, trips: p.trips } }) });
+export async function push(baseRev: number, p: Pick<Persisted, 'index' | 'trips'>) {
+  const res = await call({ method: 'PUT', body: JSON.stringify({ baseRev, data: { index: p.index, trips: p.trips } }) });
   if (res.status === 409) return { ok: false as const, remote: (await res.json()) as RemoteDoc };
   if (!res.ok) await fail(res);
   const j = (await res.json()) as { rev: number };

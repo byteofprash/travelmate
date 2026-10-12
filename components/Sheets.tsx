@@ -284,11 +284,12 @@ export function StaysSheet({ trip, dayIdx, accent, onOpen }: { trip: Trip; dayId
 
 export function EditSheet({
   meta, trip, text, busy, err, result, canUndo, showData, examples,
-  onText, onApply, onUndo, onToggleData, onReset,
+  onText, onApply, onUndo, onToggleData, onReset, onDelete, confirmDelete, onConfirmDelete,
 }: {
   meta: TripMeta; trip: Trip; text: string; busy: boolean; err: string;
   result: { summary: string[]; n: number } | null; canUndo: boolean; showData: boolean; examples: string[];
-  onText: (v: string) => void; onApply: () => void; onUndo: () => void; onToggleData: () => void; onReset: () => void;
+  onText: (v: string) => void; onApply: () => void; onUndo: () => void; onToggleData: () => void; onReset: () => void; onDelete: () => void;
+  confirmDelete: boolean; onConfirmDelete: (v: boolean) => void;
 }) {
   const disabled = busy || !text.trim();
   const empty = trip.days.length === 0;
@@ -352,6 +353,27 @@ export function EditSheet({
       <div style={{ marginTop: 18, paddingTop: 14, borderTop: `1px solid ${rule(0.1)}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div onClick={onToggleData} role="button" tabIndex={0} style={{ font: sans(500, 12.5), cursor: 'pointer' }}>{showData ? 'Hide trip data' : 'View trip data (JSON)'}</div>
         <div onClick={onReset} role="button" tabIndex={0} style={{ font: sans(400, 12.5), color: C.muted, cursor: 'pointer' }}>Reset to original</div>
+      </div>
+      <div style={{ marginTop: 14, paddingTop: 14, borderTop: `1px solid ${rule(0.1)}` }}>
+        {!confirmDelete ? (
+          <button type="button" onClick={() => onConfirmDelete(true)} style={{ border: 0, background: 'transparent', padding: '6px 0', font: sans(700, 13), color: C.error, cursor: 'pointer' }}>
+            Delete this trip
+          </button>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <div style={{ font: sans(400, 12.5, 1.4), color: C.ink2 }}>
+              Delete {meta.name} and all of its days, stays and journeys? This also removes it from your other devices and cannot be undone.
+            </div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button type="button" onClick={onDelete} style={{ flex: 1, padding: '12px 14px', border: 0, borderRadius: R.pill, background: C.error, color: '#fff', boxShadow: CLAY.soft, font: sans(700, 13), cursor: 'pointer' }}>
+                Yes, delete trip
+              </button>
+              <button type="button" onClick={() => onConfirmDelete(false)} style={{ flex: 1, padding: '12px 14px', border: 0, borderRadius: R.pill, background: C.card, color: C.ink, boxShadow: CLAY.soft, font: sans(700, 13), cursor: 'pointer' }}>
+                Keep it
+              </button>
+            </div>
+          </div>
+        )}
       </div>
       {showData && (
         <pre style={{ margin: '10px 0 0', maxHeight: 260, overflow: 'auto', padding: 12, borderRadius: R.ctl, background: C.charcoal, color: '#EADDCB', font: mono(400, 10.5, 1.5), whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
@@ -486,45 +508,27 @@ export function InboxSheet({ items, trips, onPick, onDismiss }: { items: InboxIt
 /* ---------- Settings ---------- */
 
 const SYNC_LABEL: Record<SyncApi['status'], string> = {
-  off: 'Not syncing',
   syncing: 'Syncing…',
   synced: 'Up to date',
   offline: 'Offline: changes are saved on this device and will sync when you are back online',
   conflict: 'Needs your choice',
   error: 'Problem',
 };
-const SYNC_DOT: Record<SyncApi['status'], string> = { off: '#A8998E', syncing: '#C79A2E', synced: '#3E8A4F', offline: '#C79A2E', conflict: '#D8352A', error: '#D8352A' };
+const SYNC_DOT: Record<SyncApi['status'], string> = { syncing: '#C79A2E', synced: '#3E8A4F', offline: '#C79A2E', conflict: '#D8352A', error: '#D8352A' };
 
-/** Settings → Sync: the access code, the current state and, after a clash, the choice of which copy to keep. */
-function SyncSection({ sync }: { sync: SyncApi }) {
-  const [draft, setDraft] = useState(sync.code);
+/** Settings → Sync: the current state, a manual sync, the choice after a clash, and locking this device. */
+function SyncSection({ sync, onLock }: { sync: SyncApi; onLock: () => void }) {
   const smallBtn: React.CSSProperties = { padding: '10px 14px', borderRadius: R.pill, font: sans(700, 12.5), cursor: 'pointer', textAlign: 'center', boxShadow: CLAY.soft, background: C.card, color: C.ink, border: 0 };
   return (
     <div style={{ padding: '14px 0', borderBottom: `1px solid ${rule(0.1)}`, display: 'flex', flexDirection: 'column', gap: 10 }}>
-      <div style={label}>SYNC BETWEEN DEVICES</div>
+      <div style={label}>SYNC AND ACCESS</div>
       <div style={{ font: sans(400, 12.5, 1.4), color: C.muted }}>
-        Saves your trips to the cloud so every device shows the same plans. Enter the access code you set as APP_SECRET on the server.
+        Your trips are saved to the cloud so every device shows the same plans. This device is unlocked with your access code.
       </div>
-      <div style={{ display: 'flex', gap: 8 }}>
-        <input
-          type="password"
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          placeholder="Access code"
-          autoComplete="off"
-          aria-label="Access code"
-          style={{ flex: 1, minWidth: 0, border: 0, padding: '11px 14px', borderRadius: R.pill, background: C.sand, boxShadow: CLAY.inset, font: sans(400, 14), color: C.ink, outline: 'none' }}
-        />
-        <button type="button" onClick={() => sync.setCode(draft)} disabled={draft.trim() === sync.code} style={{ ...smallBtn, background: C.dark, color: C.darkText, opacity: draft.trim() === sync.code ? 0.5 : 1 }}>
-          {sync.code ? 'Update' : 'Turn on'}
-        </button>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, font: sans(500, 12.5, 1.35), color: C.ink2 }} role="status">
+        <span style={{ flex: 'none', width: 9, height: 9, borderRadius: 5, background: SYNC_DOT[sync.status] }} />
+        <span>{sync.message && sync.status !== 'conflict' ? sync.message : SYNC_LABEL[sync.status]}</span>
       </div>
-      {sync.code && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, font: sans(500, 12.5, 1.35), color: C.ink2 }} role="status">
-          <span style={{ flex: 'none', width: 9, height: 9, borderRadius: 5, background: SYNC_DOT[sync.status] }} />
-          <span>{sync.message && sync.status !== 'conflict' ? sync.message : SYNC_LABEL[sync.status]}</span>
-        </div>
-      )}
       {sync.status === 'conflict' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           <div style={{ font: sans(400, 12.5, 1.4), color: C.ink2 }}>
@@ -536,17 +540,15 @@ function SyncSection({ sync }: { sync: SyncApi }) {
           </div>
         </div>
       )}
-      {sync.code && sync.status !== 'conflict' && (
-        <div style={{ display: 'flex', gap: 8 }}>
-          <button type="button" onClick={sync.syncNow} style={smallBtn}>Sync now</button>
-          <button type="button" onClick={() => { setDraft(''); sync.setCode(''); }} style={smallBtn}>Turn off</button>
-        </div>
-      )}
+      <div style={{ display: 'flex', gap: 8 }}>
+        {sync.status !== 'conflict' && <button type="button" onClick={sync.syncNow} style={smallBtn}>Sync now</button>}
+        <button type="button" onClick={onLock} style={smallBtn}>Lock this device</button>
+      </div>
     </div>
   );
 }
 
-export function SettingsSheet({ settings, onChange, sync }: { settings: Settings; onChange: (s: Settings) => void; sync: SyncApi }) {
+export function SettingsSheet({ settings, onChange, sync, onLock }: { settings: Settings; onChange: (s: Settings) => void; sync: SyncApi; onLock: () => void }) {
   const seg = (active: boolean): React.CSSProperties => ({
     flex: 1, textAlign: 'center', whiteSpace: 'nowrap', padding: '9px 14px', borderRadius: R.ctl, font: sans(500, 12.5), cursor: 'pointer',
     background: active ? C.dark : 'transparent', color: active ? C.darkText : C.ink,
@@ -557,7 +559,7 @@ export function SettingsSheet({ settings, onChange, sync }: { settings: Settings
       <div style={kicker()}>PREFERENCES</div>
       <div style={{ marginTop: 9, font: serif(30, 1.05) }}>Settings</div>
       <div style={{ marginTop: 18, borderTop: `1px solid ${rule(0.1)}` }}>
-        <SyncSection sync={sync} />
+        <SyncSection sync={sync} onLock={onLock} />
         <div style={{ padding: '14px 0', borderBottom: `1px solid ${rule(0.1)}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>
           <div style={label}>COLOURS</div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 10, flex: 1, maxWidth: 300 }}>

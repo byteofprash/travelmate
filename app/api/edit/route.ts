@@ -2,6 +2,7 @@ import type Anthropic from '@anthropic-ai/sdk';
 import { z } from 'zod';
 import { EditResultSchema } from '@/lib/ops';
 import { SYSTEM_PROMPT } from '@/lib/prompt';
+import { checkAccess } from '@/lib/server/access';
 import { callTool } from '@/lib/server/claude';
 
 export const runtime = 'nodejs';
@@ -40,6 +41,8 @@ const TOOL: Anthropic.Beta.BetaTool = {
 };
 
 export async function POST(req: Request) {
+  const denied = await checkAccess(req);
+  if (denied) return denied;
   if (!process.env.ANTHROPIC_API_KEY) {
     return Response.json({ error: 'ANTHROPIC_API_KEY is not set on the server.' }, { status: 500 });
   }

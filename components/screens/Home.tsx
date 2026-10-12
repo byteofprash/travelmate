@@ -66,6 +66,11 @@ export function Home({
           <span style={{ font: sans(700, 13) }}>Review ›</span>
         </button>
       )}
+      {sorted.length === 0 && (
+        <div style={{ margin: '28px 16px 0', padding: '28px 22px', borderRadius: R.card, background: C.card, boxShadow: CLAY.soft, textAlign: 'center', font: sans(400, 14, 1.5), color: C.ink2 }}>
+          No trips yet. Press <b>New trip</b> and paste a booking or an itinerary to start one.
+        </div>
+      )}
       <div style={{ padding: '10px 16px 0', display: 'flex', flexDirection: 'column' }}>
         {groups.map((g) => (
           <div key={g.name}>

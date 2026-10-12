@@ -11,8 +11,9 @@ import { TripView } from './screens/TripView';
 import { MapView } from './screens/MapView';
 import { DaySheet, EditSheet, InboxSheet, JourneysSheet, NewTripSheet, SettingsSheet, SheetFrame, StaySheet, StaysSheet, StopSheet } from './Sheets';
 import { applyOps, type EditResult } from '@/lib/ops';
+import { authedFetch } from '@/lib/access';
 import { buildNewTrip, NewTripResultSchema } from '@/lib/newtrip';
-import { DEFAULT_SETTINGS, load, loadSettings, sampleTrip, save, saveSettings, type Persisted } from '@/lib/store';
+import { DEFAULT_SETTINGS, emptyTrip, load, loadSettings, sampleTrip, save, saveSettings, type Persisted } from '@/lib/store';
 import { todayIndex } from '@/lib/derive';
 import { toISO, toMin } from '@/lib/format';
 import { C, rule, sans, CLAY, R } from '@/lib/theme';
@@ -58,7 +59,10 @@ function readClockOverride() {
   return { today, time: toMin(q.get('time')) };
 }
 
-export default function App() {
+/** Stands in for the current trip when there are no trips at all (for example after deleting the last one). */
+const NO_TRIP: TripMeta = { id: '_none', name: '', start: '2000-01-01', end: '2000-01-01', nights: 0, summary: '', status: 'empty' };
+
+export default function App({ onLock }: { onLock: () => void }) {
   const [data, setData] = useState<Persisted>(() => load());
   const [settings, setSettings] = useState<Settings>(() => (typeof window === 'undefined' ? DEFAULT_SETTINGS : loadSettings()));
   const [override] = useState(readClockOverride);
@@ -88,6 +92,7 @@ export default function App() {
   const [editErr, setEditErr] = useState('');
   const [editResult, setEditResult] = useState<{ summary: string[]; n: number } | null>(null);
   const [showData, setShowData] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const [newText, setNewText] = useState('');
   const [newBusy, setNewBusy] = useState(false);
   const [newErr, setNewErr] = useState('');
@@ -116,8 +121,8 @@ export default function App() {
   const todayISO = override.today ?? toISO(now);
   const nowMin = override.time ?? now.getHours() * 60 + now.getMinutes();
 
-  const meta = data.index.find((m) => m.id === tripId) ?? data.index[0];
-  const trip = data.trips[meta.id];
+  const meta = data.index.find((m) => m.id === tripId) ?? data.index[0] ?? NO_TRIP;
+  const trip = data.trips[meta.id] ?? emptyTrip(meta);
   const planned = trip.days.length > 0;
   const di = Math.max(0, Math.min(dayIdx, trip.days.length - 1));
   const day = trip.days[di];
@@ -134,10 +139,13 @@ export default function App() {
 
   // Forwarded emails (see /api/inbox). Adding one to a trip opens the usual edit sheet with the email text filled in;
   // the email is removed from the inbox once that edit has been applied.
-  const inbox = useInbox(sync.code);
+  const inbox = useInbox();
   const pendingInbox = useRef<string | null>(null);
   useEffect(() => {
-    if (!sheet) pendingInbox.current = null;
+    if (!sheet) {
+      pendingInbox.current = null;
+      setConfirmDelete(false); // a delete confirmation never carries over to the next time a sheet opens
+    }
   }, [sheet]);
   const addFromInbox = (item: { id: string; subject: string; from: string; text: string }, id: string) => {
     setTripId(id);
@@ -211,7 +219,7 @@ export default function App() {
     try {
       let out;
       try {
-        const res = await fetch('/api/new-trip', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text, today: todayISO }) });
+        const res = await authedFetch('/api/new-trip', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text, today: todayISO }) });
         if (!res.ok) throw new Error(String(res.status));
         out = NewTripResultSchema.parse(await res.json());
       } catch {
@@ -277,7 +285,7 @@ export default function App() {
     setEditErr('');
     setEditResult(null);
     try {
-      const res = await fetch('/api/edit', {
+      const res = await authedFetch('/api/edit', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ request: text, trip: before, meta: { name: meta.name, start: meta.start, end: meta.end, nights: meta.nights } }),
@@ -317,11 +325,32 @@ export default function App() {
   };
 
   const resetTrip = () => {
-    setData((d) => ({ ...d, trips: { ...d.trips, [trip.id]: sampleTrip(trip.id) }, history: { ...d.history, [trip.id]: [] } }));
+    // A built-in sample trip goes back to its sample; a trip you created has no original, so it is emptied.
+    const original = sampleTrip(trip.id) ?? emptyTrip(meta);
+    setData((d) => ({
+      ...d,
+      trips: { ...d.trips, [trip.id]: original },
+      index: d.index.map((m) => (m.id === trip.id ? { ...m, status: original.days.length ? 'planned' : 'empty' } : m)),
+      history: { ...d.history, [trip.id]: [] },
+    }));
     setEditResult(null);
-    const ti = todayIndex(meta, sampleTrip(trip.id), todayISO);
+    const ti = todayIndex(meta, original, todayISO);
     setDayIdx(ti >= 0 ? ti : 0);
-    flash('Reset to original trip');
+    flash(original.days.length ? 'Reset to original trip' : 'Trip cleared');
+  };
+
+  /** Remove the open trip everywhere (the deletion syncs to your other devices) and go back to the list. */
+  const deleteTrip = () => {
+    const id = trip.id;
+    setData((d) => {
+      const { [id]: _trip, ...trips } = d.trips;
+      const { [id]: _history, ...history } = d.history;
+      return { ...d, index: d.index.filter((m) => m.id !== id), trips, history };
+    });
+    resetEditUi();
+    setEditText('');
+    go('home');
+    flash('Trip deleted');
   };
 
   const onTonight = () => {
@@ -391,6 +420,9 @@ export default function App() {
             onUndo={undoEdit}
             onToggleData={() => setShowData((s) => !s)}
             onReset={resetTrip}
+            onDelete={deleteTrip}
+            confirmDelete={confirmDelete}
+            onConfirmDelete={setConfirmDelete}
           />
         );
       case 'new':
@@ -398,7 +430,7 @@ export default function App() {
       case 'inbox':
         return <InboxSheet items={inbox.items} trips={data.index} onPick={addFromInbox} onDismiss={(id) => void inbox.dismiss(id)} />;
       case 'settings':
-        return <SettingsSheet settings={settings} onChange={setSettings} sync={sync} />;
+        return <SettingsSheet settings={settings} onChange={setSettings} sync={sync} onLock={onLock} />;
     }
   };
 

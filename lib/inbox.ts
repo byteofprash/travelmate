@@ -1,4 +1,6 @@
-/** Client side of the email inbox (see /api/inbox). Needs the same access code as syncing. */
+import { authedFetch } from './access';
+
+/** Client side of the email inbox (see /api/inbox). */
 export interface InboxItem {
   id: string;
   from: string;
@@ -8,15 +10,13 @@ export interface InboxItem {
   receivedAt: string;
 }
 
-const headers = (code: string) => ({ 'x-access-code': code });
-
-export async function fetchInbox(code: string): Promise<InboxItem[]> {
-  const res = await fetch('/api/inbox', { headers: headers(code), cache: 'no-store' });
+export async function fetchInbox(): Promise<InboxItem[]> {
+  const res = await authedFetch('/api/inbox', { cache: 'no-store' });
   if (!res.ok) throw new Error(String(res.status));
   return ((await res.json()) as { items: InboxItem[] }).items;
 }
 
-export async function removeInboxItem(code: string, id: string): Promise<void> {
-  const res = await fetch(`/api/inbox?id=${encodeURIComponent(id)}`, { method: 'DELETE', headers: headers(code) });
+export async function removeInboxItem(id: string): Promise<void> {
+  const res = await authedFetch(`/api/inbox?id=${encodeURIComponent(id)}`, { method: 'DELETE' });
   if (!res.ok) throw new Error(String(res.status));
 }

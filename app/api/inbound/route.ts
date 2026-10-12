@@ -1,5 +1,6 @@
 import { z } from 'zod';
-import { client, secretMatches } from '@/lib/server/state-store';
+import { secretMatches } from '@/lib/server/access';
+import { client } from '@/lib/server/state-store';
 import { MAX_TEXT, readInbox, writeInbox, type InboxItem } from '@/lib/server/inbox-store';
 
 export const runtime = 'nodejs';

@@ -1,4 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk';
+import { checkAccess } from '@/lib/server/access';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -29,6 +30,8 @@ function setup(client: Anthropic) {
  * why. It never returns the key.
  */
 export async function GET(req: Request) {
+  const denied = await checkAccess(req);
+  if (denied) return denied;
   const deep = new URL(req.url).searchParams.get('deep') === '1';
   if (!process.env.ANTHROPIC_API_KEY) {
     return Response.json(

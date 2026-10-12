@@ -14,35 +14,43 @@ Built from the Claude Design handoff in [`docs/design/`](docs/design/HANDOFF.md)
 ## Deploying on Vercel
 
 1. Import the repo into Vercel. The Next.js preset needs no config changes.
-2. Add the environment variable **`ANTHROPIC_API_KEY`** (Project → Settings → Environment Variables).
+2. Add the environment variables **`ANTHROPIC_API_KEY`** and **`APP_SECRET`** (Project → Settings → Environment Variables). `APP_SECRET` is the access code: see Access code below. Nothing works without it.
 3. Optional: **`ANTHROPIC_WORKSPACE_ID`** (`wrkspc_...`). An API key belongs to exactly one Anthropic workspace, and each response says which workspace served it. If this is set, `/api/edit` returns an error (and logs it) when a response comes from any other workspace, which catches the wrong workspace's key being deployed. It checks the key; it can't choose the workspace, so to use a different workspace, create the API key in that workspace. The check happens after the request is sent, so it stops and flags a mismatch but can't prevent that one call.
-4. Optional, to sync trips between devices (see below): connect a database and add **`APP_SECRET`**.
+4. Recommended: connect a database so your trips are saved in the cloud and shared between devices (see Syncing between devices).
 5. Optional: **`CLAUDE_MODEL`** overrides the model (default `claude-sonnet-5-5`, following the handoff's "sonnet").
 
-**Checking the setup:** after deploying, open `/api/health` on your site. It makes one free token-counting call and reports whether the key works, which workspace served it, and, if it fails, why (no key set, key rejected, wrong workspace, unknown model, rate limit). Add `?deep=1` to send a tiny real request (a few tokens) with the same settings as the app's edit route: if the plain check passes but the deep one fails, the problem is in the request settings rather than the key. Replies also show `setup` (where requests are sent, and whether the key looks like a normal API key or has stray quotes or spaces) and, on errors, `answeredBy` (whether the reply carries Anthropic's request ID or came from some other proxy or gateway). Errors include Anthropic's `requestId`, which support needs; the server log carries it too. It never returns the key. Changing an environment variable in Vercel only takes effect after a redeploy.
+**Checking the setup:** after deploying, request `/api/health` with your access code, e.g. `curl -H "x-access-code: YOUR_CODE" https://your-app.vercel.app/api/health` (it is locked like everything else, so it cannot be opened in a plain browser tab). It makes one free token-counting call and reports whether the key works, which workspace served it, and, if it fails, why (no key set, key rejected, wrong workspace, unknown model, rate limit). Add `?deep=1` to send a tiny real request (a few tokens) with the same settings as the app's edit route: if the plain check passes but the deep one fails, the problem is in the request settings rather than the key. Replies also show `setup` (where requests are sent, and whether the key looks like a normal API key or has stray quotes or spaces) and, on errors, `answeredBy` (whether the reply carries Anthropic's request ID or came from some other proxy or gateway). Errors include Anthropic's `requestId`, which support needs; the server log carries it too. It never returns the key. Changing an environment variable in Vercel only takes effect after a redeploy.
 
 The Claude route sets `maxDuration = 300`, which fits Vercel's default Fluid Compute limits. Pasting a long itinerary into an empty trip can take a while.
 
+## Access code
+
+The app has no user accounts. Instead, **everything works only with a valid access code**, the value of the `APP_SECRET` environment variable:
+
+- **The app is locked.** On a device that has not entered the code, you see only a lock screen: no trips are shown. Enter the code once per device; it is checked with the server and then kept on that device.
+- **The server refuses everything else.** `/api/edit`, `/api/new-trip`, `/api/state`, `/api/inbox` and `/api/health` answer 401 without the right `x-access-code` header, and every one of them answers 503 if `APP_SECRET` is not set (the app fails closed). The only other route, `/api/inbound`, is for the email worker and has its own secret (`INBOUND_SECRET`).
+- **If the code changes** (you set a new `APP_SECRET` and redeploy), each device locks the next time it talks to the server and asks for the new code. **Settings → Lock this device** locks one device on purpose.
+- **Offline:** a device that already entered a valid code opens and works with its saved trips without a connection. A device that never entered one cannot open the app, online or not.
+- Choose a long random value (`openssl rand -base64 24`): the server waits briefly before refusing a wrong code, but a short code can still be guessed. The page itself is public; the sample trips are part of the app's code, but nothing is shown or loaded from the cloud until the code is accepted.
+
 ## Syncing between devices
 
-Without setup the app is local only: trips live in each browser's `localStorage`, so a phone and a laptop have separate copies and clearing the browser's data deletes them. To share them:
+Trips are kept in each browser's `localStorage` (so the app works offline) and saved to a Redis database so every device shows the same plans. Without a database the app still works, but a phone and a laptop have separate copies and clearing the browser's data deletes them.
 
 1. **Add a database.** In the Vercel project: Storage → Marketplace → **Upstash Redis** → connect it to the project. (Vercel KV became this.) Vercel adds `KV_REST_API_URL` and `KV_REST_API_TOKEN`; a database made directly on Upstash uses `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`, which also work.
-2. **Set `APP_SECRET`** to a long random string (`openssl rand -base64 24`). The app has no user accounts, so this access code is what stops anyone who finds the URL from reading or overwriting your trips. Syncing stays off, and the API refuses requests, until it is set.
-3. **Redeploy**, then on each device open Settings → **Sync between devices**, enter the access code and press **Turn on**.
+2. **Redeploy.** Syncing then starts by itself once a device is unlocked. Settings → **Sync and access** shows the state and has **Sync now**.
 
 How it behaves:
 
-- `localStorage` is still the working copy, so the app works offline. Changes are pushed about a second after you make them, and other devices pick them up when the app returns to the foreground or comes back online. Settings → Sync shows the state and has **Sync now** and **Turn off**.
-- The synced data is the trips and the trip list. Undo history and settings (colours, timeline style) stay on each device.
+- Changes are pushed about a second after you make them, and other devices pick them up when the app returns to the foreground or comes back online.
+- The synced data is the trips and the trip list, including trips you create and delete. Undo history and settings (colours, timeline style) stay on each device.
 - The first device to sync uploads its trips. A new device that has not changed the sample trips adopts what is in the cloud.
 - If this device and the cloud both changed (for example you edited offline on two devices), nothing is overwritten. A toast points you to Settings, which asks you to **Keep cloud copy** or **Keep this device**; the other one is replaced.
-- Storage is one JSON document under the key `travelmate:state:v1` with a revision number. `GET /api/state` returns it and `PUT /api/state` saves it only if the revision the client sent is still current (otherwise 409), both requiring the `x-access-code` header. The code is stored in the browser once entered, in `localStorage`.
-- `/api/edit` (the Claude calls) is not behind the access code; anyone who can reach the site can use it and spend your Anthropic credit.
+- Storage is one JSON document under the key `travelmate:state:v1` with a revision number. `GET /api/state` returns it and `PUT /api/state` saves it only if the revision the client sent is still current (otherwise 409), both requiring the access code.
 
 ## Forwarding booking emails
 
-Forward a booking confirmation (flight, train, hotel) to an address on your own domain and it shows up in the app, ready to add to a trip. It needs syncing set up first (the database and `APP_SECRET`), a domain on Cloudflare, and a free Cloudflare account.
+Forward a booking confirmation (flight, train, hotel) to an address on your own domain and it shows up in the app, ready to add to a trip. It needs the database (see Syncing between devices), a domain on Cloudflare, and a free Cloudflare account.
 
 ```
 you forward an email ─▶ trips@yourdomain ─▶ Cloudflare Email Routing ─▶ Email Worker ─▶ /api/inbound ─▶ inbox (Redis)
@@ -64,7 +72,7 @@ Notes:
 
 ```bash
 npm install
-cp .env.example .env.local   # add your ANTHROPIC_API_KEY
+cp .env.example .env.local   # add APP_SECRET (any value; you type it into the lock screen) and ANTHROPIC_API_KEY
 npm run dev
 ```
 
@@ -95,6 +103,8 @@ The **New trip** button on the Trips screen opens a sheet with two ways to start
 
 - **From text:** paste a booking email, a tour itinerary or notes, and press **Create trip with Claude**. Claude names the trip, works out the dates (using today's date to resolve dates written without a year) and builds the days, stays and journeys. If the text does not say where or when, nothing is created and the sheet says what is missing. Only what the text says or implies is used; unknown times show as "—" and unknown details as "Add confirmation" / "Add phone". The trip opens straight away, and Undo works on later edits as usual.
 - **Empty:** enter a name and first and last day and press **Create empty trip**; the Plan this trip sheet opens so you can paste text into it.
+
+**Deleting a trip:** open the trip, press **Edit trip**, and choose **Delete this trip** at the bottom of the sheet. It asks you to confirm, then removes the trip and its days, stays and journeys. The deletion syncs to your other devices and cannot be undone. (For a built-in sample trip, **Reset to original** restores it instead; for a trip you created it empties it.)
 
 ## Layouts
 

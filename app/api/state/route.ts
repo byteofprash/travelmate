@@ -1,5 +1,6 @@
 import { z } from 'zod';
-import { client, codeMatches, readDoc, writeDoc, type StoredDoc } from '@/lib/server/state-store';
+import { checkAccess } from '@/lib/server/access';
+import { client, readDoc, writeDoc, type StoredDoc } from '@/lib/server/state-store';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -14,9 +15,9 @@ const putSchema = z.object({
 const json = (body: unknown, status = 200) => Response.json(body, { status, headers: { 'Cache-Control': 'no-store' } });
 
 /** The checks every request needs. Returns an error response, or the Redis client. */
-function gate(req: Request) {
-  if (!process.env.APP_SECRET) return json({ error: 'APP_SECRET is not set on the server, so syncing is switched off.', code: 'no-secret' }, 503);
-  if (!codeMatches(req.headers.get('x-access-code'))) return json({ error: 'Wrong access code.', code: 'bad-code' }, 401);
+async function gate(req: Request) {
+  const denied = await checkAccess(req);
+  if (denied) return denied;
   const r = client();
   if (!r) return json({ error: 'No database is connected (set KV_REST_API_URL and KV_REST_API_TOKEN).', code: 'no-storage' }, 503);
   return r;
@@ -24,7 +25,7 @@ function gate(req: Request) {
 
 /** Current synced trips: { rev, updatedAt, data }, or { rev: 0, data: null } before anything was saved. */
 export async function GET(req: Request) {
-  const r = gate(req);
+  const r = await gate(req);
   if (r instanceof Response) return r;
   try {
     const doc = await readDoc(r);
@@ -40,7 +41,7 @@ export async function GET(req: Request) {
  * the current document comes back with status 409 so the client can decide what to keep.
  */
 export async function PUT(req: Request) {
-  const r = gate(req);
+  const r = await gate(req);
   if (r instanceof Response) return r;
   const text = await req.text();
   if (text.length > MAX_BYTES) return json({ error: 'The trips are too large to sync.', code: 'too-large' }, 413);
