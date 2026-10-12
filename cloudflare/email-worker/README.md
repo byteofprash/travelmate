@@ -22,3 +22,24 @@ which puts them in the in-app inbox. Nothing is added to a trip until you choose
 5. Forward a booking email to `trips@yourdomain.com`. Within a few seconds it appears in the app (Trips screen).
 
 Sending to this address does not forward the email anywhere else; the worker only reads it.
+
+## Troubleshooting
+
+**The sender gets `550 5.1.1 Address does not exist`.** The email never reached the worker: Cloudflare has no routing rule for that address. Check, in the Cloudflare dashboard under your domain → Email → Email Routing:
+
+1. Routing rules has a custom address that matches what you sent to, character for character, and it is active. (Or turn on the catch-all rule with the same action, as a test.)
+2. That rule's action is **Send to a Worker** and the worker is `travelmate-email`. A deployed worker only receives mail through a rule that targets it.
+3. Email Routing is enabled, and the domain's MX records are Cloudflare's (`route1`, `route2`, `route3` on `mx.cloudflare.net`). If the domain also has MX records for another mail provider, mail goes there instead. Use a subdomain for this.
+4. If you just created the rule, wait a few minutes.
+
+**The email is rejected by the worker** (the sender gets a bounce with one of these):
+
+| Message | Meaning |
+| --- | --- |
+| `Sender not allowed` | The sender is not in `ALLOWED_SENDERS`. Use exactly the address you forward from. |
+| `Could not deliver (401)` | `INBOUND_SECRET` on Cloudflare does not match the one on Vercel. |
+| `Could not deliver (503)` | `INBOUND_SECRET` or the database is not set on Vercel, or the app was not redeployed after adding them. |
+| `The email has no readable text` | The email has no text part (for example, image only). |
+| `Message too large` | Over 5 MB. |
+
+**It is delivered but nothing shows in the app.** Open Settings → Sync and check the access code and status: the inbox is behind the same access code as syncing. Then check the Vercel logs for `/api/inbound`.
