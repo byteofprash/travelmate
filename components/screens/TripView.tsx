@@ -1,7 +1,7 @@
 import { Bed, Check, Plane, Plus, type LucideIcon } from 'lucide-react';
 import { BackButton } from '../BackButton';
 import { rangeLong, plural } from '@/lib/format';
-import { cityCount, dayBits, isStop, nightCount, routeRows } from '@/lib/derive';
+import { cityCount, dayBits, flightStatus, isStop, nightCount, routeRows } from '@/lib/derive';
 import { C, mono, rule, sans, serif, CLAY, R } from '@/lib/theme';
 import type { Settings, Trip, TripMeta } from '@/lib/types';
 
@@ -17,6 +17,7 @@ export function TripView({
   onStays,
   onAddJourneys,
   onAddStays,
+  onFinishFlights,
 }: {
   meta: TripMeta;
   trip: Trip;
@@ -31,14 +32,13 @@ export function TripView({
   /** Open the editor with flight / stay hints (when there are none yet). */
   onAddJourneys: () => void;
   onAddStays: () => void;
+  /** Open the editor listing which flight details are still missing. */
+  onFinishFlights: () => void;
 }) {
   const accent = settings.accent;
   const rows = routeRows(meta, trip);
   const stayCount = Object.keys(trip.stays).length;
-  const first = trip.journeys[0];
-  const journeyDetail = first
-    ? `${first.from} → ${first.to}${trip.journeys.length > 1 ? ` · +${trip.journeys.length - 1} more` : ''}`
-    : '';
+  const fs = flightStatus(trip);
   return (
     <div className="scroll" style={{ position: 'absolute', inset: '0 0 var(--tabbar) 0', overflowY: 'auto', padding: 'var(--top) 0 24px' }}>
      <div className="col">
@@ -60,16 +60,17 @@ export function TripView({
       <div style={{ margin: '20px 16px 0', display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 12 }}>
         <StatusTile
           icon={Plane}
-          title="Flights & journeys"
-          filled={trip.journeys.length > 0}
-          detail={journeyDetail}
+          title="Flights"
+          state={fs.state === 'none' ? 'empty' : fs.state}
+          detail={fs.state === 'complete' ? `${plural(fs.total, 'flight')} · all details` : `${fs.complete} of ${plural(fs.total, 'flight')} complete`}
+          note={fs.state === 'partial' ? `Needs ${fs.missing.join(', ')}` : undefined}
           emptyText="Not added yet"
-          onOpen={trip.journeys.length > 0 ? onJourneys : onAddJourneys}
+          onOpen={fs.state === 'complete' ? onJourneys : fs.state === 'partial' ? onFinishFlights : onAddJourneys}
         />
         <StatusTile
           icon={Bed}
           title="Stays"
-          filled={stayCount > 0}
+          state={stayCount > 0 ? 'complete' : 'empty'}
           detail={`${plural(stayCount, 'stay')} · ${plural(nightCount(trip), 'night')}`}
           emptyText="Not added yet"
           onOpen={stayCount > 0 ? onStays : onAddStays}
@@ -143,39 +144,50 @@ export function TripView({
   );
 }
 
+type TileState = 'empty' | 'partial' | 'complete';
+
+const DASH = 'rgba(120, 84, 52, .4)';
+const DASH_ACCENT = 'color-mix(in srgb, var(--accent) 65%, transparent)';
+
 /**
- * A checklist tile for something the trip needs. Filled in (raised clay, tinted with the secondary colour, a check
- * badge) once there is data; an outline with a dashed border while it is still empty, which invites adding it.
+ * A checklist tile for something the trip needs. Complete: raised clay tinted with the secondary colour and a check
+ * badge. Empty: a dashed outline that invites adding it. Partial: the dashed outline in the primary colour with what is
+ * done and what is still missing, so it never looks finished before it is.
  */
 function StatusTile({
   icon: Icon,
   title,
-  filled,
+  state,
   detail,
+  note,
   emptyText,
   onOpen,
 }: {
   icon: LucideIcon;
   title: string;
-  filled: boolean;
+  state: TileState;
   detail: string;
+  note?: string;
   emptyText: string;
   onOpen: () => void;
 }) {
+  const done = state === 'complete';
+  const partial = state === 'partial';
+  const line = partial ? DASH_ACCENT : DASH;
   return (
     <button
       type="button"
       onClick={onOpen}
-      className={filled ? 'status-tile' : 'status-tile empty'}
-      aria-label={filled ? `${title}: ${detail}. Open` : `${title}: ${emptyText}. Add`}
+      className={done ? 'status-tile' : 'status-tile empty'}
+      aria-label={done ? `${title}: ${detail}. Open` : partial ? `${title}: ${detail}${note ? `, ${note.toLowerCase()}` : ''}. Finish` : `${title}: ${emptyText}. Add`}
       style={{
         boxSizing: 'border-box',
         minHeight: 128,
         padding: '16px 14px 14px',
         borderRadius: R.card,
-        border: filled ? '2px solid transparent' : '2px dashed rgba(120, 84, 52, .4)',
-        background: filled ? 'color-mix(in srgb, var(--accent2) 30%, #FCF7EE)' : 'transparent',
-        boxShadow: filled ? CLAY.raised : 'none',
+        border: done ? '2px solid transparent' : `2px dashed ${line}`,
+        background: done ? 'color-mix(in srgb, var(--accent2) 30%, #FCF7EE)' : partial ? 'color-mix(in srgb, var(--accent2) 12%, transparent)' : 'transparent',
+        boxShadow: done ? CLAY.raised : 'none',
         color: C.ink,
         textAlign: 'left',
         cursor: 'pointer',
@@ -195,15 +207,15 @@ function StatusTile({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            background: filled ? 'var(--accent)' : 'transparent',
-            border: filled ? '0' : '2px dashed rgba(120, 84, 52, .4)',
+            background: done ? 'var(--accent)' : 'transparent',
+            border: done ? '0' : `2px dashed ${line}`,
             boxSizing: 'border-box',
-            boxShadow: filled ? CLAY.accent : 'none',
+            boxShadow: done ? CLAY.accent : 'none',
           }}
         >
-          <Icon size={21} strokeWidth={1.9} color={filled ? '#fff' : C.muted} />
+          <Icon size={21} strokeWidth={1.9} color={done ? '#fff' : partial ? 'var(--accent)' : C.muted} />
         </span>
-        {filled ? (
+        {done ? (
           <span
             aria-hidden
             style={{ width: 26, height: 26, borderRadius: 13, background: C.card, boxShadow: CLAY.soft, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
@@ -213,16 +225,17 @@ function StatusTile({
         ) : (
           <span
             aria-hidden
-            style={{ display: 'inline-flex', alignItems: 'center', gap: 3, height: 26, padding: '0 10px 0 7px', borderRadius: 13, border: '2px dashed rgba(120, 84, 52, .4)', boxSizing: 'border-box', font: sans(700, 11.5), color: C.muted }}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 3, height: 26, padding: partial ? '0 10px' : '0 10px 0 7px', borderRadius: 13, border: `2px dashed ${line}`, boxSizing: 'border-box', font: sans(700, 11.5), color: partial ? 'var(--accent)' : C.muted }}
           >
-            <Plus size={13} strokeWidth={2.6} />
-            Add
+            {!partial && <Plus size={13} strokeWidth={2.6} />}
+            {partial ? 'Finish' : 'Add'}
           </span>
         )}
       </div>
       <div style={{ minWidth: 0 }}>
         <div style={{ font: sans(700, 15, 1.2) }}>{title}</div>
-        <div style={{ marginTop: 4, font: sans(filled ? 500 : 400, 12.5, 1.35), color: filled ? C.ink2 : C.muted, overflowWrap: 'anywhere' }}>{filled ? detail : emptyText}</div>
+        <div style={{ marginTop: 4, font: sans(done || partial ? 500 : 400, 12.5, 1.35), color: done || partial ? C.ink2 : C.muted, overflowWrap: 'anywhere' }}>{state === 'empty' ? emptyText : detail}</div>
+        {note && <div style={{ marginTop: 3, font: sans(500, 11.5, 1.35), color: C.muted, overflowWrap: 'anywhere' }}>{note}</div>}
       </div>
     </button>
   );

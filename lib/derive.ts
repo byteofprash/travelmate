@@ -1,6 +1,6 @@
 import { EXTRAS } from './extras';
-import { MON, MONTHS, WD, addDays, durMin, fmtDur, parseISO, plural, toISO, toMin } from './format';
-import type { Day, Leg, Stop, Trip, TripMeta } from './types';
+import { MON, MONTHS, WD, addDays, durMin, fmtDur, isPlaceholder, parseISO, plural, toISO, toMin } from './format';
+import type { Day, Journey, Leg, Stop, Trip, TripMeta } from './types';
 
 export const isStop = (i: { kind: string }): i is Stop => i.kind === 'stop';
 export const isLeg = (i: { kind: string }): i is Leg => i.kind === 'leg';
@@ -83,4 +83,52 @@ export function seasonKicker(index: TripMeta[]) {
   }
   const txt = seen.join(' & ');
   return (txt.charAt(0).toUpperCase() + txt.slice(1) + ' ' + [...years].join('–')).trim();
+}
+
+/* ---------- Flights: when are they complete? ---------- */
+
+export const isFlight = (j: Journey) => /^flight$/i.test(j.mode);
+
+export type FlightField = 'flight number' | 'airline' | 'date' | 'departure time';
+
+// IATA codes are two characters plus up to four digits (LH 1234, U2 8803), ICAO three letters (EZY1234). At least one
+// letter is required so that a bare number such as "1234" does not pass.
+const FLIGHT_NUMBER = /^(?=.*[A-Z])[A-Z0-9]{2,3}\s?\d{1,4}[A-Z]?$/i;
+const CLOCK = /^([01]?\d|2[0-3]):[0-5]\d$/;
+
+/**
+ * What a flight still lacks before it counts as complete: the flight number, the airline, the date and the departure
+ * time. Each is checked on the journey itself; nothing is inferred from the itinerary text or guessed. An airline is
+ * a name, not a route ("ASW → CAI") or a placeholder, and a time must be a real clock time.
+ */
+export function flightGaps(trip: Trip, j: Journey): FlightField[] {
+  const gaps: FlightField[] = [];
+  if (isPlaceholder(j.number) || !FLIGHT_NUMBER.test((j.number ?? '').trim())) gaps.push('flight number');
+  const by = (j.by ?? '').trim();
+  if (isPlaceholder(by) || /[→>]/.test(by) || !/[A-Za-z]{2,}/.test(by)) gaps.push('airline');
+  if (!trip.days[j.day]) gaps.push('date');
+  if (isPlaceholder(j.time) || !CLOCK.test((j.time ?? '').trim())) gaps.push('departure time');
+  return gaps;
+}
+
+export interface FlightStatus {
+  /** none: no flights at all; partial: some are missing details; complete: every flight has all four. */
+  state: 'none' | 'partial' | 'complete';
+  total: number;
+  complete: number;
+  /** Every distinct detail still missing across the incomplete flights, in a fixed order. */
+  missing: FlightField[];
+  /** Each flight with what it lacks. */
+  flights: { index: number; journey: Journey; missing: FlightField[] }[];
+}
+
+export function flightStatus(trip: Trip): FlightStatus {
+  const flights = trip.journeys
+    .map((journey, index) => ({ index, journey, missing: flightGaps(trip, journey) }))
+    .filter((f) => isFlight(f.journey));
+  const complete = flights.filter((f) => f.missing.length === 0).length;
+  const order: FlightField[] = ['flight number', 'airline', 'date', 'departure time'];
+  const missing = order.filter((m) => flights.some((f) => f.missing.includes(m)));
+  const state = flights.length === 0 ? 'none' : complete === flights.length ? 'complete' : 'partial';
+  return { state, total: flights.length, complete, missing, flights };
 }

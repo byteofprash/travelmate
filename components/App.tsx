@@ -15,8 +15,8 @@ import { authedFetch } from '@/lib/access';
 import { explainFailure } from '@/lib/errors';
 import { buildNewTrip, NewTripResultSchema } from '@/lib/newtrip';
 import { DEFAULT_SETTINGS, emptyTrip, load, loadSettings, sampleTrip, save, saveSettings, type Persisted } from '@/lib/store';
-import { todayIndex } from '@/lib/derive';
-import { toISO, toMin } from '@/lib/format';
+import { dayBits, flightStatus, todayIndex } from '@/lib/derive';
+import { isPlaceholder, toISO, toMin } from '@/lib/format';
 import { C, rule, sans, CLAY, R } from '@/lib/theme';
 import type { Settings, Sheet, Stop, Trip, TripMeta } from '@/lib/types';
 
@@ -264,6 +264,22 @@ export default function App({ onLock }: { onLock: () => void }) {
     } catch (e) {
       return e instanceof Error ? e.message : NEW_ERR;
     }
+  };
+
+  /** Open the editor with a list of exactly which flight details are still missing, ready to be filled in. */
+  const finishFlights = () => {
+    const lines = flightStatus(trip)
+      .flights.filter((f) => f.missing.length > 0)
+      .map((f) => {
+        const d = trip.days[f.journey.day];
+        const b = d ? dayBits(meta, d) : null;
+        const airline = isPlaceholder(f.journey.by) || /[→>]/.test(f.journey.by) ? '' : `${f.journey.by} `;
+        return `• ${airline}${f.journey.from} → ${f.journey.to}${b ? `, ${b.wd} ${b.d} ${b.month}` : ''}: needs ${f.missing.join(', ')}`;
+      });
+    resetEditUi();
+    setEditHint('flights');
+    setEditText(`Add the missing flight details (only what you know):\n${lines.join('\n')}\n\n`);
+    setSheet({ type: 'add', tripId: trip.id });
   };
 
   const openStop = (s: Stop) => {
@@ -539,6 +555,7 @@ export default function App({ onLock }: { onLock: () => void }) {
               setEditHint('stays');
               setSheet({ type: 'add', tripId: trip.id });
             }}
+            onFinishFlights={finishFlights}
           />
         )}
         {effTab === 'map' && day && (

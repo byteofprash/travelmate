@@ -67,6 +67,10 @@ export interface Journey {
   from: string;
   to: string;
   dur: string;
+  /** Flights: the flight number as printed on the booking, e.g. 'LH 1234'. */
+  number?: string;
+  /** Departure time, 'HH:MM' (24 hour). */
+  time?: string;
 }
 
 export interface Trip {

@@ -80,10 +80,12 @@ const STAY_FIELDS = { type: 'object', properties: { ...stayProps }, description:
 const journeyProps = {
   day: int('0-based day index'),
   mode: { type: 'string', enum: ['Flight', 'Car', 'Train'] },
-  by: str('Operator or vehicle'),
+  by: str('Flights: the airline name, e.g. Lufthansa. Otherwise the operator or vehicle.'),
   from: str(),
   to: str(),
-  dur: str(),
+  dur: str('Duration, e.g. "2 hr 30 min"'),
+  number: str('Flights only: the flight number exactly as on the booking, e.g. "LH 1234". Omit unless the text states it.'),
+  time: str('Departure time, "HH:MM" (24 hour). Omit unless the text states it.'),
 };
 const JOURNEY = { type: 'object', properties: journeyProps, required: ['day', 'mode', 'from', 'to'], additionalProperties: false };
 const JOURNEY_FIELDS = { type: 'object', properties: { ...journeyProps }, description: 'Only the fields to change.', additionalProperties: false };

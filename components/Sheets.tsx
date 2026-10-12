@@ -1,10 +1,10 @@
 import { useState, type ReactNode } from 'react';
 import type { SyncApi } from './useSync';
 import type { InboxItem } from '@/lib/inbox';
-import { X } from 'lucide-react';
+import { Check, X } from 'lucide-react';
 import { MODES } from './CommuteLeg';
 import { isPlaceholder, plural, rangeShort } from '@/lib/format';
-import { dayBits, daySummary, homeCity, nightCount, operator, staysInOrder } from '@/lib/derive';
+import { dayBits, daySummary, flightGaps, homeCity, isFlight, nightCount, operator, staysInOrder } from '@/lib/derive';
 import { PRESETS, C, TAGC, mono, rule, sans, serif, CLAY, R } from '@/lib/theme';
 import type { Day, Leg, Settings, Stop, Trip, TripMeta } from '@/lib/types';
 
@@ -205,7 +205,7 @@ export function JourneysSheet({ meta, trip, dayIdx, onOpen }: { meta: TripMeta; 
       <div style={kicker()}>ALL JOURNEYS · {rangeShort(meta.start, meta.end).toUpperCase()}</div>
       <div style={{ marginTop: 9, font: serif(30, 1.05) }}>Journeys</div>
       <div style={{ ...subTxt, lineHeight: 1.4 }}>Every flight and long transfer on this trip. Tap one to open its day.</div>
-      {trip.journeys.length === 0 && <div style={{ ...subTxt, marginTop: 18 }}>No flights or transfers added yet. Open the Trip tab and tap Flights &amp; journeys to paste a booking.</div>}
+      {trip.journeys.length === 0 && <div style={{ ...subTxt, marginTop: 18 }}>No flights or transfers added yet. Open the Trip tab and tap Flights to paste a booking.</div>}
       <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
         {trip.journeys.map((j, i) => {
           const d = trip.days[j.day];
@@ -238,6 +238,19 @@ export function JourneysSheet({ meta, trip, dayIdx, onOpen }: { meta: TripMeta; 
                   {j.mode} · {j.by}
                 </div>
                 <div style={{ marginTop: 4, font: serif(17, 1.2) }}>{j.from} → {j.to}</div>
+                {isFlight(j) && (() => {
+                  const gaps = flightGaps(trip, j);
+                  return gaps.length === 0 ? (
+                    <div style={{ marginTop: 6, display: 'flex', alignItems: 'center', gap: 5, font: sans(700, 12, 1.2), color: C.ink2 }}>
+                      <Check size={13} strokeWidth={3} color="var(--accent)" />
+                      {j.number} · {j.time}
+                    </div>
+                  ) : (
+                    <div style={{ marginTop: 6, display: 'inline-block', padding: '3px 9px', borderRadius: R.pill, border: '2px dashed color-mix(in srgb, var(--accent) 65%, transparent)', font: sans(500, 11.5, 1.2), color: C.ink2 }}>
+                      Needs {gaps.join(', ')}
+                    </div>
+                  );
+                })()}
               </div>
               <div style={{ font: mono(400, 11.5, 1.2), color: isPlaceholder(j.dur) ? C.muted2 : C.muted, textAlign: 'right', maxWidth: 74 }}>{j.dur}</div>
             </div>

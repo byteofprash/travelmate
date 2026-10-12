@@ -101,6 +101,8 @@ const JourneyShape = z
     from: z.string(),
     to: z.string(),
     dur: z.string().optional(),
+    number: z.string().optional(),
+    time: z.string().optional(),
   })
   .passthrough();
 
