@@ -27,6 +27,16 @@ const EG_EXAMPLES = [
   'Add a felucca ride in Aswan at 17:00 on the 27th',
   'Cairo hotel confirmation is LPV-2231, phone +20 2 3383 0000',
 ];
+const FLIGHT_EXAMPLES = [
+  'Flight LH 1234 from Munich to Lisbon on 3 Dec, departs 08:10, arrives 10:45',
+  'Train from Lisbon to Porto on the 6th at 14:00, 3 hr',
+  'Paste a flight confirmation email here',
+];
+const STAY_EXAMPLES = [
+  'Hotel Avenida Palace in Lisbon, 3 to 7 Dec, confirmation ABC123',
+  'Airbnb in Alfama for the first two nights, check-in after 15:00',
+  'Paste a hotel booking email here',
+];
 const examplesFor = (id: string, name: string, empty: boolean) =>
   id === 'eg'
     ? EG_EXAMPLES
@@ -94,6 +104,7 @@ export default function App({ onLock }: { onLock: () => void }) {
   const [editResult, setEditResult] = useState<{ summary: string[]; n: number } | null>(null);
   const [showData, setShowData] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [editHint, setEditHint] = useState<'flights' | 'stays' | null>(null);
   const [newText, setNewText] = useState('');
   const [newBusy, setNewBusy] = useState(false);
   const [newErr, setNewErr] = useState('');
@@ -146,6 +157,7 @@ export default function App({ onLock }: { onLock: () => void }) {
     if (!sheet) {
       pendingInbox.current = null;
       setConfirmDelete(false); // a delete confirmation never carries over to the next time a sheet opens
+      setEditHint(null);
     }
   }, [sheet]);
   const addFromInbox = (item: { id: string; subject: string; from: string; text: string }, id: string) => {
@@ -425,7 +437,8 @@ export default function App({ onLock }: { onLock: () => void }) {
             result={editResult}
             canUndo={(data.history[trip.id] || []).length > 0}
             showData={showData}
-            examples={examplesFor(trip.id, meta.name, !planned)}
+            examples={editHint === 'flights' ? FLIGHT_EXAMPLES : editHint === 'stays' ? STAY_EXAMPLES : examplesFor(trip.id, meta.name, !planned)}
+            placeholder={editHint === 'flights' ? 'Paste your flight or train bookings' : editHint === 'stays' ? 'Paste your hotel or accommodation bookings' : undefined}
             onText={setEditText}
             onApply={runEdit}
             onUndo={undoEdit}
@@ -514,6 +527,18 @@ export default function App({ onLock }: { onLock: () => void }) {
               setSheet({ type: 'add', tripId: trip.id });
             }}
             onDay={(i) => go('today', { dayIdx: i })}
+            onJourneys={() => setSheet({ type: 'journeys' })}
+            onStays={() => setSheet({ type: 'stays' })}
+            onAddJourneys={() => {
+              resetEditUi();
+              setEditHint('flights');
+              setSheet({ type: 'add', tripId: trip.id });
+            }}
+            onAddStays={() => {
+              resetEditUi();
+              setEditHint('stays');
+              setSheet({ type: 'add', tripId: trip.id });
+            }}
           />
         )}
         {effTab === 'map' && day && (

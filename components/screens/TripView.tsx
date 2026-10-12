@@ -1,6 +1,7 @@
+import { Bed, Check, Plane, Plus, type LucideIcon } from 'lucide-react';
 import { BackButton } from '../BackButton';
 import { rangeLong, plural } from '@/lib/format';
-import { cityCount, dayBits, isStop, routeRows } from '@/lib/derive';
+import { cityCount, dayBits, isStop, nightCount, routeRows } from '@/lib/derive';
 import { C, mono, rule, sans, serif, CLAY, R } from '@/lib/theme';
 import type { Settings, Trip, TripMeta } from '@/lib/types';
 
@@ -12,6 +13,10 @@ export function TripView({
   onHome,
   onEdit,
   onDay,
+  onJourneys,
+  onStays,
+  onAddJourneys,
+  onAddStays,
 }: {
   meta: TripMeta;
   trip: Trip;
@@ -20,9 +25,20 @@ export function TripView({
   onHome: () => void;
   onEdit: () => void;
   onDay: (i: number) => void;
+  /** Open the list of journeys / stays (when there are some). */
+  onJourneys: () => void;
+  onStays: () => void;
+  /** Open the editor with flight / stay hints (when there are none yet). */
+  onAddJourneys: () => void;
+  onAddStays: () => void;
 }) {
   const accent = settings.accent;
   const rows = routeRows(meta, trip);
+  const stayCount = Object.keys(trip.stays).length;
+  const first = trip.journeys[0];
+  const journeyDetail = first
+    ? `${first.from} → ${first.to}${trip.journeys.length > 1 ? ` · +${trip.journeys.length - 1} more` : ''}`
+    : '';
   return (
     <div className="scroll" style={{ position: 'absolute', inset: '0 0 var(--tabbar) 0', overflowY: 'auto', padding: 'var(--top) 0 24px' }}>
      <div className="col">
@@ -41,8 +57,26 @@ export function TripView({
       <div style={{ margin: '8px 22px 0', font: sans(400, 13.5, 1.4), color: C.muted }}>
         {rangeLong(meta.start, meta.end)} · {plural(trip.days.length, 'day')} · {plural(cityCount(trip), 'city', 'cities')} · {plural(Object.keys(trip.stays).length, 'stay')}
       </div>
+      <div style={{ margin: '20px 16px 0', display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 12 }}>
+        <StatusTile
+          icon={Plane}
+          title="Flights & journeys"
+          filled={trip.journeys.length > 0}
+          detail={journeyDetail}
+          emptyText="Not added yet"
+          onOpen={trip.journeys.length > 0 ? onJourneys : onAddJourneys}
+        />
+        <StatusTile
+          icon={Bed}
+          title="Stays"
+          filled={stayCount > 0}
+          detail={`${plural(stayCount, 'stay')} · ${plural(nightCount(trip), 'night')}`}
+          emptyText="Not added yet"
+          onOpen={stayCount > 0 ? onStays : onAddStays}
+        />
+      </div>
       {rows.length > 0 && (
-        <div style={{ margin: '20px 16px 0', padding: '16px 18px', borderRadius: R.card, boxShadow: CLAY.soft, display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div style={{ margin: '14px 16px 0', padding: '16px 18px', borderRadius: R.card, boxShadow: CLAY.soft, display: 'flex', flexDirection: 'column', gap: 10 }}>
           {rows.map((r, i) => (
             <div key={i} style={{ display: 'contents' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -106,5 +140,90 @@ export function TripView({
       </div>
      </div>
     </div>
+  );
+}
+
+/**
+ * A checklist tile for something the trip needs. Filled in (raised clay, tinted with the secondary colour, a check
+ * badge) once there is data; an outline with a dashed border while it is still empty, which invites adding it.
+ */
+function StatusTile({
+  icon: Icon,
+  title,
+  filled,
+  detail,
+  emptyText,
+  onOpen,
+}: {
+  icon: LucideIcon;
+  title: string;
+  filled: boolean;
+  detail: string;
+  emptyText: string;
+  onOpen: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onOpen}
+      className={filled ? 'status-tile' : 'status-tile empty'}
+      aria-label={filled ? `${title}: ${detail}. Open` : `${title}: ${emptyText}. Add`}
+      style={{
+        boxSizing: 'border-box',
+        minHeight: 128,
+        padding: '16px 14px 14px',
+        borderRadius: R.card,
+        border: filled ? '2px solid transparent' : '2px dashed rgba(120, 84, 52, .4)',
+        background: filled ? 'color-mix(in srgb, var(--accent2) 30%, #FCF7EE)' : 'transparent',
+        boxShadow: filled ? CLAY.raised : 'none',
+        color: C.ink,
+        textAlign: 'left',
+        cursor: 'pointer',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
+        gap: 14,
+        font: 'inherit',
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+        <span
+          style={{
+            width: 44,
+            height: 44,
+            borderRadius: 22,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: filled ? 'var(--accent)' : 'transparent',
+            border: filled ? '0' : '2px dashed rgba(120, 84, 52, .4)',
+            boxSizing: 'border-box',
+            boxShadow: filled ? CLAY.accent : 'none',
+          }}
+        >
+          <Icon size={21} strokeWidth={1.9} color={filled ? '#fff' : C.muted} />
+        </span>
+        {filled ? (
+          <span
+            aria-hidden
+            style={{ width: 26, height: 26, borderRadius: 13, background: C.card, boxShadow: CLAY.soft, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          >
+            <Check size={15} strokeWidth={3} color="var(--accent)" />
+          </span>
+        ) : (
+          <span
+            aria-hidden
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 3, height: 26, padding: '0 10px 0 7px', borderRadius: 13, border: '2px dashed rgba(120, 84, 52, .4)', boxSizing: 'border-box', font: sans(700, 11.5), color: C.muted }}
+          >
+            <Plus size={13} strokeWidth={2.6} />
+            Add
+          </span>
+        )}
+      </div>
+      <div style={{ minWidth: 0 }}>
+        <div style={{ font: sans(700, 15, 1.2) }}>{title}</div>
+        <div style={{ marginTop: 4, font: sans(filled ? 500 : 400, 12.5, 1.35), color: filled ? C.ink2 : C.muted, overflowWrap: 'anywhere' }}>{filled ? detail : emptyText}</div>
+      </div>
+    </button>
   );
 }

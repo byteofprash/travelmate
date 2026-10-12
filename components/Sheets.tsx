@@ -205,6 +205,7 @@ export function JourneysSheet({ meta, trip, dayIdx, onOpen }: { meta: TripMeta; 
       <div style={kicker()}>ALL JOURNEYS · {rangeShort(meta.start, meta.end).toUpperCase()}</div>
       <div style={{ marginTop: 9, font: serif(30, 1.05) }}>Journeys</div>
       <div style={{ ...subTxt, lineHeight: 1.4 }}>Every flight and long transfer on this trip. Tap one to open its day.</div>
+      {trip.journeys.length === 0 && <div style={{ ...subTxt, marginTop: 18 }}>No flights or transfers added yet. Open the Trip tab and tap Flights &amp; journeys to paste a booking.</div>}
       <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
         {trip.journeys.map((j, i) => {
           const d = trip.days[j.day];
@@ -255,6 +256,7 @@ export function StaysSheet({ trip, dayIdx, accent, onOpen }: { trip: Trip; dayId
     <>
       <div style={kicker()}>{plural(nightCount(trip), 'NIGHT', 'NIGHTS')} · {plural(stays.length, 'STAY', 'STAYS')}</div>
       <div style={{ marginTop: 9, font: serif(30, 1.05) }}>Stays</div>
+      {stays.length === 0 && <div style={{ ...subTxt, marginTop: 18 }}>No stays added yet. Open the Trip tab and tap Stays to paste a booking.</div>}
       <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
         {stays.map((s) => (
           <div
@@ -284,12 +286,12 @@ export function StaysSheet({ trip, dayIdx, accent, onOpen }: { trip: Trip; dayId
 
 export function EditSheet({
   meta, trip, text, busy, err, result, canUndo, showData, examples,
-  onText, onApply, onUndo, onToggleData, onReset, onDelete, confirmDelete, onConfirmDelete,
+  onText, onApply, onUndo, onToggleData, onReset, onDelete, confirmDelete, onConfirmDelete, placeholder,
 }: {
   meta: TripMeta; trip: Trip; text: string; busy: boolean; err: string;
   result: { summary: string[]; n: number } | null; canUndo: boolean; showData: boolean; examples: string[];
   onText: (v: string) => void; onApply: () => void; onUndo: () => void; onToggleData: () => void; onReset: () => void; onDelete: () => void;
-  confirmDelete: boolean; onConfirmDelete: (v: boolean) => void;
+  confirmDelete: boolean; onConfirmDelete: (v: boolean) => void; placeholder?: string;
 }) {
   const disabled = busy || !text.trim();
   const empty = trip.days.length === 0;
@@ -319,7 +321,7 @@ export function EditSheet({
       <textarea
         value={text}
         onChange={(e) => onText(e.target.value)}
-        placeholder={empty ? 'Paste a booking email, a tour itinerary or your notes' : 'e.g. Add a dinner cruise on the 26th at 19:00, back by 22:00'}
+        placeholder={placeholder ?? (empty ? 'Paste a booking email, a tour itinerary or your notes' : 'e.g. Add a dinner cruise on the 26th at 19:00, back by 22:00')}
         rows={5}
         style={{ marginTop: 12, width: '100%', resize: 'none', border: 0, padding: 14, borderRadius: R.ctl, boxShadow: CLAY.inset, background: C.sand, font: sans(400, 14, 1.45), color: C.ink, outline: 'none' }}
       />

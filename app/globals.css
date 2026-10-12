@@ -154,11 +154,16 @@ h1 { font-weight: 400; }
 .hov-card { transition: background .15s, transform .15s, box-shadow .15s; }
 .hov-card:hover { background: #FFFBF4 !important; transform: translateY(-2px); }
 .hov-card:active { transform: translateY(1px) scale(.985); }
+.status-tile { transition: transform .15s, background .15s; }
+.status-tile:active { transform: translateY(1px) scale(.985); }
+.status-tile.empty:hover { background: rgba(255, 255, 255, .35) !important; }
+.status-tile:not(.empty):hover { transform: translateY(-2px); }
+.status-tile:focus-visible { outline: 2px solid var(--accent, #1F8A7D); outline-offset: 3px; }
 .lift { transition: transform .15s; }
 .lift:hover { transform: translateY(-2px); }
 .lift:active { transform: translateY(1px) scale(.985); }
 .chip-hov:hover { background: #FFFBF4; }
-@media (prefers-reduced-motion: reduce) { .hov-card, .lift { transition: none; } .hov-card:hover, .lift:hover { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .hov-card, .lift, .status-tile { transition: none; } .hov-card:hover, .lift:hover, .status-tile:hover { transform: none !important; } }
 [role='button']:focus-visible { outline: 2px solid var(--accent, #D8352A); outline-offset: 2px; }
 
 /* Map (Leaflet + OpenStreetMap), muted to sit on the paper palette */
