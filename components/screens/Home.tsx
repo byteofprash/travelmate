@@ -12,6 +12,7 @@ export function Home({
   onSettings,
   inboxCount = 0,
   onInbox,
+  onNew,
 }: {
   index: TripMeta[];
   trips: Record<string, Trip>;
@@ -21,6 +22,7 @@ export function Home({
   onSettings: () => void;
   inboxCount?: number;
   onInbox?: () => void;
+  onNew?: () => void;
 }) {
   const sorted = [...index].sort((a, b) => a.start.localeCompare(b.start));
   const upcoming = sorted.filter((t) => t.end >= todayISO);
@@ -38,7 +40,19 @@ export function Home({
     <div className="scroll" style={{ position: 'absolute', inset: 0, overflowY: 'auto', padding: 'var(--top) 0 40px' }}>
      <div className="col">
       <div style={{ padding: '6px 22px 0', font: mono(500, 11), letterSpacing: '.08em', textTransform: 'uppercase', color: C.muted }}>{seasonKicker(index)}</div>
-      <h1 style={{ margin: '14px 22px 0', font: serif(44, 1), letterSpacing: '-.02em' }}>Trips</h1>
+      <div style={{ margin: '14px 22px 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+        <h1 style={{ margin: 0, font: serif(44, 1), letterSpacing: '-.02em' }}>Trips</h1>
+        {onNew && (
+          <button
+            type="button"
+            onClick={onNew}
+            style={{ flex: 'none', display: 'inline-flex', alignItems: 'center', gap: 6, height: 46, padding: '0 20px 0 16px', border: 0, borderRadius: R.pill, background: C.dark, color: C.darkText, boxShadow: CLAY.accent, font: sans(700, 14), cursor: 'pointer' }}
+          >
+            <span style={{ font: sans(500, 22, 1), marginTop: -2 }} aria-hidden>+</span>
+            New trip
+          </button>
+        )}
+      </div>
       <div style={{ margin: '8px 22px 0', font: sans(400, 13.5, 1.4), color: C.muted }}>
         {upcoming.length} upcoming · {nights} nights away
       </div>

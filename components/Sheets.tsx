@@ -362,6 +362,79 @@ export function EditSheet({
   );
 }
 
+/* ---------- New trip ---------- */
+
+const NEW_EXAMPLE = 'e.g. Flying Munich to Lisbon on 3 Dec, home on the 7th. Hotel Avenida Palace, 4 nights. Day trip to Sintra on the 5th.';
+
+/** Create a trip: paste text and Claude names it, works out the dates and builds the days; or start empty with a name and dates. */
+export function NewTripSheet({
+  text, busy, err, onText, onCreate, onCreateEmpty,
+}: {
+  text: string; busy: boolean; err: string; onText: (v: string) => void; onCreate: () => void;
+  onCreateEmpty: (name: string, start: string, end: string) => string | null;
+}) {
+  const [name, setName] = useState('');
+  const [start, setStart] = useState('');
+  const [end, setEnd] = useState('');
+  const [emptyErr, setEmptyErr] = useState('');
+  const disabled = busy || !text.trim();
+  const field: React.CSSProperties = { width: '100%', minWidth: 0, border: 0, padding: '11px 14px', borderRadius: R.ctl, background: C.sand, boxShadow: CLAY.inset, font: sans(400, 14), color: C.ink, outline: 'none' };
+  const canEmpty = !!name.trim() && !!start && !!end;
+  return (
+    <>
+      <div style={kicker()}>NEW TRIP</div>
+      <div style={h2}>Create a trip</div>
+      <div style={subTxt}>Paste a booking email, a tour itinerary or your notes. Claude names the trip, works out the dates and builds the days, stays and journeys.</div>
+      <textarea
+        value={text}
+        onChange={(e) => onText(e.target.value)}
+        placeholder={NEW_EXAMPLE}
+        rows={7}
+        aria-label="Trip details"
+        style={{ marginTop: 14, width: '100%', resize: 'none', border: 0, padding: 14, borderRadius: R.ctl, boxShadow: CLAY.inset, background: C.sand, font: sans(400, 14, 1.45), color: C.ink, outline: 'none' }}
+      />
+      {err && <div role="alert" style={{ marginTop: 8, font: sans(400, 12.5, 1.4), color: C.error }}>{err}</div>}
+      <button
+        type="button"
+        onClick={() => !disabled && onCreate()}
+        aria-disabled={disabled}
+        style={{ ...btnDark, display: 'block', width: '100%', marginTop: 12, border: 0, boxShadow: CLAY.accent, cursor: disabled ? 'default' : 'pointer', opacity: disabled ? 0.5 : 1 }}
+      >
+        {busy ? 'Reading your text…' : 'Create trip with Claude'}
+      </button>
+      {busy && <div style={{ marginTop: 8, font: sans(400, 12, 1.4), color: C.muted, textAlign: 'center' }}>A long itinerary can take a minute.</div>}
+
+      <div style={{ margin: '24px 0 4px', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div style={{ flex: 1, height: 1, background: rule(0.12) }} />
+        <div style={label}>OR START EMPTY</div>
+        <div style={{ flex: 1, height: 1, background: rule(0.12) }} />
+      </div>
+      <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Trip name, e.g. Lisbon" aria-label="Trip name" style={field} />
+        <div style={{ display: 'flex', gap: 8 }}>
+          <label style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 4, font: sans(500, 11, 1.2), color: C.muted }}>
+            First day
+            <input type="date" value={start} onChange={(e) => { setStart(e.target.value); if (!end || end < e.target.value) setEnd(e.target.value); }} style={field} />
+          </label>
+          <label style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 4, font: sans(500, 11, 1.2), color: C.muted }}>
+            Last day
+            <input type="date" value={end} min={start || undefined} onChange={(e) => setEnd(e.target.value)} style={field} />
+          </label>
+        </div>
+        {emptyErr && <div role="alert" style={{ font: sans(400, 12.5, 1.4), color: C.error }}>{emptyErr}</div>}
+        <button
+          type="button"
+          onClick={() => canEmpty && setEmptyErr(onCreateEmpty(name, start, end) ?? '')}
+          aria-disabled={!canEmpty}
+          style={{ ...btnOutline, border: 0, opacity: canEmpty ? 1 : 0.5, cursor: canEmpty ? 'pointer' : 'default' }}
+        >
+          Create empty trip
+        </button>
+      </div>
+    </>
+  );
+}
+
 /* ---------- Inbox ---------- */
 
 const snippet = (t: string) => t.replace(/\s+/g, ' ').slice(0, 170) + (t.length > 170 ? '…' : '');

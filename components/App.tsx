@@ -9,13 +9,14 @@ import { Home } from './screens/Home';
 import { Today } from './screens/Today';
 import { TripView } from './screens/TripView';
 import { MapView } from './screens/MapView';
-import { DaySheet, EditSheet, InboxSheet, JourneysSheet, SettingsSheet, SheetFrame, StaySheet, StaysSheet, StopSheet } from './Sheets';
+import { DaySheet, EditSheet, InboxSheet, JourneysSheet, NewTripSheet, SettingsSheet, SheetFrame, StaySheet, StaysSheet, StopSheet } from './Sheets';
 import { applyOps, type EditResult } from '@/lib/ops';
+import { buildNewTrip, NewTripResultSchema } from '@/lib/newtrip';
 import { DEFAULT_SETTINGS, load, loadSettings, sampleTrip, save, saveSettings, type Persisted } from '@/lib/store';
 import { todayIndex } from '@/lib/derive';
 import { toISO, toMin } from '@/lib/format';
 import { C, rule, sans, CLAY, R } from '@/lib/theme';
-import type { Settings, Sheet, Stop, Trip } from '@/lib/types';
+import type { Settings, Sheet, Stop, Trip, TripMeta } from '@/lib/types';
 
 type Tab = 'home' | 'today' | 'trip' | 'map';
 
@@ -47,6 +48,7 @@ function useDesktop() {
 }
 
 const ERR ='Couldn’t update the trip. Try rephrasing, or try again in a moment.';
+const NEW_ERR = 'Couldn’t create the trip. Try again in a moment, or add the dates to your text.';
 
 /** `?today=2026-12-25&time=10:30` pins the clock, for checking the now line before the trip. */
 function readClockOverride() {
@@ -86,6 +88,9 @@ export default function App() {
   const [editErr, setEditErr] = useState('');
   const [editResult, setEditResult] = useState<{ summary: string[]; n: number } | null>(null);
   const [showData, setShowData] = useState(false);
+  const [newText, setNewText] = useState('');
+  const [newBusy, setNewBusy] = useState(false);
+  const [newErr, setNewErr] = useState('');
   const [toast, setToast] = useState('');
   const [toastText, setToastText] = useState(' '); // kept while the toast fades out
   const toastTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
@@ -177,6 +182,61 @@ export default function App() {
     } else {
       setEditText('');
       setSheet({ type: 'add', tripId: id });
+    }
+  };
+
+  /** Add a freshly built trip and open it (or, if it has no days yet, open the sheet to plan it). */
+  const addTrip = (m: TripMeta, t: Trip) => {
+    setData((d) => ({ ...d, index: [...d.index, m], trips: { ...d.trips, [m.id]: t } }));
+    setTripId(m.id);
+    resetEditUi();
+    setNewText('');
+    setNewErr('');
+    if (t.days.length) {
+      const ti = todayIndex(m, t, todayISO);
+      go('today', { dayIdx: ti >= 0 ? ti : 0 });
+      flash('Trip created');
+    } else {
+      setEditText('');
+      setSheet({ type: 'add', tripId: m.id });
+    }
+  };
+
+  /** Claude reads the pasted text and returns the name, dates and days; buildNewTrip turns that into a valid trip. */
+  const createFromText = async () => {
+    const text = newText.trim();
+    if (!text || newBusy) return;
+    setNewBusy(true);
+    setNewErr('');
+    try {
+      let out;
+      try {
+        const res = await fetch('/api/new-trip', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text, today: todayISO }) });
+        if (!res.ok) throw new Error(String(res.status));
+        out = NewTripResultSchema.parse(await res.json());
+      } catch {
+        return setNewErr(NEW_ERR);
+      }
+      if (out.missing) return setNewErr(out.missing);
+      try {
+        const { meta: m, trip: t } = buildNewTrip(out, Object.keys(data.trips));
+        addTrip(m, t);
+      } catch (e) {
+        setNewErr(e instanceof Error ? `${e.message} Add it to your text and try again.` : NEW_ERR);
+      }
+    } finally {
+      setNewBusy(false);
+    }
+  };
+
+  /** Name and dates only; returns an error message to show, or null on success. */
+  const createEmpty = (name: string, start: string, end: string): string | null => {
+    try {
+      const { meta: m, trip: t } = buildNewTrip({ name, start, end, summary: '', ops: [] }, Object.keys(data.trips));
+      addTrip(m, t);
+      return null;
+    } catch (e) {
+      return e instanceof Error ? e.message : NEW_ERR;
     }
   };
 
@@ -333,6 +393,8 @@ export default function App() {
             onReset={resetTrip}
           />
         );
+      case 'new':
+        return <NewTripSheet text={newText} busy={newBusy} err={newErr} onText={setNewText} onCreate={createFromText} onCreateEmpty={createEmpty} />;
       case 'inbox':
         return <InboxSheet items={inbox.items} trips={data.index} onPick={addFromInbox} onDismiss={(id) => void inbox.dismiss(id)} />;
       case 'settings':
@@ -372,6 +434,10 @@ export default function App() {
             onSettings={() => setSheet({ type: 'settings' })}
             inboxCount={inbox.items.length}
             onInbox={() => setSheet({ type: 'inbox' })}
+            onNew={() => {
+              setNewErr('');
+              setSheet({ type: 'new' });
+            }}
           />
         )}
         {effTab === 'today' && day && (

@@ -8,6 +8,7 @@ Built from the Claude Design handoff in [`docs/design/`](docs/design/HANDOFF.md)
 
 - **Next.js (App Router) + TypeScript**, deployed on Vercel. A web-first, installable PWA shell.
 - **`/api/edit`**: a server route that calls Claude with the `@anthropic-ai/sdk`. It uses one `apply_trip_ops` tool, validates the returned ops with zod and returns a **patch** (`{ summary, ops }`), never the whole trip. The API key never reaches the browser.
+- **`/api/new-trip`**: creates a whole new trip from pasted text. It calls Claude once (`create_trip` tool), which returns the trip's name, start and end dates, a one-line summary and the ops to build it; `lib/newtrip.ts` validates that and builds the trip. Day dates and weekdays are always recomputed from the start date, and the end date is widened if the plan runs past it. Both routes share `lib/server/claude.ts`.
 - Trips are stored in `localStorage` (`tc-trips-v1`), so the app keeps working without signal. They can also be synced to a Redis database so every device shows the same trips (see Syncing between devices). Each Claude edit keeps a version in history, so Undo can step back several times.
 
 ## Deploying on Vercel
@@ -81,11 +82,19 @@ npm run dev
 | `app/api/inbound/route.ts`, `app/api/inbox/route.ts`, `lib/server/inbox-store.ts`, `lib/inbox.ts`, `components/useInbox.ts` | Email inbox: receive from the worker, list and dismiss, in-app banner |
 | `cloudflare/email-worker/` | Cloudflare Email Worker that passes forwarded emails to `/api/inbound` (deployed separately) |
 | `lib/sync.ts`, `components/useSync.ts` | Client side of syncing: change tracking, background push and pull, conflict choice |
+| `app/api/new-trip/route.ts`, `lib/newtrip.ts`, `lib/server/claude.ts` | Create a trip from text: the route, the schema and builder, and the shared Claude call |
 | `lib/ops.ts` | Op schema (zod) and `applyOps()` |
 | `lib/prompt.ts` | System prompt (from the handoff, adapted for tool use and "plan from pasted text") |
 | `lib/extras.ts` | Presentation data the mockup hard-coded for Egypt (route box, whole-trip map, sea/Nile) |
 | `data/` | Sample trips from the handoff |
 | `docs/design/` | Original handoff README and HTML prototype, for reference |
+
+## Creating trips
+
+The **New trip** button on the Trips screen opens a sheet with two ways to start:
+
+- **From text:** paste a booking email, a tour itinerary or notes, and press **Create trip with Claude**. Claude names the trip, works out the dates (using today's date to resolve dates written without a year) and builds the days, stays and journeys. If the text does not say where or when, nothing is created and the sheet says what is missing. Only what the text says or implies is used; unknown times show as "—" and unknown details as "Add confirmation" / "Add phone". The trip opens straight away, and Undo works on later edits as usual.
+- **Empty:** enter a name and first and last day and press **Create empty trip**; the Plan this trip sheet opens so you can paste text into it.
 
 ## Layouts
 
