@@ -31,6 +31,6 @@ export async function explainFailure(res: Response | null, fallback: string): Pr
     return `Anthropic rejected the request (${s || res.status})${detail ? `: ${detail.slice(0, 160)}` : ''}${ref}`;
   }
   // Our own, already readable messages (too large, did not validate, no changes returned, …).
-  if (res.status === 422 && err) return err;
+  if (res.status === 422 && err) return detail ? `${err} (${detail.split('\n')[0].slice(0, 140)})` : err;
   return `${fallback} (error ${res.status}${err ? `: ${err.slice(0, 80)}` : ''})`;
 }

@@ -3,9 +3,21 @@ import type { Day, Item, Journey, Stay, Trip } from './types';
 
 // Loose record for partial updates; the model may send any subset of fields.
 const Fields = z.record(z.string(), z.unknown());
-const LL = z.tuple([z.number(), z.number()]);
 
-const ItemSchema = z
+// Models are sloppy in harmless ways: null for "nothing here", "5" for 5, a bare string for a list of one. Accept those,
+// so a patch is only rejected for something that is actually wrong.
+const dropNulls = (v: unknown): unknown =>
+  Array.isArray(v)
+    ? v.map(dropNulls)
+    : v && typeof v === 'object'
+      ? Object.fromEntries(Object.entries(v).filter(([, x]) => x !== null).map(([k, x]) => [k, dropNulls(x)]))
+      : v;
+const toNum = (v: unknown) => (typeof v === 'string' && v.trim() !== '' && Number.isFinite(Number(v)) ? Number(v) : v);
+const num = () => z.preprocess(toNum, z.number());
+const int = () => z.preprocess(toNum, z.number().int());
+const LL = z.tuple([num(), num()]);
+
+const ItemShape = z
   .object({
     kind: z.enum(['stop', 'leg']).optional(),
     id: z.string().optional(),
@@ -22,11 +34,12 @@ const ItemSchema = z
     via: z.array(LL).optional(),
   })
   .passthrough();
+const ItemSchema = z.preprocess(dropNulls, ItemShape);
 
-const DaySchema = z
+const DayShape = z
   .object({
-    num: z.number().int().positive(),
-    d: z.number().int().optional(),
+    num: z.preprocess(toNum, z.number().int().positive()),
+    d: int().optional(),
     wd: z.string().optional(),
     title: z.string(),
     mode: z.string().optional(),
@@ -40,7 +53,7 @@ const DaySchema = z
   })
   .passthrough();
 
-const StaySchema = z
+const StayShape = z
   .object({
     id: z.string(),
     city: z.string(),
@@ -48,19 +61,19 @@ const StaySchema = z
     area: z.string().optional(),
     inShort: z.string().optional(),
     outShort: z.string().optional(),
-    nights: z.array(z.number().int()).optional(),
+    nights: z.array(int()).optional(),
     conf: z.string().optional(),
     phone: z.string().optional(),
     by: z.string().optional(),
     notes: z.string().optional(),
     ll: LL.optional(),
-    day: z.number().int().optional(),
+    day: int().optional(),
   })
   .passthrough();
 
-const JourneySchema = z
+const JourneyShape = z
   .object({
-    day: z.number().int().nonnegative(),
+    day: z.preprocess(toNum, z.number().int().nonnegative()),
     mode: z.string(),
     by: z.string().optional(),
     from: z.string(),
@@ -69,24 +82,28 @@ const JourneySchema = z
   })
   .passthrough();
 
+const DaySchema = z.preprocess(dropNulls, DayShape);
+const StaySchema = z.preprocess(dropNulls, StayShape);
+const JourneySchema = z.preprocess(dropNulls, JourneyShape);
+
 export const OpSchema = z.discriminatedUnion('op', [
   z.object({ op: z.literal('update_item'), id: z.string(), fields: Fields }),
-  z.object({ op: z.literal('add_item'), day: z.number().int(), after_id: z.string().nullable().optional(), item: ItemSchema }),
+  z.object({ op: z.literal('add_item'), day: int(), after_id: z.string().nullable().optional(), item: ItemSchema }),
   z.object({ op: z.literal('remove_item'), id: z.string() }),
-  z.object({ op: z.literal('update_day'), day: z.number().int(), fields: Fields }),
+  z.object({ op: z.literal('update_day'), day: int(), fields: Fields }),
   z.object({ op: z.literal('add_day'), day: DaySchema }),
-  z.object({ op: z.literal('remove_day'), day: z.number().int() }),
+  z.object({ op: z.literal('remove_day'), day: int() }),
   z.object({ op: z.literal('update_stay'), id: z.string(), fields: Fields }),
   z.object({ op: z.literal('add_stay'), stay: StaySchema }),
   z.object({ op: z.literal('remove_stay'), id: z.string() }),
   z.object({ op: z.literal('add_journey'), journey: JourneySchema }),
-  z.object({ op: z.literal('update_journey'), index: z.number().int(), fields: Fields }),
-  z.object({ op: z.literal('remove_journey'), index: z.number().int() }),
+  z.object({ op: z.literal('update_journey'), index: int(), fields: Fields }),
+  z.object({ op: z.literal('remove_journey'), index: int() }),
 ]);
 export type Op = z.infer<typeof OpSchema>;
 
 export const EditResultSchema = z.object({
-  summary: z.array(z.string()),
+  summary: z.preprocess((v) => (typeof v === 'string' ? [v] : v), z.array(z.string())),
   ops: z.array(OpSchema),
 });
 export type EditResult = z.infer<typeof EditResultSchema>;

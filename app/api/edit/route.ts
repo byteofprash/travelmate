@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { EditResultSchema } from '@/lib/ops';
 import { SYSTEM_PROMPT } from '@/lib/prompt';
 import { checkAccess } from '@/lib/server/access';
-import { callTool } from '@/lib/server/claude';
+import { callValidated } from '@/lib/server/claude';
 
 export const runtime = 'nodejs';
 export const maxDuration = 300;
@@ -56,12 +56,7 @@ export async function POST(req: Request) {
     `Trip: ${meta.name}, ${meta.start} to ${meta.end} (${meta.nights} nights). Day 1 is ${meta.start}.\n\n` +
     `Current trip JSON:\n${tripJson}\n\nRequest:\n${request}`;
 
-  const out = await callTool({ system: SYSTEM_PROMPT, tool: TOOL, content });
+  const out = await callValidated({ system: SYSTEM_PROMPT, tool: TOOL, content, schema: EditResultSchema });
   if (out instanceof Response) return out;
-  const result = EditResultSchema.safeParse(out.input);
-  if (!result.success) {
-    console.error('Invalid ops from model', z.prettifyError(result.error));
-    return Response.json({ error: 'The model returned changes that did not validate.' }, { status: 422 });
-  }
-  return Response.json(result.data);
+  return Response.json(out.data);
 }

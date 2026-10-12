@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { NewTripResultSchema } from '@/lib/newtrip';
 import { NEW_TRIP_PROMPT } from '@/lib/prompt';
 import { checkAccess } from '@/lib/server/access';
-import { callTool } from '@/lib/server/claude';
+import { callValidated } from '@/lib/server/claude';
 
 export const runtime = 'nodejs';
 export const maxDuration = 300;
@@ -55,12 +55,7 @@ export async function POST(req: Request) {
   if (!parsed.success) return Response.json({ error: 'Bad request' }, { status: 400 });
   const { text, today } = parsed.data;
 
-  const out = await callTool({ system: NEW_TRIP_PROMPT, tool: TOOL, content: `Today is ${today}.\n\nText:\n${text}` });
+  const out = await callValidated({ system: NEW_TRIP_PROMPT, tool: TOOL, content: `Today is ${today}.\n\nText:\n${text}`, schema: NewTripResultSchema });
   if (out instanceof Response) return out;
-  const result = NewTripResultSchema.safeParse(out.input);
-  if (!result.success) {
-    console.error('Invalid new trip from model', z.prettifyError(result.error));
-    return Response.json({ error: 'The model returned a trip that did not validate.' }, { status: 422 });
-  }
-  return Response.json(result.data);
+  return Response.json(out.data);
 }

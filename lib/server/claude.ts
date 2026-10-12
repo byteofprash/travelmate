@@ -1,4 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk';
+import { z } from 'zod';
 
 const MODEL = process.env.CLAUDE_MODEL || 'claude-sonnet-5-5';
 // Optional. An API key belongs to one workspace, and Anthropic reports the workspace that served each
@@ -63,4 +64,42 @@ export async function callTool(opts: { system: string; tool: Anthropic.Beta.Beta
     console.error(err);
     return Response.json({ error: 'internal' }, { status: 500 });
   }
+}
+
+/** The first few problems in a failed validation, as short lines: "ops.2.day.title: Invalid input: expected string". */
+export function summarizeIssues(error: z.ZodError, max = 5): string {
+  return error.issues
+    .slice(0, max)
+    .map((i) => `${i.path.join('.') || '(root)'}: ${i.message}`)
+    .join('\n');
+}
+
+/**
+ * callTool plus validation. Models occasionally return a patch that is almost right, so if the first answer does not
+ * match `schema`, Claude is told exactly what was wrong and asked once more before giving up. A second failure comes
+ * back as a 422 whose `detail` lists the problems, so the app (and the log) can say what was wrong.
+ */
+export async function callValidated<T>(opts: {
+  system: string;
+  tool: Anthropic.Beta.BetaTool;
+  content: string;
+  schema: z.ZodType<T>;
+  /** For tests: replaces the real Claude call. */
+  call?: typeof callTool;
+}): Promise<{ data: T } | Response> {
+  const call = opts.call ?? callTool;
+  let content = opts.content;
+  let issues = '';
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    const out = await call({ system: opts.system, tool: opts.tool, content });
+    if (out instanceof Response) return out;
+    const parsed = opts.schema.safeParse(out.input);
+    if (parsed.success) return { data: parsed.data };
+    issues = summarizeIssues(parsed.error);
+    console.error(`Invalid ${opts.tool.name} answer from the model (attempt ${attempt})\n${z.prettifyError(parsed.error)}`);
+    content =
+      `${opts.content}\n\nYour previous answer was rejected because it did not match the required format:\n${issues}\n` +
+      `Call the tool again with a corrected answer. Follow the formats in the instructions exactly.`;
+  }
+  return Response.json({ error: 'The model returned changes that did not validate.', detail: issues }, { status: 422 });
 }
