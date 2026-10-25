@@ -113,6 +113,12 @@ export default function App({ onLock }: { onLock: () => void }) {
   const toastTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  // iOS Safari ignores the viewport lock, so stop its pinch gesture directly (the map still pinches via its own touch handling).
+  useEffect(() => {
+    const stop = (e: Event) => e.preventDefault();
+    for (const t of ['gesturestart', 'gesturechange', 'gestureend']) document.addEventListener(t, stop);
+    return () => { for (const t of ['gesturestart', 'gesturechange', 'gestureend']) document.removeEventListener(t, stop); };
+  }, []);
   useEffect(() => save(data), [data]);
   useEffect(() => saveSettings(settings), [settings]);
   useEffect(() => {

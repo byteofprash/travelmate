@@ -10,7 +10,7 @@
 }
 
 * { box-sizing: border-box; }
-html, body { margin: 0; height: 100%; overscroll-behavior: none; } /* no pull-down bounce or pull-to-refresh */
+html, body { margin: 0; height: 100%; overscroll-behavior: none; touch-action: pan-x pan-y; } /* no pull-down bounce or pull-to-refresh */
 body {
   background: #0e0f1a;
   font-family: 'VT323', 'Liberation Sans', monospace;
