@@ -8,11 +8,11 @@ keep_vars = true
 
 # Set these in the dashboard as plain variables (or uncomment and fill them in here, but then they are committed
 # to the repo and override the dashboard):
-#   INBOUND_URL      your app's address plus /api/inbound, e.g. https://your-app.vercel.app/api/inbound
+#   INBOUND_URL      your app's address plus /api/inbound, e.g. https://travel.byteofprash.com/api/inbound
 #   ALLOWED_SENDERS  comma-separated addresses allowed to send to this worker (the address you forward from)
 # And this one as a Secret, never in this file:
-#   INBOUND_SECRET   the same value as INBOUND_SECRET on Vercel
+#   INBOUND_SECRET   the same value as INBOUND_SECRET in the server .env
 #
 # [vars]
-# INBOUND_URL = "https://YOUR-APP.vercel.app/api/inbound"
+# INBOUND_URL = "https://travel.byteofprash.com/api/inbound"
 # ALLOWED_SENDERS = "you@example.com"

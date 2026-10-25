@@ -1,0 +1,27 @@
+# Runs behind the shared Traefik + cloudflared stack in ~/infra (see README, "Deploying on Hetzner").
+# No ports are published: Traefik routes travel.byteofprash.com to this container over the `proxy` network.
+services:
+  travelmate:
+    build:
+      context: .
+      args:
+        NEXT_PUBLIC_MAP_TILES: ${NEXT_PUBLIC_MAP_TILES:-}
+        NEXT_PUBLIC_MAP_ATTRIBUTION: ${NEXT_PUBLIC_MAP_ATTRIBUTION:-}
+    container_name: travelmate
+    restart: unless-stopped
+    env_file: .env
+    networks: [proxy]
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:3000/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.travelmate.rule=Host(`travel.byteofprash.com`)
+      - traefik.http.routers.travelmate.entrypoints=web
+      - traefik.http.services.travelmate.loadbalancer.server.port=3000
+
+networks:
+  proxy:
+    external: true
