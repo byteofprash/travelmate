@@ -35,7 +35,7 @@ export async function GET(req: Request) {
   const deep = new URL(req.url).searchParams.get('deep') === '1';
   if (!process.env.ANTHROPIC_API_KEY) {
     return Response.json(
-      { ok: false, hasKey: false, problem: 'ANTHROPIC_API_KEY is not set on the server. Add it in Vercel, then redeploy.' },
+      { ok: false, hasKey: false, problem: 'ANTHROPIC_API_KEY is not set on the server. Add it to the server .env, then restart the container.' },
       { status: 503 },
     );
   }

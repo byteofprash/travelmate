@@ -1,9 +1,8 @@
 import { Redis } from '@upstash/redis';
 
 /**
- * Server-side store for the synced trips: one JSON document in Upstash Redis (what Vercel KV became in the
- * Vercel Marketplace). Vercel sets KV_REST_API_URL and KV_REST_API_TOKEN when the database is connected to
- * the project; a database created directly on Upstash uses UPSTASH_REDIS_REST_URL and _TOKEN. Either works.
+ * Server-side store for the synced trips: one JSON document in Upstash Redis. The credentials are
+ * KV_REST_API_URL and KV_REST_API_TOKEN, or UPSTASH_REDIS_REST_URL and _TOKEN. Either works.
  */
 const KEY = 'travelmate:state:v1';
 

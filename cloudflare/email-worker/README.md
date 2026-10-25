@@ -11,9 +11,9 @@ which puts them in the in-app inbox. Nothing is added to a trip until you choose
    npm install
    npx wrangler login
    npx wrangler deploy
-   npx wrangler secret put INBOUND_SECRET     # paste the same value you set as INBOUND_SECRET on Vercel
+   npx wrangler secret put INBOUND_SECRET     # paste the same value you set as INBOUND_SECRET in the server's `.env`
    ```
-   Then add the two plain variables, `INBOUND_URL` (your app's address plus `/api/inbound`) and `ALLOWED_SENDERS` (the address you
+   Then add the two plain variables, `INBOUND_URL` (`https://travel.byteofprash.com/api/inbound`) and `ALLOWED_SENDERS` (the address you
    forward from), in the dashboard: Worker → Settings → Variables and Secrets. (The deploy keeps dashboard values: see `keep_vars` in
    `wrangler.toml`. You can also put them in `wrangler.toml` under `[vars]`, but then they are committed to the repo.)
    If you deploy from GitHub instead of the command line, skip the commands and set `INBOUND_URL`, `ALLOWED_SENDERS` and the
@@ -22,7 +22,7 @@ which puts them in the in-app inbox. Nothing is added to a trip until you choose
    (it adds the MX and SPF records for you).
 3. **Create the address:** Email Routing → Routing rules → Create address → e.g. `trips@yourdomain.com` →
    Action **Send to a Worker** → `travelmate-email`.
-4. **On Vercel**, add `INBOUND_SECRET` (any long random string, e.g. `openssl rand -base64 24`) and redeploy.
+4. **On the server**, add `INBOUND_SECRET` (any long random string, e.g. `openssl rand -base64 24`) to `.env` and run `docker compose up -d`. If Cloudflare Access protects the app, it must bypass `/api/inbound`.
 5. Forward a booking email to `trips@yourdomain.com`. Within a few seconds it appears in the app (Trips screen).
 
 Sending to this address does not forward the email anywhere else; the worker only reads it.
@@ -41,12 +41,12 @@ Sending to this address does not forward the email anywhere else; the worker onl
 | Message | Meaning |
 | --- | --- |
 | `Sender not allowed` | The sender is not in `ALLOWED_SENDERS`. Use exactly the address you forward from. |
-| `Could not deliver (401 bad-secret)` | The app got the request but `INBOUND_SECRET` on Cloudflare does not match the one on Vercel (check for typos, extra characters, and that it is the Vercel Production environment, then redeploy Vercel). |
-| `Could not deliver (401 blocked-by-vercel-protection)` | Vercel is blocking the request before it reaches the app. `INBOUND_URL` points at a protected deployment (often a preview URL). Use the production URL, or turn off Deployment Protection for it. |
+| `Could not deliver (401 bad-secret)` | The app got the request but `INBOUND_SECRET` on Cloudflare does not match the one in the server's `.env` (check for typos and extra characters, then `docker compose up -d`). |
+| `Could not deliver (401 blocked-by-vercel-protection)` | Something in front of the app (Cloudflare Access, or a protected Vercel deployment) is blocking the request before it reaches the app. Add a Bypass policy for `/api/inbound`. |
 | `Could not deliver (404)` | `INBOUND_URL` has the wrong address or path. It must end in `/api/inbound`. |
 | `Worker setting INBOUND_URL is not set` / `Worker secret INBOUND_SECRET is not set` | The worker is missing that setting. Add it in the dashboard (Worker → Settings → Variables and Secrets). |
-| `Could not deliver (503 …)` | `no-secret`: `INBOUND_SECRET` is not set on Vercel. `no-storage`: no database is connected. Add them and redeploy. (503 is retried, so the sender sees a temporary failure rather than a bounce.) |
+| `Could not deliver (503 …)` | `no-secret`: `INBOUND_SECRET` is not set in `.env`. `no-storage`: no database is connected. Add them and restart the container. (503 is retried, so the sender sees a temporary failure rather than a bounce.) |
 | `The email has no readable text` | The email has no text part (for example, image only). |
 | `Message too large` | Over 5 MB. |
 
-**It is delivered but nothing shows in the app.** Open Settings → Sync and check the access code and status: the inbox is behind the same access code as syncing. Then check the Vercel logs for `/api/inbound`.
+**It is delivered but nothing shows in the app.** Open Settings → Sync and check the access code and status: the inbox is behind the same access code as syncing. Then check `docker compose logs travelmate` for `/api/inbound`.

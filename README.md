@@ -6,24 +6,29 @@ Built from the Claude Design handoff in [`docs/design/`](docs/design/HANDOFF.md)
 
 ## Stack
 
-- **Next.js (App Router) + TypeScript**, deployed on Vercel. A web-first, installable PWA shell.
+- **Next.js (App Router) + TypeScript**, deployed with Docker on Hetzner. A web-first, installable PWA shell.
 - **`/api/edit`**: a server route that calls Claude with the `@anthropic-ai/sdk`. It uses one `apply_trip_ops` tool, validates the returned ops with zod and returns a **patch** (`{ summary, ops }`), never the whole trip. The API key never reaches the browser.
 - **`/api/new-trip`**: creates a whole new trip from pasted text. It calls Claude once (`create_trip` tool), which returns the trip's name, start and end dates, a one-line summary and the ops to build it; `lib/newtrip.ts` validates that and builds the trip. Day dates and weekdays are always recomputed from the start date, and the end date is widened if the plan runs past it. Both routes share `lib/server/claude.ts`.
 - Trips are stored in `localStorage` (`tc-trips-v1`), so the app keeps working without signal. They can also be synced to a Redis database so every device shows the same trips (see Syncing between devices). Each Claude edit keeps a version in history, so Undo can step back several times.
 
-## Deploying on Vercel
+## Deploying on Hetzner
 
-1. Import the repo into Vercel. The Next.js preset needs no config changes.
-2. Add the environment variables **`ANTHROPIC_API_KEY`** and **`APP_SECRET`** (Project → Settings → Environment Variables). `APP_SECRET` is the access code: see Access code below. Nothing works without it.
-3. Optional: **`ANTHROPIC_WORKSPACE_ID`** (`wrkspc_...`). An API key belongs to exactly one Anthropic workspace, and each response says which workspace served it. If this is set, `/api/edit` returns an error (and logs it) when a response comes from any other workspace, which catches the wrong workspace's key being deployed. It checks the key; it can't choose the workspace, so to use a different workspace, create the API key in that workspace. The check happens after the request is sent, so it stops and flags a mismatch but can't prevent that one call.
-4. Recommended: connect a database so your trips are saved in the cloud and shared between devices (see Syncing between devices).
-5. Optional: **`CLAUDE_MODEL`** overrides the model (default `claude-sonnet-5-5`, following the handoff's "sonnet").
+The app runs as one Docker container at **https://travel.byteofprash.com**, behind the shared Traefik + Cloudflare Tunnel stack in `~/infra` (no ports are published; Traefik routes by hostname over the `proxy` Docker network).
 
-**Checking the setup:** after deploying, request `/api/health` with your access code, e.g. `curl -H "x-access-code: YOUR_CODE" https://your-app.vercel.app/api/health` (it is locked like everything else, so it cannot be opened in a plain browser tab). It makes one free token-counting call and reports whether the key works, which workspace served it, and, if it fails, why (no key set, key rejected, wrong workspace, unknown model, rate limit). Add `?deep=1` to send a tiny real request (a few tokens) with the same settings as the app's edit route: if the plain check passes but the deep one fails, the problem is in the request settings rather than the key. Replies also show `setup` (where requests are sent, and whether the key looks like a normal API key or has stray quotes or spaces) and, on errors, `answeredBy` (whether the reply carries Anthropic's request ID or came from some other proxy or gateway). Errors include Anthropic's `requestId`, which support needs; the server log carries it too. It never returns the key. Changing an environment variable in Vercel only takes effect after a redeploy.
+1. On the server, clone the repo to `~/travelmate` and `cd` into it.
+2. Create `.env` next to `docker-compose.yml` (it is git-ignored) from `.env.example`. **`ANTHROPIC_API_KEY`** and **`APP_SECRET`** are required; `APP_SECRET` is the access code (see Access code below). Nothing works without it. Add the Upstash vars for syncing and `INBOUND_SECRET` for email forwarding if you use them. Optional: **`ANTHROPIC_WORKSPACE_ID`** (`wrkspc_...`), which makes `/api/edit` return an error (and log it) when a response comes from any other workspace; it checks the key, it can't choose the workspace. Optional: **`CLAUDE_MODEL`** overrides the model (default `claude-sonnet-5-5`).
+3. Start it: `docker compose up -d --build`.
+4. Cloudflare Zero Trust → Networks → Tunnels → the tunnel → add a published application route: subdomain `travel`, domain `byteofprash.com`, type HTTP, URL `traefik:80`.
+5. Optional: add a Cloudflare Access self-hosted application for `travel.byteofprash.com`. If you do, add a **Bypass** policy for the path `/api/inbound`, otherwise the email worker is blocked (that route has its own `INBOUND_SECRET`). The app's own access code still applies on top.
+6. Check Traefik is routing: `docker logs traefik` should show the request with router `travelmate@docker`.
 
-**When an edit or a new trip fails,** the sheet says why (for example the API key was rejected, the account is out of credit, the model is unknown, Anthropic is busy, or the request timed out) and includes Anthropic's request ID where there is one. The server log (Vercel → Logs → `/api/edit`) has the full detail on a line starting `Anthropic API error`. How strictly Claude is held to the format: the tool definition in `lib/server/tool-schemas.ts` spells out every operation with its fields, types, allowed values (`tag`, `mode`, weekdays) and required fields, and the prompt says nested values must be real arrays and objects. Anthropic's `strict: true` mode (which enforces a schema exactly) is deliberately not used: it caps a request at 24 optional fields and 16 union fields, and the itinerary format has many more optional fields than that, so a strict version would be rejected as too complex. Instead every answer is validated in `lib/ops.ts`: a list or object sent as JSON text inside a string (for example `"ops": "[{...}]"`) is parsed, harmless slips (a `null` for an empty field, a number sent as text) are accepted, and otherwise Claude is asked once to correct the answer, told exactly which fields were wrong; only if that fails too does the sheet show the failing field.
+**Updating:** `git pull && docker compose up -d --build`. Logs: `docker compose logs -f travelmate`. Changing `.env` needs `docker compose up -d` to take effect. `NEXT_PUBLIC_MAP_TILES` / `NEXT_PUBLIC_MAP_ATTRIBUTION` are baked in at build time, so set them in `.env` and rebuild.
 
-The Claude route sets `maxDuration = 300`, which fits Vercel's default Fluid Compute limits. Pasting a long itinerary into an empty trip can take a while.
+**Checking the setup:** after deploying, request `/api/health` with your access code, e.g. `curl -H "x-access-code: YOUR_CODE" https://travel.byteofprash.com/api/health` (it is locked like everything else, so it cannot be opened in a plain browser tab). It makes one free token-counting call and reports whether the key works, which workspace served it, and, if it fails, why (no key set, key rejected, wrong workspace, unknown model, rate limit). Add `?deep=1` to send a tiny real request (a few tokens) with the same settings as the app's edit route: if the plain check passes but the deep one fails, the problem is in the request settings rather than the key. Replies also show `setup` (where requests are sent, and whether the key looks like a normal API key or has stray quotes or spaces) and, on errors, `answeredBy` (whether the reply carries Anthropic's request ID or came from some other proxy or gateway). Errors include Anthropic's `requestId`, which support needs; the server log carries it too. It never returns the key. 
+
+**When an edit or a new trip fails,** the sheet says why (for example the API key was rejected, the account is out of credit, the model is unknown, Anthropic is busy, or the request timed out) and includes Anthropic's request ID where there is one. The server log (`docker compose logs travelmate`) has the full detail on a line starting `Anthropic API error`. How strictly Claude is held to the format: the tool definition in `lib/server/tool-schemas.ts` spells out every operation with its fields, types, allowed values (`tag`, `mode`, weekdays) and required fields, and the prompt says nested values must be real arrays and objects. Anthropic's `strict: true` mode (which enforces a schema exactly) is deliberately not used: it caps a request at 24 optional fields and 16 union fields, and the itinerary format has many more optional fields than that, so a strict version would be rejected as too complex. Instead every answer is validated in `lib/ops.ts`: a list or object sent as JSON text inside a string (for example `"ops": "[{...}]"`) is parsed, harmless slips (a `null` for an empty field, a number sent as text) are accepted, and otherwise Claude is asked once to correct the answer, told exactly which fields were wrong; only if that fails too does the sheet show the failing field.
+
+The Claude routes set `maxDuration = 300`, which is ignored on a long-running container. Cloudflare's proxy times out at about 100 seconds without a response, so pasting a long itinerary into an empty trip can take a while, but a request that takes longer than that will fail at the tunnel.
 
 ## Access code
 
@@ -31,7 +36,7 @@ The app has no user accounts. Instead, **everything works only with a valid acce
 
 - **The app is locked.** On a device that has not entered the code, you see only a lock screen: no trips are shown. Enter the code once per device; it is checked with the server and then kept on that device.
 - **The server refuses everything else.** `/api/edit`, `/api/new-trip`, `/api/state`, `/api/inbox` and `/api/health` answer 401 without the right `x-access-code` header, and every one of them answers 503 if `APP_SECRET` is not set (the app fails closed). The only other route, `/api/inbound`, is for the email worker and has its own secret (`INBOUND_SECRET`).
-- **If the code changes** (you set a new `APP_SECRET` and redeploy), each device locks the next time it talks to the server and asks for the new code. **Settings → Lock this device** locks one device on purpose.
+- **If the code changes** (you set a new `APP_SECRET` and restart the container), each device locks the next time it talks to the server and asks for the new code. **Settings → Lock this device** locks one device on purpose.
 - **Offline:** a device that already entered a valid code opens and works with its saved trips without a connection. A device that never entered one cannot open the app, online or not.
 - Choose a long random value (`openssl rand -base64 24`): the server waits briefly before refusing a wrong code, but a short code can still be guessed. The page itself is public; the sample trips are part of the app's code, but nothing is shown or loaded from the cloud until the code is accepted.
 
@@ -39,8 +44,8 @@ The app has no user accounts. Instead, **everything works only with a valid acce
 
 Trips are kept in each browser's `localStorage` (so the app works offline) and saved to a Redis database so every device shows the same plans. Without a database the app still works, but a phone and a laptop have separate copies and clearing the browser's data deletes them.
 
-1. **Add a database.** In the Vercel project: Storage → Marketplace → **Upstash Redis** → connect it to the project. (Vercel KV became this.) Vercel adds `KV_REST_API_URL` and `KV_REST_API_TOKEN`; a database made directly on Upstash uses `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`, which also work.
-2. **Redeploy.** Syncing then starts by itself once a device is unlocked. Settings → **Sync and access** shows the state and has **Sync now**.
+1. **Add a database.** Create an **Upstash Redis** database and put its REST URL and token in `.env` as `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` (`KV_REST_API_URL` / `KV_REST_API_TOKEN` also work).
+2. **Restart** with `docker compose up -d`. Syncing then starts by itself once a device is unlocked. Settings → **Sync and access** shows the state and has **Sync now**.
 
 How it behaves:
 
@@ -59,7 +64,7 @@ you forward an email ─▶ trips@yourdomain ─▶ Cloudflare Email Routing ─
 app: "2 emails waiting" ─▶ pick a trip ─▶ the usual edit sheet, prefilled ─▶ Apply with Claude (Undo works)
 ```
 
-1. Add `INBOUND_SECRET` on Vercel (any long random string) and redeploy.
+1. Add `INBOUND_SECRET` to `.env` (any long random string) and run `docker compose up -d`.
 2. Deploy the worker and create the address: follow [`cloudflare/email-worker/README.md`](cloudflare/email-worker/README.md). The worker needs your app's URL, the same `INBOUND_SECRET` and the address you forward from.
 3. Forward an email to the new address. Within a few seconds the Trips screen shows a banner (the app checks on start-up, when it returns to the foreground and every minute).
 
