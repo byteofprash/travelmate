@@ -2,7 +2,7 @@
 
 The one app you open while travelling: where you're going today, how you're getting there and where you're sleeping tonight. Paste itineraries, booking emails or notes and Claude turns them into days, stops, commutes, stays and journeys, then edits them from plain-English requests.
 
-Built from the Claude Design handoff in [`docs/design/`](docs/design/HANDOFF.md). Spacing and copy follow the mockup; the visual style is claymorphism and the typeface is Nunito Sans at the owner's request (see Design and Fonts).
+Built from the Claude Design handoff in [`docs/design/`](docs/design/HANDOFF.md). Spacing and copy follow the mockup; the visual style is 8-bit pixel art at the owner's request (see Design and Fonts).
 
 ## Stack
 
@@ -123,22 +123,22 @@ A flight only counts as complete when it has all four of: a **flight number** (l
 - **900px and wider (desktop):** the tab bar becomes a collapsible left sidebar with icons and names (Trips, then Trip, Today and Map for the open trip, and Settings). The centre column keeps the same cards but at the phone's size (1x, and 1.1x on screens 1400px and wider). Sheets open as a drawer on the right instead of from the bottom. The sidebar's collapsed state is remembered.
 - The breakpoint lives in two places that must match: `app/globals.css` and `DESKTOP_QUERY` in `components/App.tsx`.
 
-## Design: claymorphism
+## Design: 8-bit pixel art
 
-The app uses a claymorphic look: soft, puffy, borderless objects on a warm cream base, lit from the top-left. Everything is defined in `lib/theme.ts` (the `C`, `TAGC`, `TAGBG`, `CLAY` and `R` objects) plus the matching rules in `app/globals.css`, so re-theming means editing those two files.
+The app is drawn as 8-bit pixel art: a dithered night-navy page with stars, light panels with hard 4px ink outlines and notched corners, a lit top-left and shaded bottom-right edge, and hard drop shadows. Everything comes from `lib/theme.ts` (`C`, `TAGBG`, `TAGC`, `CLAY`, `R`, the font helpers) plus `app/globals.css`, so re-theming means editing those two files. The token names (`CLAY.raised`, `R.card` and so on) were kept from the earlier clay design; their values are now pixel ones, and every radius is 0.
 
-- **Palette:** cream base `#F4EBDD`, clay cards `#FCF7EE`, warm brown ink `#3A2F2A`. Tags are deep text on a pastel pill (blue for flights and arrivals, green for stays, orange for meals, red for visits). Text colours are chosen to stay readable on cream.
-- **Background:** not the cream: a faint mist of the primary colour (`--bg`), two soft washes of the primary and secondary in opposite corners, and a very faint tile of map contour lines (an SVG mask, so the lines take the primary colour). It is set on `.phone` in `app/globals.css` and follows the chosen preset. The cards, sidebar and sheets stay warm cream so they stand out from it.
-- **Clay shadows (`CLAY`):** `raised` and `soft` combine an outer drop shadow with an inner top-left highlight and an inner bottom-right shade; `inset` is the pressed or well look (inputs, the "guided" pill, the active tab); `accent` is the same raised shadow tinted from `--accent`.
-- **Shapes (`R`):** 24px cards, 16px controls, pill buttons and chips, 32px sheets. No hairline borders; depth comes from shadow. The phone tab bar floats as a rounded clay pill.
-- **Primary and secondary colours:** Settings → Colours offers four presets, each a primary and a secondary: Teal & coral (default), Indigo & peach, Terracotta & sage and Violet & mint (`PRESETS` in `lib/theme.ts`). The primary is `--accent` and carries white text: the hero card, primary buttons, selected days, the active tab and the tinted shadows. The secondary is `--accent2`, a pastel that always carries dark ink text: secondary buttons, the NEXT badge, the active tab's fill and the now-line. Accents saved from earlier palettes are mapped to the closest preset on load.
-- **Logo:** a clay tile in the primary colour with a coral dot (the secondary); `public/icon.svg` is the teal & coral version for the home-screen icon.
-- **Map:** Leaflet tiles are tinted warm, markers are shaded "beads" and the zoom control is a clay pill.
-- Cards lift on hover and press down when tapped; this is switched off for `prefers-reduced-motion`.
+- **Palette:** Sweetie-16. Ink `#1a1c2c`, night navy `#29366f` for the page, paper `#f4f4f4` for panels. Text on panels is ink; text straight on the page uses the `light*` tokens.
+- **Fonts:** Press Start 2P for titles and labels (sizes snap to multiples of 4 so each font pixel is whole), VT323 for text you read. Both are bundled through `@fontsource`; Liberation Sans is the fallback for glyphs they lack (arrows and some symbols). No italics or letter-spacing.
+- **Icons:** `components/PixelIcon.tsx` draws 12x12 bitmaps as crisp SVG rects and adds the 1-cell ink outline automatically, so a new icon is just a silhouette.
+- **States:** solid and raised means complete or selected; dashed means empty or incomplete (the Flights and Stays tiles, "Add address").
+- **Presets:** Settings → Colours offers Green & yellow (default), Sky & lime, Orange & cyan and Yellow & sky (`PRESETS`). The primary is `--accent`, the secondary `--accent2`; text on both is ink. Accents saved from earlier palettes map to the nearest preset, otherwise the default.
+- **Map:** Leaflet tiles are pixelated and palette-tinted, markers are square numbered tiles, the zoom control is square.
+- Panels hop up on hover and sink when pressed, in two steps; switched off for `prefers-reduced-motion`.
+- **Logo:** a pixel plane on navy (`public/icon.svg`).
 
 ## Fonts
 
-The whole app uses one family, **Nunito Sans** (SIL Open Font License 1.1), bundled through `@fontsource-variable/nunito-sans`. It falls back to the bundled Liberation Sans (`public/fonts/`, licence included) for glyphs Nunito Sans lacks, such as the → arrow, and then to Arial-metric fonts. The family name is set in one place, `lib/theme.ts`, plus the `font-family` lines in `app/globals.css`.
+Press Start 2P and VT323 (both SIL Open Font License 1.1), bundled through `@fontsource/press-start-2p` and `@fontsource/vt323`. Glyphs they lack fall back to the bundled Liberation Sans (`public/fonts/`, licence included). The family names are set in one place, `lib/theme.ts`, plus the `font-family` lines in `app/globals.css`.
 
 ## Differences from the prototype
 

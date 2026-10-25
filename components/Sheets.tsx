@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import type { SyncApi } from './useSync';
 import type { InboxItem } from '@/lib/inbox';
-import { ArrowUpRight, Check, MapPin, X } from 'lucide-react';
+import { PixelIcon } from './PixelIcon';
 import { MODES } from './CommuteLeg';
 import { isPlaceholder, plural, rangeShort } from '@/lib/format';
 import { dayBits, daySummary, flightGaps, homeCity, isFlight, nightCount, operator, stayAddress, stayMapsUrl, staysInOrder } from '@/lib/derive';
@@ -10,10 +10,10 @@ import type { Day, Leg, Settings, Stay, Stop, Trip, TripMeta } from '@/lib/types
 
 /* ---------- shared bits ---------- */
 
-const kicker = (color: string = C.muted): React.CSSProperties => ({ font: mono(500, 10.5), letterSpacing: '.08em', textTransform: 'uppercase', color });
-const h2: React.CSSProperties = { marginTop: 9, font: serif(30, 1.05), letterSpacing: '-.01em' };
+const kicker = (color: string = C.muted): React.CSSProperties => ({ font: mono(500, 10.5), textTransform: 'uppercase', color });
+const h2: React.CSSProperties = { marginTop: 9, font: serif(30, 1.05), };
 const subTxt: React.CSSProperties = { marginTop: 6, font: sans(400, 13, 1.35), color: C.muted };
-const label: React.CSSProperties = { font: mono(500, 10.5, 1.4), letterSpacing: '.07em', color: C.muted };
+const label: React.CSSProperties = { font: mono(500, 10.5, 1.4), color: C.muted };
 const btnOutline: React.CSSProperties = { padding: 14, borderRadius: R.ctl, background: C.accent2, color: C.ink, boxShadow: CLAY.soft, textAlign: 'center', font: sans(500, 14), cursor: 'pointer' };
 const btnDark: React.CSSProperties = { padding: 14, borderRadius: R.ctl, background: C.dark, color: C.darkText, textAlign: 'center', font: sans(500, 14), cursor: 'pointer' };
 
@@ -36,7 +36,7 @@ export function SheetFrame({ open, onClose, children }: { open: boolean; onClose
       <div className={'scroll sheet' + (open ? ' open' : '')} role="dialog" aria-modal="true" aria-hidden={!open}>
         <div className="sheet-grab" />
         <button type="button" className="sheet-close" onClick={onClose} aria-label="Close" tabIndex={open ? 0 : -1}>
-          <X size={18} strokeWidth={1.6} color={C.ink} />
+          <PixelIcon name="close" size={28} />
         </button>
         <div className="sheet-body" style={{ padding: '10px 22px 0' }}>{children}</div>
       </div>
@@ -65,7 +65,7 @@ export function StopSheet({
       <div style={subTxt}>{stop.sub}</div>
       <div style={{ marginTop: 18, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
         <label style={{ display: 'flex', flexDirection: 'column', gap: 6, padding: '10px 12px', borderRadius: R.ctl, background: C.sand, boxShadow: CLAY.inset }}>
-          <span style={{ font: mono(500, 10), letterSpacing: '.07em', color: C.muted }}>START</span>
+          <span style={{ font: mono(500, 10), color: C.muted }}>START</span>
           <input
             type="text"
             inputMode="numeric"
@@ -78,7 +78,7 @@ export function StopSheet({
           />
         </label>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6, padding: '10px 12px', borderRadius: R.ctl, background: C.sand, boxShadow: CLAY.inset }}>
-          <span style={{ font: mono(500, 10), letterSpacing: '.07em', color: C.muted }}>DURATION</span>
+          <span style={{ font: mono(500, 10), color: C.muted }}>DURATION</span>
           <span style={{ font: mono(500, 16) }}>{stop.dur || '—'}</span>
         </div>
       </div>
@@ -87,7 +87,7 @@ export function StopSheet({
         <KV k="AFTERWARDS" v={legTxt(nx)} />
         <KV k="ARRANGED BY" v={day.mode === 'Guided' ? operator(trip) : 'You'} />
       </div>
-      <div style={{ marginTop: 16, font: mono(500, 10.5), letterSpacing: '.07em', color: C.muted }}>NOTES</div>
+      <div style={{ marginTop: 16, font: mono(500, 10.5), color: C.muted }}>NOTES</div>
       <textarea
         value={draftNote}
         onChange={(e) => onNote(e.target.value)}
@@ -119,7 +119,7 @@ export function StaySheet({ meta, trip, id, accent, onMap, onDone }: { meta: Tri
           const b = dayBits(meta, d);
           return (
             <div key={d.num} style={{ flex: 1, padding: '9px 0', borderRadius: R.ctl, textAlign: 'center', background: on ? C.dark : C.card, color: on ? C.darkText : C.muted2, boxShadow: CLAY.soft }}>
-              <div style={{ font: mono(500, 9.5), letterSpacing: '.06em' }}>{b.wd.toUpperCase()}</div>
+              <div style={{ font: mono(500, 9.5), }}>{b.wd.toUpperCase()}</div>
               <div style={{ marginTop: 4, font: serif(17, 1) }}>{b.d}</div>
             </div>
           );
@@ -158,17 +158,17 @@ export function DaySheet({ meta, trip, day, dayIdx, accent, onTonight }: { meta:
   return (
     <>
       <div style={kicker(accent)}>Day {day.num} · {b.wd} {b.d} {b.month}</div>
-      <div style={{ marginTop: 10, font: serif(32, 1.05, true), letterSpacing: '-.01em', textWrap: 'balance' }}>{sum.theme}</div>
+      <div style={{ marginTop: 10, font: serif(32, 1.05, true), textWrap: 'balance' }}>{sum.theme}</div>
       <div style={{ marginTop: 10, font: serif(14.5, 1.5), color: C.ink2, textWrap: 'pretty' }}>{sum.story}</div>
       <div style={{ marginTop: 18, display: 'grid', gridTemplateColumns: 'repeat(3,minmax(0,1fr))', gap: 8 }}>
         {sum.stats.map((x) => (
           <div key={x.k} style={{ padding: '10px 12px', borderRadius: R.ctl, background: C.card, boxShadow: CLAY.soft, minWidth: 0 }}>
-            <div style={{ font: mono(500, 9.5), letterSpacing: '.07em', color: C.muted }}>{x.k}</div>
+            <div style={{ font: mono(500, 9.5), color: C.muted }}>{x.k}</div>
             <div style={{ marginTop: 6, font: sans(500, 14, 1.2) }}>{x.v}</div>
           </div>
         ))}
       </div>
-      <div style={{ marginTop: 20, font: mono(500, 10.5), letterSpacing: '.07em', color: C.muted }}>THE PLAN</div>
+      <div style={{ marginTop: 20, font: mono(500, 10.5), color: C.muted }}>THE PLAN</div>
       <div style={{ marginTop: 8, borderTop: `1px solid ${rule(0.1)}` }}>
         {day.items.filter((i): i is Stop => i.kind === 'stop').map((p) => (
           <div key={p.id} style={{ padding: '10px 0', borderBottom: `1px solid ${rule(0.1)}`, display: 'grid', gridTemplateColumns: '56px minmax(0,1fr)', gap: 10, alignItems: 'baseline' }}>
@@ -179,7 +179,7 @@ export function DaySheet({ meta, trip, day, dayIdx, accent, onTonight }: { meta:
       </div>
       {sum.bring.length > 0 && (
         <>
-          <div style={{ marginTop: 18, font: mono(500, 10.5), letterSpacing: '.07em', color: C.muted }}>BRING</div>
+          <div style={{ marginTop: 18, font: mono(500, 10.5), color: C.muted }}>BRING</div>
           <div style={{ marginTop: 8, display: 'flex', flexWrap: 'wrap', gap: 6 }}>
             {sum.bring.map((x) => (
               <div key={x} style={{ padding: '7px 11px', borderRadius: R.ctl, boxShadow: CLAY.soft, font: sans(400, 12.5) }}>{x}</div>
@@ -189,7 +189,7 @@ export function DaySheet({ meta, trip, day, dayIdx, accent, onTonight }: { meta:
       )}
       <div onClick={onTonight} role="button" tabIndex={0} style={{ marginTop: 18, padding: '14px 16px', borderRadius: R.ctl, background: C.sand, display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer' }}>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ font: mono(500, 10), letterSpacing: '.08em', color: C.nile }}>{tonight.kicker}</div>
+          <div style={{ font: mono(500, 10), color: C.nile }}>{tonight.kicker}</div>
           <div style={{ marginTop: 5, font: serif(17, 1.2) }}>{tonight.name}</div>
         </div>
         <div style={{ font: serif(18, 1), color: C.muted }}>→</div>
@@ -231,11 +231,11 @@ export function JourneysSheet({ meta, trip, dayIdx, onOpen }: { meta: TripMeta; 
               }}
             >
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
-                <div style={{ font: mono(500, 9.5), letterSpacing: '.06em', color: C.muted }}>{b.wd.toUpperCase()}</div>
+                <div style={{ font: mono(500, 9.5), color: C.muted }}>{b.wd.toUpperCase()}</div>
                 <div style={{ font: serif(20, 1) }}>{b.d}</div>
               </div>
               <div style={{ minWidth: 0 }}>
-                <div style={{ font: mono(500, 10, 1.2), letterSpacing: '.07em', textTransform: 'uppercase', color: j.mode === 'Flight' ? C.flight : C.ink2 }}>
+                <div style={{ font: mono(500, 10, 1.2), textTransform: 'uppercase', color: j.mode === 'Flight' ? C.flight : C.ink2 }}>
                   {j.mode} · {j.by}
                 </div>
                 <div style={{ marginTop: 4, font: serif(17, 1.2) }}>{j.from} → {j.to}</div>
@@ -243,11 +243,11 @@ export function JourneysSheet({ meta, trip, dayIdx, onOpen }: { meta: TripMeta; 
                   const gaps = flightGaps(trip, j);
                   return gaps.length === 0 ? (
                     <div style={{ marginTop: 6, display: 'flex', alignItems: 'center', gap: 5, font: sans(700, 12, 1.2), color: C.ink2 }}>
-                      <Check size={13} strokeWidth={3} color="var(--accent)" />
+                      <PixelIcon name="check" size={14} />
                       {j.number} · {j.time}
                     </div>
                   ) : (
-                    <div style={{ marginTop: 6, display: 'inline-block', padding: '3px 9px', borderRadius: R.pill, border: '2px dashed color-mix(in srgb, var(--accent) 65%, transparent)', font: sans(500, 11.5, 1.2), color: C.ink2 }}>
+                    <div style={{ marginTop: 6, display: 'inline-block', padding: '3px 9px', borderRadius: R.pill, border: `4px dashed ${C.accent2}`, font: sans(500, 11.5, 1.2), color: C.ink2 }}>
                       Needs {gaps.join(', ')}
                     </div>
                   );
@@ -281,7 +281,7 @@ export function StaysSheet({ trip, dayIdx, accent, onOpen, onAddAddress }: { tri
             style={{ padding: '14px 16px', borderRadius: R.ctl, background: s.nights.includes(dayIdx) ? C.sand : C.card, boxShadow: CLAY.soft, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12 }}
           >
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10, font: mono(500, 10), letterSpacing: '.07em', textTransform: 'uppercase' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10, font: mono(500, 10), textTransform: 'uppercase' }}>
                 <span style={{ color: accent }}>{s.city}</span>
                 <span style={{ color: C.muted }}>{plural(s.nights.length, 'night')}</span>
               </div>
@@ -309,10 +309,10 @@ function MapsLink({ stay }: { stay: Stay }) {
       rel="noopener noreferrer"
       onClick={(e) => e.stopPropagation()}
       aria-label={`Open ${stay.name} in Google Maps: ${address}`}
-      style={{ color: C.ink, textDecoration: 'underline', textDecorationColor: 'color-mix(in srgb, var(--accent) 60%, transparent)', textUnderlineOffset: 3, textDecorationThickness: 2, overflowWrap: 'anywhere' }}
+      style={{ color: C.ink, textDecoration: 'underline', textDecorationColor: 'var(--accent)', textUnderlineOffset: 4, textDecorationThickness: 3, overflowWrap: 'anywhere' }}
     >
       {address}
-      <ArrowUpRight size={13} strokeWidth={2.4} color="var(--accent)" style={{ marginLeft: 3, verticalAlign: '-1px' }} />
+      <PixelIcon name="external" size={14} style={{ display: 'inline-block', marginLeft: 6, verticalAlign: '-2px' }} />
     </a>
   );
 }
@@ -322,7 +322,7 @@ function AddressLine({ stay, onAdd }: { stay: Stay; onAdd: () => void }) {
   const has = !!stayAddress(stay);
   return (
     <div style={{ marginTop: 8, display: 'flex', alignItems: 'flex-start', gap: 6, font: sans(500, 12.5, 1.4) }}>
-      <MapPin size={14} strokeWidth={2.2} color={has ? 'var(--accent)' : C.muted2} style={{ flex: 'none', marginTop: 2 }} />
+      <PixelIcon name="pin" size={14} style={{ marginTop: 3, opacity: has ? 1 : 0.5 }} />
       {has ? (
         <MapsLink stay={stay} />
       ) : (
@@ -332,7 +332,7 @@ function AddressLine({ stay, onAdd }: { stay: Stay; onAdd: () => void }) {
             e.stopPropagation();
             onAdd();
           }}
-          style={{ border: 0, background: 'transparent', padding: 0, font: 'inherit', color: C.muted, cursor: 'pointer', textAlign: 'left', textDecoration: 'underline dashed', textUnderlineOffset: 3 }}
+          style={{ border: 0, background: 'transparent', padding: 0, font: 'inherit', color: C.muted, cursor: 'pointer', textAlign: 'left', textDecoration: 'underline dashed', textUnderlineOffset: 4 }}
         >
           Add address
         </button>
@@ -397,7 +397,7 @@ export function EditSheet({
       {result && (
         <div style={{ marginTop: 14, padding: '14px 16px', borderRadius: R.ctl, background: C.sand }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 10 }}>
-            <div style={{ font: mono(500, 10.5), letterSpacing: '.08em', color: C.nile }}>
+            <div style={{ font: mono(500, 10.5), color: C.nile }}>
               {result.n ? `${result.n} ${result.n > 1 ? 'CHANGES' : 'CHANGE'}` : 'NO CHANGES'}
             </div>
             {canUndo && (
@@ -437,7 +437,7 @@ export function EditSheet({
         )}
       </div>
       {showData && (
-        <pre style={{ margin: '10px 0 0', maxHeight: 260, overflow: 'auto', padding: 12, borderRadius: R.ctl, background: C.charcoal, color: '#EADDCB', font: mono(400, 10.5, 1.5), whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+        <pre style={{ margin: '10px 0 0', maxHeight: 260, overflow: 'auto', padding: 12, borderRadius: R.ctl, background: C.charcoal, color: '#cfdbe3', font: mono(400, 10.5, 1.5), whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
           {JSON.stringify(trip, null, 2)}
         </pre>
       )}
@@ -575,7 +575,7 @@ const SYNC_LABEL: Record<SyncApi['status'], string> = {
   conflict: 'Needs your choice',
   error: 'Problem',
 };
-const SYNC_DOT: Record<SyncApi['status'], string> = { syncing: '#C79A2E', synced: '#3E8A4F', offline: '#C79A2E', conflict: '#D8352A', error: '#D8352A' };
+const SYNC_DOT: Record<SyncApi['status'], string> = { syncing: '#ffcd75', synced: '#38b764', offline: '#ffcd75', conflict: '#b13e53', error: '#b13e53' };
 
 /** Settings → Sync: the current state, a manual sync, the choice after a clash, and locking this device. */
 function SyncSection({ sync, onLock }: { sync: SyncApi; onLock: () => void }) {
@@ -587,7 +587,7 @@ function SyncSection({ sync, onLock }: { sync: SyncApi; onLock: () => void }) {
         Your trips are saved to the cloud so every device shows the same plans. This device is unlocked with your access code.
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, font: sans(500, 12.5, 1.35), color: C.ink2 }} role="status">
-        <span style={{ flex: 'none', width: 9, height: 9, borderRadius: 5, background: SYNC_DOT[sync.status] }} />
+        <span style={{ flex: 'none', width: 12, height: 12, margin: 2, background: SYNC_DOT[sync.status], boxShadow: `0 0 0 2px ${C.ink}` }} />
         <span>{sync.message && sync.status !== 'conflict' ? sync.message : SYNC_LABEL[sync.status]}</span>
       </div>
       {sync.status === 'conflict' && (
@@ -637,8 +637,8 @@ export function SettingsSheet({ settings, onChange, sync, onLock }: { settings: 
                   style={{ padding: '10px 10px 9px', borderRadius: R.ctl, background: on ? C.sand : C.card, boxShadow: on ? CLAY.inset : CLAY.soft, cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 7 }}
                 >
                   <div style={{ display: 'flex' }}>
-                    <div style={{ width: 26, height: 26, borderRadius: 13, background: p.primary, boxShadow: '0 3px 6px rgba(90,60,40,.3), inset 2px 2px 4px rgba(255,255,255,.4), inset -2px -3px 4px rgba(0,0,0,.2)' }} />
-                    <div style={{ width: 26, height: 26, borderRadius: 13, background: p.secondary, marginLeft: -7, boxShadow: '0 3px 6px rgba(90,60,40,.25), inset 2px 2px 4px rgba(255,255,255,.55), inset -2px -3px 4px rgba(120,70,40,.18)' }} />
+                    <div style={{ width: 24, height: 24, margin: 4, background: p.primary, boxShadow: CLAY.flat }} />
+                    <div style={{ width: 24, height: 24, margin: 4, marginLeft: 8, background: p.secondary, boxShadow: CLAY.flat }} />
                   </div>
                   <div style={{ font: sans(on ? 700 : 500, 11.5, 1.2), color: C.ink2 }}>{p.name}</div>
                 </div>

@@ -1,7 +1,7 @@
-import { ChevronLeft } from 'lucide-react';
-import { C, CLAY, R, sans } from '@/lib/theme';
+import { PixelIcon } from './PixelIcon';
+import { C, CLAY, R, mono } from '@/lib/theme';
 
-/** A clear, finger-sized back control: a raised clay pill with a chevron and a label. */
+/** A clear back control: a raised yellow pixel button with an arrow and a label. */
 export function BackButton({ label = 'Trips', onClick, iconOnly = false }: { label?: string; onClick: () => void; iconOnly?: boolean }) {
   return (
     <button
@@ -13,21 +13,23 @@ export function BackButton({ label = 'Trips', onClick, iconOnly = false }: { lab
         flex: 'none',
         display: 'inline-flex',
         alignItems: 'center',
-        gap: 4,
-        height: 44,
-        minWidth: 44,
+        gap: 8,
+        height: 48,
+        minWidth: 48,
+        margin: 4,
         padding: iconOnly ? 0 : '0 16px 0 10px',
         justifyContent: 'center',
         border: 0,
         borderRadius: R.pill,
-        background: C.card,
-        boxShadow: CLAY.soft,
+        background: C.accent2,
+        boxShadow: CLAY.accent,
         color: C.ink,
-        font: sans(700, 14),
+        font: mono(700, 14),
+        textTransform: 'uppercase',
         cursor: 'pointer',
       }}
     >
-      <ChevronLeft size={22} strokeWidth={2.4} color="var(--accent)" />
+      <PixelIcon name="back" size={28} />
       {!iconOnly && label}
     </button>
   );

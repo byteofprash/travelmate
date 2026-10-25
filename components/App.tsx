@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from '
 import { Sidebar } from './Sidebar';
 import { useSync } from './useSync';
 import { useInbox } from './useInbox';
-import { CalendarDays, Map as MapIcon, Route, type LucideIcon } from 'lucide-react';
+import { PixelIcon, type IconName } from './PixelIcon';
 import { Home } from './screens/Home';
 import { Today } from './screens/Today';
 import { TripView } from './screens/TripView';
@@ -17,7 +17,7 @@ import { buildNewTrip, NewTripResultSchema } from '@/lib/newtrip';
 import { DEFAULT_SETTINGS, emptyTrip, load, loadSettings, sampleTrip, save, saveSettings, type Persisted } from '@/lib/store';
 import { dayBits, flightStatus, todayIndex } from '@/lib/derive';
 import { isPlaceholder, toISO, toMin } from '@/lib/format';
-import { C, rule, sans, CLAY, R } from '@/lib/theme';
+import { C, mono, rule, sans, CLAY, R } from '@/lib/theme';
 import type { Settings, Sheet, Stop, Trip, TripMeta } from '@/lib/types';
 
 type Tab = 'home' | 'today' | 'trip' | 'map';
@@ -483,10 +483,10 @@ export default function App({ onLock }: { onLock: () => void }) {
     }
   };
 
-  const tabs: [Tab, string, LucideIcon][] = [
-    ['trip', 'Trip', Route],
-    ['today', 'Today', CalendarDays],
-    ['map', 'Map', MapIcon],
+  const tabs: [Tab, string, IconName][] = [
+    ['trip', 'Trip', 'list'],
+    ['today', 'Today', 'calendar'],
+    ['map', 'Map', 'map'],
   ];
 
   return (
@@ -591,20 +591,20 @@ export default function App({ onLock }: { onLock: () => void }) {
           style={{
             display: effTab === 'home' || desktop ? 'none' : 'grid',
             position: 'absolute',
-            left: 16,
-            right: 16,
-            bottom: 'calc(12px + var(--safe-bottom))',
+            left: 20,
+            right: 20,
+            bottom: 'calc(24px + var(--safe-bottom))',
             zIndex: 20,
-            height: 60,
-            borderRadius: 30,
-            background: C.card,
-            boxShadow: CLAY.raised,
+            height: 68,
+            borderRadius: R.pill,
+            background: C.ink2,
+            boxShadow: CLAY.dark,
             gridTemplateColumns: 'repeat(3,1fr)',
-            padding: 6,
-            gap: 6,
+            padding: 8,
+            gap: 8,
           }}
         >
-          {tabs.map(([k, l, Icon]) => {
+          {tabs.map(([k, l, icon]) => {
             const active = effTab === k;
             return (
               <div
@@ -615,9 +615,23 @@ export default function App({ onLock }: { onLock: () => void }) {
                 aria-label={l}
                 title={l}
                 aria-current={active ? 'page' : undefined}
-                style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4, cursor: 'pointer', borderRadius: 24, color: active ? settings.accent : C.muted, background: active ? 'color-mix(in srgb, var(--accent2) 40%, #FCF7EE)' : 'transparent', boxShadow: active ? CLAY.inset : 'none', transition: 'box-shadow .2s, background .2s' }}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 4,
+                  cursor: 'pointer',
+                  borderRadius: R.pill,
+                  color: active ? C.ink : C.lightMuted,
+                  background: active ? C.accent2 : 'transparent',
+                  boxShadow: active ? CLAY.flat : 'none',
+                  font: mono(500, 9),
+                  textTransform: 'uppercase',
+                }}
               >
-                <Icon size={22} strokeWidth={active ? 2.1 : 1.8} />
+                <PixelIcon name={icon} size={28} />
+                <span aria-hidden>{l}</span>
               </div>
             );
           })}
@@ -635,14 +649,15 @@ export default function App({ onLock }: { onLock: () => void }) {
             top: 'calc(var(--top) - 2px)',
             left: '50%',
             zIndex: 40,
-            transform: `translateX(-50%) translateY(${toast ? '0' : '-10px'})`,
+            transform: `translateX(-50%) translateY(${toast ? '0' : '-12px'})`,
             opacity: toast ? 1 : 0,
-            transition: 'all .3s',
-            padding: '10px 16px',
+            transition: 'transform .12s steps(3), opacity .12s steps(3)',
+            padding: '10px 18px',
             borderRadius: R.ctl,
             background: C.charcoal,
-            color: C.darkText,
-            font: sans(500, 12.5),
+            color: C.light,
+            boxShadow: '0 -4px 0 0 #94b0c2, 0 4px 0 0 #94b0c2, -4px 0 0 0 #94b0c2, 4px 0 0 0 #94b0c2, 4px 8px 0 0 rgba(10,11,26,.55), 8px 4px 0 0 rgba(10,11,26,.55)',
+            font: sans(500, 13),
             whiteSpace: 'nowrap',
             pointerEvents: 'none',
           }}

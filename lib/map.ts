@@ -32,7 +32,7 @@ export interface MapModel {
   bounds: LatLon[];
 }
 
-const STAY = '#2F6B3A';
+const STAY = '#3b5dc9';
 const BRAND = 'var(--accent)'; // follows the accent colour
 
 export function buildTripMap(trip: Trip, title: string): MapModel {

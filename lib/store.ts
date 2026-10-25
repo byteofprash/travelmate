@@ -55,10 +55,10 @@ export function save(p: Persisted) {
 export const DEFAULT_SETTINGS: Settings = { accent: DEFAULT_PRESET.primary, accent2: DEFAULT_PRESET.secondary, cardStyle: 'cards', showTransport: true };
 
 const LEGACY_ACCENTS: Record<string, string> = {
-  '#A8492A': '#C4512F', '#8A6A2F': '#C4512F',
-  '#4A5B8C': '#5B5FD6', '#1455C0': '#5B5FD6', '#2F6FBF': '#5B5FD6',
-  '#2F6F73': '#1F8A7D', '#408335': '#1F8A7D', '#3E8A4F': '#1F8A7D',
-  '#814997': '#7A5FD0', '#8A56B0': '#7A5FD0',
+  '#A8492A': '#EF7D57', '#8A6A2F': '#EF7D57',
+  '#4A5B8C': '#41A6F6', '#1455C0': '#41A6F6', '#2F6FBF': '#41A6F6',
+  '#2F6F73': '#38B764', '#408335': '#38B764', '#3E8A4F': '#38B764',
+  '#814997': '#FFCD75', '#8A56B0': '#FFCD75',
 };
 
 export function loadSettings(): Settings {

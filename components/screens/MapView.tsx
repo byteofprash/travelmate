@@ -159,9 +159,10 @@ export function MapView({
   const seg = (active: boolean): React.CSSProperties => ({
     flex: 'none',
     whiteSpace: 'nowrap',
-    padding: '8px 16px',
+    padding: '6px 14px',
     borderRadius: R.pill,
-    font: sans(500, 12.5),
+    font: mono(500, 11),
+    textTransform: 'uppercase',
     boxShadow: active ? CLAY.accent : 'none',
     cursor: 'pointer',
     background: active ? C.dark : 'transparent',
@@ -180,7 +181,7 @@ export function MapView({
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, pointerEvents: 'auto' }}>
           <BackButton label="Trips" iconOnly onClick={onHome} />
-          <div style={{ display: 'flex', padding: 3, borderRadius: R.pill, background: C.card, boxShadow: CLAY.soft, pointerEvents: 'auto' }}>
+          <div style={{ display: 'flex', gap: 4, padding: 4, margin: 4, borderRadius: R.pill, background: C.card, boxShadow: CLAY.soft, pointerEvents: 'auto' }}>
             <div onClick={() => onMode('day')} style={seg(mode === 'day')}>Day</div>
             <div onClick={() => onMode('trip')} style={seg(mode === 'trip')}>Whole trip</div>
           </div>
@@ -192,20 +193,21 @@ export function MapView({
                 alignItems: 'center',
                 gap: 8,
                 font: mono(500, 10.5),
-                letterSpacing: '.06em',
                 color: C.muted,
                 padding: '8px 10px',
+                margin: 4,
                 borderRadius: R.ctl,
                 background: C.card,
+                boxShadow: CLAY.flat,
               }}
             >
-              <span style={{ width: scale.width, height: 5, borderBottom: `1.5px solid ${C.muted}`, borderLeft: `1.5px solid ${C.muted}`, borderRight: `1.5px solid ${C.muted}` }} />
+              <span style={{ width: scale.width, height: 8, borderBottom: `4px solid ${C.muted}`, borderLeft: `4px solid ${C.muted}`, borderRight: `4px solid ${C.muted}` }} />
               {scale.label}
             </div>
           )}
         </div>
         {mode === 'day' && (
-          <div className="scroll" style={{ display: 'flex', gap: 6, overflowX: 'auto', margin: '0 -16px', padding: '0 16px', pointerEvents: 'auto' }}>
+          <div className="scroll" style={{ display: 'flex', gap: 12, overflowX: 'auto', margin: '0 -16px', padding: '6px 20px 10px', pointerEvents: 'auto' }}>
             {trip.days.map((d, i) => {
               const sel = i === dayIdx;
               const dd = new Date(meta.start + 'T00:00');
@@ -217,7 +219,7 @@ export function MapView({
                   style={{
                     flex: 'none',
                     whiteSpace: 'nowrap',
-                    padding: '7px 10px',
+                    padding: '6px 10px',
                     borderRadius: R.ctl,
                     font: mono(500, 11),
                     cursor: 'pointer',
@@ -235,8 +237,8 @@ export function MapView({
       </div>
 
       <div style={{ position: 'absolute', zIndex: 5, left: 0, right: 0, bottom: 14, pointerEvents: 'none' }}>
-        <div style={{ padding: '0 18px 8px', font: serif(22, 1.1), textShadow: `0 0 8px ${C.sand}, 0 0 8px ${C.sand}` }}>{model.title}</div>
-        <div className="scroll" style={{ display: 'flex', gap: 10, overflowX: 'auto', padding: '0 16px 2px', pointerEvents: 'auto' }}>
+        <div style={{ padding: '0 24px 12px', font: serif(24, 1.4), color: C.light, textShadow: `4px 4px 0 ${C.ink}` }}>{model.title}</div>
+        <div className="scroll" style={{ display: 'flex', gap: 20, overflowX: 'auto', padding: '4px 24px 14px', pointerEvents: 'auto' }}>
           {model.cards.map((c, i) => (
             <div
               key={i}
@@ -257,11 +259,13 @@ export function MapView({
               <div
                 style={{
                   flex: 'none',
-                  width: 24,
-                  height: 24,
-                  borderRadius: 12,
+                  width: 32,
+                  height: 32,
+                  borderRadius: 0,
+                  boxShadow: '0 0 0 4px ' + C.ink,
+                  margin: 4,
                   background: c.fill,
-                  color: C.paper,
+                  color: C.ink,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',

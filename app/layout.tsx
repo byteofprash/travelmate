@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
-// Nunito Sans (SIL OFL), variable weight.
-import '@fontsource-variable/nunito-sans';
+// Press Start 2P and VT323 (SIL OFL): the two pixel fonts.
+import '@fontsource/press-start-2p';
+import '@fontsource/vt323';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -15,7 +16,7 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   viewportFit: 'cover',
-  themeColor: '#EAF0EE',
+  themeColor: '#29366f',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

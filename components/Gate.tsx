@@ -1,11 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Plane } from 'lucide-react';
+import { PixelIcon } from './PixelIcon';
 import App from './App';
 import { clearCode, LOCK_EVENT, readCode, verifyCode, writeCode } from '@/lib/access';
 import { loadSettings } from '@/lib/store';
-import { C, CLAY, R, sans, serif } from '@/lib/theme';
+import { C, CLAY, INK, R, mono, sans, serif } from '@/lib/theme';
 
 type State = { s: 'checking' } | { s: 'locked'; msg?: string } | { s: 'open' };
 
@@ -56,7 +56,7 @@ export default function Gate() {
   }
   return (
     <div className="stage">
-      <div className="phone" style={{ color: C.ink, ['--accent' as string]: settings.accent, ['--accent2' as string]: settings.accent2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div className="phone" style={{ color: C.light, ['--accent' as string]: settings.accent, ['--accent2' as string]: settings.accent2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         {st.s === 'locked' && <LockScreen msg={st.msg} onUnlock={() => setSt({ s: 'open' })} />}
       </div>
     </div>
@@ -86,11 +86,11 @@ function LockScreen({ msg, onUnlock }: { msg?: string; onUnlock: () => void }) {
 
   return (
     <form onSubmit={submit} style={{ width: 'min(340px, calc(100% - 48px))', display: 'flex', flexDirection: 'column', gap: 14, textAlign: 'center' }}>
-      <div style={{ alignSelf: 'center', width: 64, height: 64, borderRadius: 22, background: 'var(--accent)', boxShadow: CLAY.accent, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <Plane size={30} strokeWidth={2} color={C.darkText} />
+      <div style={{ alignSelf: 'center', width: 72, height: 72, margin: 6, background: 'var(--accent)', boxShadow: CLAY.accent, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <PixelIcon name="plane" size={42} />
       </div>
-      <div style={{ font: serif(30, 1.1), letterSpacing: '-.01em' }}>Travel Companion</div>
-      <div style={{ font: sans(400, 14, 1.45), color: C.muted }}>Enter your access code to open your trips.</div>
+      <div style={{ font: serif(30, 1.5), textTransform: 'uppercase', color: C.light, textShadow: `4px 4px 0 ${INK}` }}>Travel Companion</div>
+      <div style={{ font: sans(400, 14, 1.1), color: C.lightMuted }}>Enter your access code to open your trips.</div>
       <input
         type="password"
         value={code}
@@ -99,17 +99,17 @@ function LockScreen({ msg, onUnlock }: { msg?: string; onUnlock: () => void }) {
         aria-label="Access code"
         autoComplete="current-password"
         autoFocus
-        style={{ border: 0, padding: '14px 18px', borderRadius: R.pill, background: C.sand, boxShadow: CLAY.inset, font: sans(400, 16), color: C.ink, outline: 'none', textAlign: 'center' }}
+        style={{ border: 0, margin: 4, padding: '14px 18px', borderRadius: R.pill, background: C.card, boxShadow: CLAY.inset, font: sans(400, 16), color: C.ink, outline: 'none', textAlign: 'center' }}
       />
       {err && (
-        <div role="alert" style={{ font: sans(500, 13, 1.4), color: C.error }}>
+        <div role="alert" style={{ font: sans(500, 13, 1.1), color: '#ef7d57' }}>
           {err}
         </div>
       )}
       <button
         type="submit"
         disabled={busy || !code.trim()}
-        style={{ border: 0, padding: '15px 18px', borderRadius: R.pill, background: 'var(--accent)', color: C.darkText, boxShadow: CLAY.accent, font: sans(700, 15), cursor: busy || !code.trim() ? 'default' : 'pointer', opacity: busy || !code.trim() ? 0.55 : 1 }}
+        style={{ border: 0, margin: 4, padding: '15px 18px 13px', borderRadius: R.pill, background: 'var(--accent)', color: C.darkText, boxShadow: CLAY.accent, font: mono(700, 14), textTransform: 'uppercase', cursor: busy || !code.trim() ? 'default' : 'pointer', opacity: busy || !code.trim() ? 0.55 : 1 }}
       >
         {busy ? 'Checking…' : 'Unlock'}
       </button>

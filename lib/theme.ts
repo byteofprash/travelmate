@@ -1,80 +1,111 @@
-// Claymorphism: a warm cream base with soft pastel objects. Surfaces are puffy, borderless and lit from the
-// top-left (see CLAY below and the .clay classes in app/globals.css). Text stays dark warm brown for contrast.
+// 8-bit pixel art. Everything is drawn from one 16-colour palette (Sweetie 16): a dithered night-sky page, light
+// panels with hard 4px outlines and notched corners, a lit top-left edge, a shaded bottom-right edge and a hard drop
+// shadow. Text on panels is ink; text straight on the page is light (the `light*` tokens).
+export const INK = '#1a1c2c';
+
 export const C = {
-  paper: '#F4EBDD', // page background
-  sheet: '#F7EFE3',
-  card: '#FCF7EE',
-  cardHover: '#FFFBF4',
-  sand: '#EADDCB', // info boxes, map background
-  draftBg: '#F8D3B0',
-  draftFg: '#6B3A08',
-  ink: '#3A2F2A',
-  ink2: '#52443C',
-  muted: '#6F6058',
-  muted2: '#85766D',
-  // "Dark" surfaces (hero cards, primary buttons, active chips and tabs) follow the accent colour, set as
-  // the --accent CSS variable on the app root. Text on them is white.
+  paper: '#29366f', // the page behind everything (night navy)
+  sheet: '#f4f4f4',
+  card: '#f4f4f4',
+  cardHover: '#ffffff',
+  sand: '#cfdbe3', // pressed wells: inputs, info boxes
+  draftBg: '#ffcd75',
+  draftFg: INK,
+  ink: INK,
+  ink2: '#333c57',
+  muted: '#566c86',
+  muted2: '#566c86',
+  // Text that sits directly on the night-blue page rather than on a panel.
+  light: '#f4f4f4',
+  lightMuted: '#94b0c2',
+  lightAccent: '#ffcd75',
+  // "Dark" surfaces (hero cards, primary buttons, active chips and tabs) follow the accent colour, set as the
+  // --accent CSS variable on the app root. Every preset colour is bright, so text on them is ink.
   dark: 'var(--accent)',
-  darkText: '#FFFFFF',
-  darkMuted: 'rgba(255,255,255,.9)',
-  darkBody: '#FFFFFF',
-  darkLabel: 'rgba(255,255,255,.85)',
-  onDarkRule: 'rgba(255,255,255,.3)',
-  charcoal: '#2E2521', // toast and the JSON viewer
+  darkText: INK,
+  darkMuted: 'rgba(26,28,44,.85)',
+  darkBody: INK,
+  darkLabel: 'rgba(26,28,44,.75)',
+  onDarkRule: 'rgba(26,28,44,.3)',
+  charcoal: INK, // toast and the JSON viewer
   accent: 'var(--accent)',
-  accent2: 'var(--accent2)', // secondary: light pastel fills, always paired with dark ink text
-  nile: '#2F6B3A', // stays (green)
-  flight: '#1F4E8C', // flights and arrivals (blue)
-  meal: '#8A4B0B', // meals (orange)
+  accent2: 'var(--accent2)', // secondary: highlights, always paired with ink text
+  nile: '#257179', // stays
+  flight: '#3b5dc9', // flights and arrivals
+  meal: '#b13e53', // meals
   now: 'var(--accent2)',
-  error: '#B3261E',
-  scrim: 'rgba(58,40,30,.4)',
+  error: '#b13e53',
+  scrim: 'rgba(10,11,26,.6)',
 };
 
-/** Primary (white text on it) + secondary (pastel, dark text on it) presets offered in Settings. First is the default. */
+/** Primary + secondary presets offered in Settings. Text on the primary is ink. First is the default. */
 export const PRESETS = [
-  { id: 'teal-coral', name: 'Teal & coral', primary: '#1F8A7D', secondary: '#F4A58A' },
-  { id: 'indigo-peach', name: 'Indigo & peach', primary: '#5B5FD6', secondary: '#F7BE96' },
-  { id: 'terracotta-sage', name: 'Terracotta & sage', primary: '#C4512F', secondary: '#BBD2B8' },
-  { id: 'violet-mint', name: 'Violet & mint', primary: '#7A5FD0', secondary: '#BFE8D2' },
+  { id: 'green-yellow', name: 'Green & yellow', primary: '#38b764', secondary: '#ffcd75' },
+  { id: 'sky-lime', name: 'Sky & lime', primary: '#41a6f6', secondary: '#a7f070' },
+  { id: 'orange-cyan', name: 'Orange & cyan', primary: '#ef7d57', secondary: '#73eff7' },
+  { id: 'yellow-sky', name: 'Yellow & sky', primary: '#ffcd75', secondary: '#41a6f6' },
 ] as const;
 export const DEFAULT_PRESET = PRESETS[0];
 
-/** Deep text colours for tags (AA on cream) and the matching pastel pill fills. */
-export const TAGC: Record<string, string> = {
-  'Pick-up': '#52443C',
-  Visit: '#B3261E',
-  Meal: '#8A4B0B',
-  Stay: '#2F6B3A',
-  Flight: '#1F4E8C',
-  Arrival: '#1F4E8C',
-};
+/** Tag pills: a palette colour with its readable text colour. TAGBG is the fill, TAGC the text on it. */
 export const TAGBG: Record<string, string> = {
-  'Pick-up': '#E6DACA',
-  Visit: '#F7CFC8',
-  Meal: '#F8D3B0',
-  Stay: '#CBE7CC',
-  Flight: '#C3DBF3',
-  Arrival: '#C3DBF3',
+  'Pick-up': '#94b0c2',
+  Visit: '#b13e53',
+  Meal: '#ef7d57',
+  Stay: '#38b764',
+  Flight: '#41a6f6',
+  Arrival: '#41a6f6',
+};
+export const TAGC: Record<string, string> = {
+  'Pick-up': INK,
+  Visit: '#f4f4f4',
+  Meal: INK,
+  Stay: INK,
+  Flight: INK,
+  Arrival: INK,
 };
 
-export const rule = (a: number) => `rgba(90,60,40,${a})`;
+/** A hairline on a light panel. */
+export const rule = (a: number) => `rgba(26,28,44,${a})`;
 
-/** Clay shadows: outer drop + top-left highlight + bottom-right shade. */
+// The outline: four 4px shadows, one per side. They leave the corners empty, which is what notches them.
+const EDGE = `0 -4px 0 0 ${INK}, 0 4px 0 0 ${INK}, -4px 0 0 0 ${INK}, 4px 0 0 0 ${INK}`;
+const LIT = 'inset 4px 4px 0 0 rgba(255,255,255,.9), inset -4px -4px 0 0 rgba(26,28,44,.2)';
+const DROP = '4px 8px 0 0 rgba(10,11,26,.55), 8px 4px 0 0 rgba(10,11,26,.55)';
+
+/** Pixel panel shadows (the names are kept from the earlier design so every surface picks them up). */
 export const CLAY = {
-  raised: '0 10px 22px rgba(120,84,52,.20), inset 4px 4px 9px rgba(255,255,255,.85), inset -4px -5px 10px rgba(168,128,92,.22)',
-  soft: '0 5px 12px rgba(120,84,52,.16), inset 3px 3px 6px rgba(255,255,255,.8), inset -3px -3px 7px rgba(168,128,92,.2)',
-  inset: 'inset 4px 4px 9px rgba(150,110,76,.28), inset -3px -3px 7px rgba(255,255,255,.8)',
-  /** Accent-tinted raised surface (primary buttons, selected chips, hero card). */
-  accent: '0 10px 22px color-mix(in srgb, var(--accent) 38%, transparent), inset 4px 4px 9px rgba(255,255,255,.38), inset -4px -5px 10px rgba(0,0,0,.2)',
+  /** Cards and buttons: outline, lit edges, hard drop shadow. */
+  raised: `${EDGE}, ${LIT}, ${DROP}`,
+  /** List rows: outline, lit edges and a short block shadow underneath. */
+  soft: `${EDGE}, ${LIT}, 0 8px 0 0 rgba(10,11,26,.45)`,
+  /** Pressed in: inputs and wells. */
+  inset: `${EDGE}, inset 4px 4px 0 0 rgba(26,28,44,.3), inset -4px -4px 0 0 rgba(255,255,255,.6)`,
+  /** Outline and lit edges only, no drop shadow: for things that sit inside another panel. */
+  flat: `${EDGE}, ${LIT}`,
+  /** A dark panel (the tab bar). */
+  dark: `${EDGE}, inset 4px 4px 0 0 rgba(255,255,255,.18), inset -4px -4px 0 0 rgba(0,0,0,.25), ${DROP}`,
+  /** On an accent-coloured surface (primary buttons, hero card): a softer lit edge so the colour stays clean. */
+  accent: `${EDGE}, inset 4px 4px 0 0 rgba(255,255,255,.45), inset -4px -4px 0 0 rgba(26,28,44,.25), ${DROP}`,
 };
-export const R = { card: 24, ctl: 16, pill: 999, tag: 999, sheet: 32 };
+/** Nothing is round in 8-bit. */
+export const R = { card: 0, ctl: 0, pill: 0, tag: 0, sheet: 0 };
 
-// One family across the whole app: Nunito Sans (from @fontsource-variable/nunito-sans), falling back to the
-// bundled Liberation Sans and then Arial-metric fonts (for glyphs Nunito Sans lacks, such as the → arrow).
-const FAMILY = "'Nunito Sans Variable', 'Liberation Sans', Arimo, Arial, Helvetica, sans-serif";
-export const F = { serif: FAMILY, sans: FAMILY, mono: FAMILY };
-/** CSS `font` shorthand helpers. */
-export const mono = (w: number, size: number, lh: number | string = 1) => `${w} ${size}px/${lh} ${F.mono}`;
-export const sans = (w: number, size: number, lh: number | string = 1) => `${w} ${size}px/${lh} ${F.sans}`;
-export const serif = (size: number, lh: number | string = 1, italic = false) => `${italic ? 'italic ' : ''}400 ${size}px/${lh} ${F.serif}`;
+// Two pixel fonts: Press Start 2P for titles and labels, VT323 for text you actually read.
+// Falls back to the bundled Liberation Sans for glyphs they lack (arrows and some symbols).
+const PS = "'Press Start 2P', 'Liberation Sans', monospace";
+const VT = "'VT323', 'Liberation Sans', monospace";
+export const F = { serif: PS, sans: VT, mono: PS };
+
+// Press Start 2P is drawn on an 8px grid and only stays crisp when each font pixel lands on whole screen pixels, so its
+// sizes snap to multiples of 4. Line heights are kept loose enough for its tall glyphs.
+const snap = (n: number) => Math.max(8, Math.round(n / 4) * 4);
+const lhOf = (lh: number | string, min: number) => (typeof lh === 'number' ? Math.max(lh, min) : lh);
+
+/** Labels, numbers and times: Press Start 2P, small. */
+export const mono = (_w: number, size: number, lh: number | string = 1) => `400 ${snap(size * 0.85)}px/${lhOf(lh, 1.5)} ${F.mono}`;
+/** Running text: VT323, sized up because it has a small x-height. */
+export const sans = (_w: number, size: number, lh: number | string = 1) => `400 ${Math.round(size * 1.5)}px/${lhOf(lh, 1.1)} ${F.sans}`;
+/** Titles: Press Start 2P for big sizes; small "serif" text is body copy, so it uses VT323. Pixel fonts have no italics. */
+export const serif = (size: number, lh: number | string = 1, _italic = false) =>
+  size <= 17 ? `400 ${Math.round(size * 1.5)}px/${lhOf(lh, 1.1)} ${F.sans}` : `400 ${Math.max(12, snap(size * 0.5))}px/${lhOf(lh, 1.45)} ${F.serif}`; // titles never go below 12px

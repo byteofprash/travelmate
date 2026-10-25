@@ -1,19 +1,19 @@
-import { CalendarDays, Luggage, Map as MapIcon, PanelLeftClose, PanelLeftOpen, Plane, Route, Settings, type LucideIcon } from 'lucide-react';
-import { C, F, mono, rule, serif, CLAY, R } from '@/lib/theme';
+import { PixelIcon, type IconName } from './PixelIcon';
+import { C, mono, rule, sans, serif, CLAY, R } from '@/lib/theme';
 
 export type NavTab = 'home' | 'today' | 'trip' | 'map';
 
-const EXPANDED = 248;
-const COLLAPSED = 72;
+const EXPANDED = 272;
+const COLLAPSED = 84;
 
 function Item({
-  icon: Icon,
+  icon,
   label,
   active,
   collapsed,
   onClick,
 }: {
-  icon: LucideIcon;
+  icon: IconName;
   label: string;
   active?: boolean;
   collapsed: boolean;
@@ -27,9 +27,9 @@ function Item({
       aria-label={label}
       aria-current={active ? 'page' : undefined}
       className={'side-item' + (active ? ' active' : '')}
-      style={{ padding: collapsed ? '13px 0' : '12px 14px', justifyContent: collapsed ? 'center' : 'flex-start' }}
+      style={{ padding: collapsed ? '12px 0' : '10px 14px', justifyContent: collapsed ? 'center' : 'flex-start' }}
     >
-      <Icon size={20} strokeWidth={active ? 1.9 : 1.6} style={{ flex: 'none' }} />
+      <PixelIcon name={icon} size={28} />
       {!collapsed && <span>{label}</span>}
     </button>
   );
@@ -54,7 +54,6 @@ export function Sidebar({
   onGo: (t: NavTab) => void;
   onSettings: () => void;
 }) {
-  const Toggle = collapsed ? PanelLeftOpen : PanelLeftClose;
   return (
     <aside className="side" style={{ width: collapsed ? COLLAPSED : EXPANDED }}>
       <div
@@ -68,14 +67,13 @@ export function Sidebar({
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 11, minWidth: 0 }}>
-          <div style={{ position: 'relative', flex: 'none', width: 38, height: 38, borderRadius: 14, background: accent, boxShadow: CLAY.accent, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Plane size={19} strokeWidth={2} color={C.darkText} />
-            <div style={{ position: 'absolute', right: 5, bottom: 5, width: 7, height: 7, borderRadius: 4, background: C.accent2, boxShadow: 'inset 1px 1px 2px rgba(255,255,255,.6)' }} />
+          <div style={{ flex: 'none', width: 48, height: 48, margin: 4, background: accent, boxShadow: CLAY.accent, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <PixelIcon name="plane" size={28} />
           </div>
           {!collapsed && (
             <div style={{ minWidth: 0 }}>
-              <div style={{ font: serif(21, 1), letterSpacing: '-.01em' }}>Travel</div>
-              <div style={{ marginTop: 4, font: mono(500, 9.5), letterSpacing: '.1em', color: C.muted, textTransform: 'uppercase' }}>Companion</div>
+              <div style={{ font: serif(21, 1), textTransform: 'uppercase' }}>Travel</div>
+              <div style={{ marginTop: 6, font: mono(500, 9.5), color: C.muted, textTransform: 'uppercase' }}>Companion</div>
             </div>
           )}
         </div>
@@ -87,35 +85,35 @@ export function Sidebar({
           aria-expanded={!collapsed}
           title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
-          <Toggle size={18} strokeWidth={1.6} color={C.ink} />
+          <PixelIcon name={collapsed ? 'forward' : 'back'} size={28} />
         </button>
       </div>
 
-      <nav aria-label="Main" style={{ padding: collapsed ? '18px 10px 0' : '18px 12px 0', display: 'flex', flexDirection: 'column', gap: 4 }}>
-        <Item icon={Luggage} label="Trips" active={tab === 'home'} collapsed={collapsed} onClick={() => onGo('home')} />
+      <nav aria-label="Main" style={{ padding: collapsed ? '22px 14px 0' : '22px 18px 0', display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <Item icon="suitcase" label="Trips" active={tab === 'home'} collapsed={collapsed} onClick={() => onGo('home')} />
 
         {showTrip && (
           <>
             {collapsed ? (
-              <div style={{ margin: '14px 12px', height: 1, background: rule(0.12) }} />
+              <div style={{ margin: '10px 8px', borderTop: `4px dotted ${rule(0.25)}` }} />
             ) : (
               <div style={{ margin: '22px 14px 8px', display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
-                <div style={{ flex: 'none', width: 6, height: 6, borderRadius: 3, background: accent }} />
-                <div style={{ font: mono(500, 10.5), letterSpacing: '.08em', textTransform: 'uppercase', color: C.muted, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                <div style={{ flex: 'none', width: 8, height: 8, background: accent, boxShadow: `0 0 0 2px ${C.ink}` }} />
+                <div style={{ font: mono(500, 10.5), textTransform: 'uppercase', color: C.muted, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                   {tripName}
                 </div>
               </div>
             )}
-            <Item icon={Route} label="Trip" active={tab === 'trip'} collapsed={collapsed} onClick={() => onGo('trip')} />
-            <Item icon={CalendarDays} label="Today" active={tab === 'today'} collapsed={collapsed} onClick={() => onGo('today')} />
-            <Item icon={MapIcon} label="Map" active={tab === 'map'} collapsed={collapsed} onClick={() => onGo('map')} />
+            <Item icon="list" label="Trip" active={tab === 'trip'} collapsed={collapsed} onClick={() => onGo('trip')} />
+            <Item icon="calendar" label="Today" active={tab === 'today'} collapsed={collapsed} onClick={() => onGo('today')} />
+            <Item icon="map" label="Map" active={tab === 'map'} collapsed={collapsed} onClick={() => onGo('map')} />
           </>
         )}
       </nav>
 
       <div style={{ flex: 1 }} />
-      <div style={{ padding: collapsed ? '10px 10px 22px' : '10px 12px 22px', borderTop: `1px solid ${rule(0.08)}`, fontFamily: F.sans }}>
-        <Item icon={Settings} label="Settings" collapsed={collapsed} onClick={onSettings} />
+      <div style={{ padding: collapsed ? '18px 14px 26px' : '18px 18px 26px', borderTop: `4px dotted ${rule(0.2)}` }}>
+        <Item icon="gear" label="Settings" collapsed={collapsed} onClick={onSettings} />
       </div>
     </aside>
   );

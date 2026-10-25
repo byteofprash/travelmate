@@ -1,5 +1,5 @@
 import { forwardRef, useLayoutEffect, useRef } from 'react';
-import { Bed, Plane } from 'lucide-react';
+import { PixelIcon } from '../PixelIcon';
 import { BackButton } from '../BackButton';
 import { ActivityCard } from '../ActivityCard';
 import { CommuteLeg } from '../CommuteLeg';
@@ -7,15 +7,16 @@ import { DaySummary } from '../DaySummary';
 import { useSwipe } from '@/lib/useSwipe';
 import { WD, addDays, fmtClock, toISO, toMin } from '@/lib/format';
 import { dayBits, dayDate, daySummary, isStop } from '@/lib/derive';
-import { C, F, TAGC, mono, rule, sans, serif, CLAY, R } from '@/lib/theme';
+import { C, INK, TAGBG, mono, sans, serif, CLAY, R } from '@/lib/theme';
 import type { Day, Settings, Stop, Trip, TripMeta } from '@/lib/types';
 
 const iconBtn: React.CSSProperties = {
-  width: 46,
-  height: 46,
-  borderRadius: 23,
-  boxShadow: CLAY.soft,
-  background: C.card,
+  width: 52,
+  height: 52,
+  margin: 4,
+  borderRadius: R.pill,
+  background: C.accent2,
+  boxShadow: CLAY.accent,
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
@@ -98,21 +99,21 @@ export const Today = forwardRef<HTMLDivElement, {
       <div style={{ padding: '2px 16px 0 22px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-start' }}>
           <BackButton label="Trips" onClick={p.onHome} />
-          <div style={{ font: mono(500, 11), letterSpacing: '.08em', color: C.muted }}>
+          <div style={{ font: mono(500, 11), color: C.lightMuted, paddingLeft: 6 }}>
             {meta.name} · DAY {day.num} OF {trip.days.length}
           </div>
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
           <div onClick={p.onJourneys} title="Journeys" aria-label="Journeys" role="button" tabIndex={0} className="hov-card" style={iconBtn}>
-            <Plane size={19} strokeWidth={1.6} color={C.ink} />
+            <PixelIcon name="plane" size={28} />
           </div>
           <div onClick={p.onStays} title="Stays" aria-label="Stays" role="button" tabIndex={0} className="hov-card" style={iconBtn}>
-            <Bed size={20} strokeWidth={1.6} color={C.ink} />
+            <PixelIcon name="bed" size={28} />
           </div>
         </div>
       </div>
 
-      <div ref={stripRef} data-noswipe className="scroll" style={{ display: 'flex', gap: 6, overflowX: 'auto', padding: '16px 22px 22px', touchAction: 'pan-x pan-y' }}>
+      <div ref={stripRef} data-noswipe className="scroll" style={{ display: 'flex', gap: 14, overflowX: 'auto', padding: '20px 24px 30px', touchAction: 'pan-x pan-y' }}>
         {strip.map((s) => {
           const sel = s.idx === p.dayIdx;
           const inT = s.idx >= 0;
@@ -123,41 +124,41 @@ export const Today = forwardRef<HTMLDivElement, {
               onClick={() => inT && go(s.idx)}
               style={{
                 flex: 'none',
-                width: 48,
-                padding: '10px 0 11px',
-                borderRadius: 24,
-                boxShadow: sel ? CLAY.accent : inT ? CLAY.soft : 'none',
+                width: 52,
+                padding: '10px 0 10px',
+                borderRadius: R.pill,
+                boxShadow: sel ? CLAY.accent : CLAY.soft,
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                gap: 5,
+                gap: 6,
                 cursor: inT ? 'pointer' : 'default',
-                background: sel ? C.dark : inT ? C.card : 'transparent',
+                background: sel ? C.dark : inT ? C.card : C.lightMuted,
                 color: sel ? C.darkText : C.ink,
-                opacity: inT ? 1 : 0.35,
+                opacity: inT ? 1 : 0.55,
               }}
             >
-              <div style={{ font: mono(500, 10), letterSpacing: '.06em', textTransform: 'uppercase' }}>{s.wd}</div>
-              <div style={{ font: `500 19px/1 ${F.serif}` }}>{s.d}</div>
-              <div style={{ width: 4, height: 4, borderRadius: 2, background: s.iso === p.todayISO ? (sel ? C.darkText : accent) : 'transparent' }} />
+              <div style={{ font: mono(500, 10), textTransform: 'uppercase' }}>{s.wd}</div>
+              <div style={{ font: sans(400, 21, 1) }}>{s.d}</div>
+              <div style={{ width: 8, height: 8, background: s.iso === p.todayISO ? (sel ? C.darkText : accent) : 'transparent' }} />
             </div>
           );
         })}
       </div>
 
       <div style={{ padding: '6px 22px 0' }}>
-        <div style={{ font: sans(500, 12), color: accent, letterSpacing: '.02em' }}>
+        <div style={{ font: mono(500, 12), textTransform: 'uppercase', color: C.lightAccent }}>
           {p.dayIdx === p.todayIdx ? 'Today · ' : ''}
           {bits.wd} {bits.d} {bits.month}
         </div>
-        <h1 style={{ margin: '8px 0 0', font: serif(38, 1.02), letterSpacing: '-.015em', textWrap: 'balance' }}>{day.title}</h1>
+        <h1 style={{ margin: '14px 0 0', font: serif(38, 1.4), textWrap: 'balance' }}>{day.title}</h1>
         <div style={{ marginTop: 10, display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
           <span
             style={{
               font: mono(500, 10.5),
-              letterSpacing: '.06em',
               textTransform: 'uppercase',
-              padding: '5px 12px',
+              padding: '8px 12px 6px',
+              margin: 4,
               borderRadius: R.pill,
               background: C.sand,
               boxShadow: CLAY.inset,
@@ -166,37 +167,37 @@ export const Today = forwardRef<HTMLDivElement, {
           >
             {day.mode}
           </span>
-          <span style={{ font: sans(400, 13, 1.3), color: C.muted }}>{day.summary}</span>
+          <span style={{ font: sans(400, 13, 1.1), color: C.lightMuted }}>{day.summary}</span>
         </div>
       </div>
 
-      <div style={{ margin: '20px 16px 0' }}>
+      <div style={{ margin: '24px 20px 0' }}>
         <DaySummary theme={sum.theme} blurb={sum.blurb} stats={sum.stats} onOpen={p.onDaySheet} />
       </div>
 
-      <div style={{ padding: '26px 16px 8px 0' }}>
+      <div style={{ padding: '30px 20px 8px 0' }}>
         {rows.map((r) => {
           if (r.k === 'now')
             return (
-              <div key="now" style={{ display: 'grid', gridTemplateColumns: '62px 18px minmax(0,1fr)', alignItems: 'center', height: 22, margin: '2px 0' }}>
-                <div style={{ font: mono(600, 11.5), color: C.accent, textAlign: 'right' }}>{r.time}</div>
+              <div key="now" style={{ display: 'grid', gridTemplateColumns: '72px 20px minmax(0,1fr)', alignItems: 'center', height: 28, margin: '4px 0' }}>
+                <div style={{ font: mono(600, 14), color: C.now, textAlign: 'right', paddingRight: 8 }}>{r.time}</div>
                 <div style={{ display: 'flex', justifyContent: 'center' }}>
-                  <div style={{ width: 11, height: 11, borderRadius: R.ctl, background: C.now, boxShadow: '0 0 0 4px color-mix(in srgb, var(--accent2) 45%, transparent)' }} />
+                  <div style={{ width: 16, height: 16, background: C.now, boxShadow: `0 -4px 0 0 ${INK}, 0 4px 0 0 ${INK}, -4px 0 0 0 ${INK}, 4px 0 0 0 ${INK}` }} />
                 </div>
-                <div style={{ height: 3, background: C.now, borderRadius: 2, marginLeft: -4 }} />
+                <div style={{ height: 4, background: C.now, marginLeft: -2 }} />
               </div>
             );
           const it = day.items[r.i];
           if (!isStop(it)) return <CommuteLeg key={'l' + r.i} mode={it.mode} duration={it.dur} time={it.time} detail={it.text} />;
           const tag = it.tag || '';
-          const tc = TAGC[tag] || C.muted;
+          const tc = TAGBG[tag] || C.lightMuted;
           return (
-            <div key={it.id} style={{ display: 'grid', gridTemplateColumns: '62px 18px minmax(0,1fr)', alignItems: 'start' }}>
-              <div style={{ font: mono(500, 13), textAlign: 'right', paddingTop: cards ? 22 : 6 }}>{it.time}</div>
-              <div style={{ display: 'flex', justifyContent: 'center', paddingTop: cards ? 21 : 5 }}>
-                <div style={{ width: 13, height: 13, borderRadius: 7, border: `3px solid ${tc}`, background: C.card, boxShadow: CLAY.soft }} />
+            <div key={it.id} style={{ display: 'grid', gridTemplateColumns: '72px 20px minmax(0,1fr)', alignItems: 'start' }}>
+              <div style={{ font: mono(500, 14), color: C.light, textAlign: 'right', paddingTop: cards ? 26 : 8, paddingRight: 8 }}>{it.time}</div>
+              <div style={{ display: 'flex', justifyContent: 'center', paddingTop: cards ? 26 : 8 }}>
+                <div style={{ width: 16, height: 16, background: tc, boxShadow: `0 -4px 0 0 ${INK}, 0 4px 0 0 ${INK}, -4px 0 0 0 ${INK}, 4px 0 0 0 ${INK}` }} />
               </div>
-              <div style={{ margin: cards ? '4px 0 4px 8px' : '0 0 0 8px' }}>
+              <div style={{ margin: cards ? '4px 0 14px 12px' : '0 0 0 12px' }}>
                 <ActivityCard
                   variant={settings.cardStyle}
                   tag={tag}

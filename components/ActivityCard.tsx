@@ -1,4 +1,4 @@
-import { C, TAGBG, TAGC, mono, sans, serif, CLAY, R } from '@/lib/theme';
+import { C, INK, TAGBG, TAGC, mono, sans, serif, CLAY, R } from '@/lib/theme';
 
 export function ActivityCard({
   variant = 'cards',
@@ -19,17 +19,17 @@ export function ActivityCard({
   note?: string;
   onOpen?: () => void;
 }) {
-  const color = tagColor ?? TAGC[tag] ?? C.muted;
+  const color = tagColor ?? TAGBG[tag] ?? C.lightMuted; // the ledger style sits straight on the night sky, so the tag colour is the bright fill
   if (variant === 'ledger') {
     return (
-      <div onClick={onOpen} role="button" tabIndex={0} style={{ padding: '0 6px 16px 0', borderBottom: '2px dotted rgba(120,84,52,.2)', cursor: 'pointer', color: C.ink }}>
+      <div onClick={onOpen} role="button" tabIndex={0} style={{ padding: '0 6px 16px 0', borderBottom: '4px dotted rgba(244,244,244,.3)', cursor: 'pointer', color: C.light }}>
         <div style={{ font: serif(24, 1.1), textWrap: 'pretty' }}>{title}</div>
-        <div style={{ marginTop: 6, display: 'flex', gap: 10, font: sans(400, 12.5, 1.3), color: C.muted, flexWrap: 'wrap' }}>
-          <span style={{ color, fontWeight: 500 }}>{tag}</span>
+        <div style={{ marginTop: 8, display: 'flex', gap: 10, font: sans(400, 12.5, 1.3), color: C.lightMuted, flexWrap: 'wrap' }}>
+          <span style={{ color }}>{tag}</span>
           <span>{subtitle}</span>
           <span>{duration}</span>
         </div>
-        {note ? <div style={{ marginTop: 6, font: serif(14, 1.4, true), color: C.ink2 }}>{note}</div> : null}
+        {note ? <div style={{ marginTop: 6, font: serif(14, 1.4, true), color: C.light }}>{note}</div> : null}
       </div>
     );
   }
@@ -40,7 +40,8 @@ export function ActivityCard({
       tabIndex={0}
       className="hov-card"
       style={{
-        padding: '15px 16px 16px',
+        padding: '16px 16px 16px',
+        margin: 4,
         borderRadius: R.card,
         background: C.card,
         boxShadow: CLAY.raised,
@@ -49,13 +50,13 @@ export function ActivityCard({
       }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10, alignItems: 'center' }}>
-        <div style={{ font: mono(700, 10.5), letterSpacing: '.07em', textTransform: 'uppercase', color, background: TAGBG[tag] ?? C.sand, padding: '4px 10px', borderRadius: R.pill }}>{tag}</div>
-        <div style={{ font: mono(400, 11.5), color: C.muted }}>{duration}</div>
+        <div style={{ font: mono(700, 10.5), textTransform: 'uppercase', color: TAGC[tag] ?? INK, background: TAGBG[tag] ?? C.sand, padding: '6px 8px 4px', margin: 2, borderRadius: R.pill, boxShadow: `0 -2px 0 ${INK}, 0 2px 0 ${INK}, -2px 0 0 ${INK}, 2px 0 0 ${INK}` }}>{tag}</div>
+        <div style={{ font: sans(400, 12.5), color: C.muted }}>{duration}</div>
       </div>
-      <div style={{ marginTop: 7, font: serif(20, 1.15), textWrap: 'pretty' }}>{title}</div>
+      <div style={{ marginTop: 10, font: serif(20, 1.4), textWrap: 'pretty' }}>{title}</div>
       <div style={{ marginTop: 4, font: sans(400, 12.5, 1.35), color: C.muted }}>{subtitle}</div>
       {note ? (
-        <div style={{ marginTop: 9, paddingTop: 9, borderTop: '2px dotted rgba(120,84,52,.18)', font: sans(400, 12.5, 1.4), color: C.ink2 }}>{note}</div>
+        <div style={{ marginTop: 9, paddingTop: 9, borderTop: '4px dotted rgba(26,28,44,.2)', font: sans(400, 12.5, 1.1), color: C.ink2 }}>{note}</div>
       ) : null}
     </div>
   );
