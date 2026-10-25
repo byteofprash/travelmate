@@ -1,7 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-// Press Start 2P and VT323 (SIL OFL): the two pixel fonts.
-import '@fontsource/press-start-2p';
-import '@fontsource/vt323';
+// Pixel Operator (CC0) is loaded from public/fonts via app/globals.css.
 import './globals.css';
 
 export const metadata: Metadata = {

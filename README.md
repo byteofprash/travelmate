@@ -128,7 +128,7 @@ A flight only counts as complete when it has all four of: a **flight number** (l
 The app is drawn as 8-bit pixel art: a dithered night-navy page with stars, light panels with hard 4px ink outlines and notched corners, a lit top-left and shaded bottom-right edge, and hard drop shadows. Everything comes from `lib/theme.ts` (`C`, `TAGBG`, `TAGC`, `CLAY`, `R`, the font helpers) plus `app/globals.css`, so re-theming means editing those two files. The token names (`CLAY.raised`, `R.card` and so on) were kept from the earlier clay design; their values are now pixel ones, and every radius is 0.
 
 - **Palette:** Sweetie-16. Ink `#1a1c2c`, night navy `#29366f` for the page, paper `#f4f4f4` for panels. Text on panels is ink; text straight on the page uses the `light*` tokens.
-- **Fonts:** Press Start 2P for titles and labels (sizes snap to multiples of 4 so each font pixel is whole), VT323 for text you read. Both are bundled through `@fontsource`; Liberation Sans is the fallback for glyphs they lack (arrows and some symbols). No italics or letter-spacing.
+- **Fonts:** Pixel Operator throughout (sizes snap to 16, 24 and 32px so each font pixel is whole; titles and labels are bold); Liberation Sans is the fallback for glyphs it lacks (arrows and some symbols). No italics or letter-spacing.
 - **Icons:** `components/PixelIcon.tsx` draws 12x12 bitmaps as crisp SVG rects and adds the 1-cell ink outline automatically, so a new icon is just a silhouette.
 - **States:** solid and raised means complete or selected; dashed means empty or incomplete (the Flights and Stays tiles, "Add address").
 - **Presets:** Settings → Colours offers Green & yellow (default), Sky & lime, Orange & cyan and Yellow & sky (`PRESETS`). The primary is `--accent`, the secondary `--accent2`; text on both is ink. Accents saved from earlier palettes map to the nearest preset, otherwise the default.
@@ -138,7 +138,7 @@ The app is drawn as 8-bit pixel art: a dithered night-navy page with stars, ligh
 
 ## Fonts
 
-Press Start 2P and VT323 (both SIL Open Font License 1.1), bundled through `@fontsource/press-start-2p` and `@fontsource/vt323`. Glyphs they lack fall back to the bundled Liberation Sans (`public/fonts/`, licence included). The family names are set in one place, `lib/theme.ts`, plus the `font-family` lines in `app/globals.css`.
+Pixel Operator (CC0, by Jayvee Enaguas), loaded from `public/fonts/`. Glyphs it lacks fall back to the bundled Liberation Sans (`public/fonts/`, licence included). The family names are set in one place, `lib/theme.ts`, plus the `font-family` lines in `app/globals.css`.
 
 ## Differences from the prototype
 

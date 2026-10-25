@@ -1,6 +1,14 @@
 /* Liberation Sans (SIL OFL 1.1, licence in /fonts). Used only for glyphs the two pixel fonts lack, such as some arrows.
    An installed copy is used if present, otherwise the bundled files. */
 @font-face {
+  font-family: 'Pixel Operator'; font-style: normal; font-weight: 400; font-display: swap;
+  src: url('/fonts/PixelOperator.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Pixel Operator'; font-style: normal; font-weight: 700; font-display: swap;
+  src: url('/fonts/PixelOperator-Bold.ttf') format('truetype');
+}
+@font-face {
   font-family: 'Liberation Sans'; font-style: normal; font-weight: 400 500; font-display: swap;
   src: local('Liberation Sans'), local('LiberationSans'), url('/fonts/LiberationSans-Regular.woff2') format('woff2');
 }
@@ -13,7 +21,7 @@
 html, body { margin: 0; height: 100%; overscroll-behavior: none; touch-action: pan-x pan-y; } /* no pull-down bounce or pull-to-refresh */
 body {
   background: #0e0f1a;
-  font-family: 'VT323', 'Liberation Sans', monospace;
+  font-family: 'Pixel Operator', 'Liberation Sans', monospace;
   font-size: 22px;
   color: #1a1c2c;
   -webkit-font-smoothing: none; /* pixel fonts stay hard-edged where the platform allows it */
@@ -142,7 +150,7 @@ h1 { font-weight: 400; color: #f4f4f4; text-shadow: 4px 4px 0 #1a1c2c; } /* page
 .side-item {
   display: flex; align-items: center; gap: 12px; width: 100%; border: 0; background: transparent;
   cursor: pointer; text-align: left; color: #1a1c2c;
-  font: 400 24px/1 'VT323', 'Liberation Sans', monospace; white-space: nowrap;
+  font: 400 24px/1 'Pixel Operator', 'Liberation Sans', monospace; white-space: nowrap;
 }
 .side-item:hover { background: #cfdbe3; }
 .side-item.active {
@@ -182,14 +190,14 @@ button:focus-visible { outline: 4px dashed var(--accent2); outline-offset: 4px; 
 .map-tiles { image-rendering: pixelated; filter: saturate(.55) contrast(1.2) brightness(.92) hue-rotate(8deg); }
 .map-root .leaflet-bottom { bottom: 168px; } /* keep controls and attribution above the cards */
 .leaflet-control-attribution {
-  background: #1a1c2c !important; color: #94b0c2; font: 400 15px/1.2 'VT323', monospace; border-radius: 0;
+  background: #1a1c2c !important; color: #94b0c2; font: 400 16px/1.2 'Pixel Operator', monospace; border-radius: 0;
 }
 .leaflet-control-attribution a { color: #73eff7; }
 .leaflet-bar {
   border: 0 !important; border-radius: 0 !important; background: #f4f4f4;
   box-shadow: 0 -4px 0 0 #1a1c2c, 0 4px 0 0 #1a1c2c, -4px 0 0 0 #1a1c2c, 4px 0 0 0 #1a1c2c, inset 4px 4px 0 0 rgba(255, 255, 255, .9), inset -4px -4px 0 0 rgba(26, 28, 44, .2), 4px 8px 0 0 rgba(10, 11, 26, .55), 8px 4px 0 0 rgba(10, 11, 26, .55) !important;
 }
-.leaflet-bar a, .leaflet-bar a:hover { background: transparent; color: #1a1c2c; border-radius: 0 !important; border-bottom: 4px solid #1a1c2c; text-decoration: none; font: 400 26px/30px 'VT323', monospace; }
+.leaflet-bar a, .leaflet-bar a:hover { background: transparent; color: #1a1c2c; border-radius: 0 !important; border-bottom: 4px solid #1a1c2c; text-decoration: none; font: 700 32px/30px 'Pixel Operator', monospace; }
 .leaflet-bar a:last-child { border-bottom: 0; }
 .leaflet-bar a:hover { background: #ffffff; }
 .tc-mk { background: none; border: 0; }
@@ -197,10 +205,10 @@ button:focus-visible { outline: 4px dashed var(--accent2); outline-offset: 4px; 
   position: absolute; left: -14px; top: -14px; width: 28px; height: 28px; border: 0; color: #1a1c2c;
   box-shadow: 0 -4px 0 0 #1a1c2c, 0 4px 0 0 #1a1c2c, -4px 0 0 0 #1a1c2c, 4px 0 0 0 #1a1c2c, inset 4px 4px 0 0 rgba(255, 255, 255, .55), inset -4px -4px 0 0 rgba(26, 28, 44, .25), 4px 8px 0 0 rgba(10, 11, 26, .45);
   display: flex; align-items: center; justify-content: center;
-  font: 400 8px/1 'Press Start 2P', monospace; cursor: pointer; box-sizing: border-box;
+  font: 700 16px/1 'Pixel Operator', monospace; cursor: pointer; box-sizing: border-box;
 }
 .tc-mk .label {
-  position: absolute; top: -9px; left: 22px; font: 400 22px/18px 'VT323', monospace; color: #f4f4f4; white-space: nowrap;
+  position: absolute; top: -9px; left: 22px; font: 700 16px/18px 'Pixel Operator', monospace; color: #f4f4f4; white-space: nowrap;
   max-width: 160px; overflow: hidden; text-overflow: ellipsis; pointer-events: none;
   text-shadow: -2px 0 0 #1a1c2c, 2px 0 0 #1a1c2c, 0 -2px 0 #1a1c2c, 0 2px 0 #1a1c2c, 2px 2px 0 #1a1c2c, -2px -2px 0 #1a1c2c, 2px -2px 0 #1a1c2c, -2px 2px 0 #1a1c2c;
 }

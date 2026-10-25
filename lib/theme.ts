@@ -91,21 +91,17 @@ export const CLAY = {
 /** Nothing is round in 8-bit. */
 export const R = { card: 0, ctl: 0, pill: 0, tag: 0, sheet: 0 };
 
-// Two pixel fonts: Press Start 2P for titles and labels, VT323 for text you actually read.
-// Falls back to the bundled Liberation Sans for glyphs they lack (arrows and some symbols).
-const PS = "'Press Start 2P', 'Liberation Sans', monospace";
-const VT = "'VT323', 'Liberation Sans', monospace";
-export const F = { serif: PS, sans: VT, mono: PS };
+// One pixel font: Pixel Operator (CC0, bundled in public/fonts). Falls back to Liberation Sans for glyphs it lacks.
+const PO = "'Pixel Operator', 'Liberation Sans', monospace";
+export const F = { serif: PO, sans: PO, mono: PO };
 
-// Press Start 2P is drawn on an 8px grid and only stays crisp when each font pixel lands on whole screen pixels, so its
-// sizes snap to multiples of 4. Line heights are kept loose enough for its tall glyphs.
-const snap = (n: number) => Math.max(8, Math.round(n / 4) * 4);
+// Pixel Operator is drawn on a 16px grid and stays crisp at 16, 24 and 32px. Sizes snap to those; titles are bold.
+const px = (n: number) => (n < 22 ? 16 : n < 30 ? 24 : 32);
 const lhOf = (lh: number | string, min: number) => (typeof lh === 'number' ? Math.max(lh, min) : lh);
 
-/** Labels, numbers and times: Press Start 2P, small. */
-export const mono = (_w: number, size: number, lh: number | string = 1) => `400 ${snap(size * 0.85)}px/${lhOf(lh, 1.5)} ${F.mono}`;
-/** Running text: VT323, sized up because it has a small x-height. */
-export const sans = (_w: number, size: number, lh: number | string = 1) => `400 ${Math.round(size * 1.5)}px/${lhOf(lh, 1.1)} ${F.sans}`;
-/** Titles: Press Start 2P for big sizes; small "serif" text is body copy, so it uses VT323. Pixel fonts have no italics. */
-export const serif = (size: number, lh: number | string = 1, _italic = false) =>
-  size <= 17 ? `400 ${Math.round(size * 1.5)}px/${lhOf(lh, 1.1)} ${F.sans}` : `400 ${Math.max(12, snap(size * 0.5))}px/${lhOf(lh, 1.45)} ${F.serif}`; // titles never go below 12px
+/** Labels, numbers and times: small bold caps-friendly text. */
+export const mono = (_w: number, size: number, lh: number | string = 1) => `700 ${size <= 16 ? 16 : 24}px/${lhOf(lh, 1.25)} ${F.mono}`;
+/** Running text. */
+export const sans = (_w: number, size: number, lh: number | string = 1) => `400 ${px(size * 1.5)}px/${lhOf(lh, 1.2)} ${F.sans}`;
+/** Titles and card headings (bold). Pixel fonts have no italics. */
+export const serif = (size: number, lh: number | string = 1, _italic = false) => `700 ${size <= 17 ? 24 : size >= 30 ? 32 : 24}px/${lhOf(lh, 1.25)} ${F.serif}`;

@@ -13,8 +13,6 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.129.0",
-    "@fontsource/press-start-2p": "^5.3.0",
-    "@fontsource/vt323": "^5.3.0",
     "@upstash/redis": "^1.39.0",
     "leaflet": "^1.9.4",
     "lucide-react": "^1.48.0",
