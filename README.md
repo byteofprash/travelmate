@@ -7,7 +7,7 @@ Built from the Claude Design handoff in [`docs/design/`](docs/design/HANDOFF.md)
 ## Stack
 
 - **Next.js (App Router) + TypeScript**, deployed with Docker on Hetzner. A web-first, installable PWA shell.
-- **`/api/edit`**: a server route that calls Claude with the `@anthropic-ai/sdk`. It uses one `apply_trip_ops` tool, validates the returned ops with zod and returns a **patch** (`{ summary, ops }`), never the whole trip. The API key never reaches the browser.
+- **`/api/edit`**: a server route that calls Claude with the `@anthropic-ai/sdk`. It uses one `apply_trip_ops` tool, validates the returned ops with zod and returns a **patch** (`{ summary, ops }`), never the whole trip. Ops can also rename the trip and change its start and end dates (`update_trip`); those live in the trip list rather than the trip itself, and Undo restores them too. The API key never reaches the browser.
 - **`/api/new-trip`**: creates a whole new trip from pasted text. It calls Claude once (`create_trip` tool), which returns the trip's name, start and end dates, a one-line summary and the ops to build it; `lib/newtrip.ts` validates that and builds the trip. Day dates and weekdays are always recomputed from the start date, and the end date is widened if the plan runs past it. Both routes share `lib/server/claude.ts`.
 - Trips are stored in `localStorage` (`tc-trips-v1`), so the app keeps working without signal. They can also be synced to a Redis database so every device shows the same trips (see Syncing between devices). Each Claude edit keeps a version in history, so Undo can step back several times.
 

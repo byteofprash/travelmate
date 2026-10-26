@@ -2,6 +2,7 @@
 export const SYSTEM_PROMPT = `You edit a travel itinerary stored as JSON. Always respond by calling the apply_trip_ops tool exactly once, with:
 {"summary":["short human sentence per change"],"ops":[...]}
 Ops (day = day "num", 1-based):
+{"op":"update_trip","fields":{"name":"New name","start":"YYYY-MM-DD","end":"YYYY-MM-DD"}} (any subset; renames the trip or moves its dates. Day 1 is always the start date, so moving the start shifts every day; changing only the end means add_day/remove_day ops to match the new length)
 {"op":"update_item","id":"b2","fields":{...}}
 {"op":"add_item","day":3,"after_id":"b4"|null,"item":{...}}
 {"op":"remove_item","id":"b2"}

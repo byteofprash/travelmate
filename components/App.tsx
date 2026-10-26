@@ -10,11 +10,11 @@ import { Today } from './screens/Today';
 import { TripView } from './screens/TripView';
 import { MapView } from './screens/MapView';
 import { DaySheet, EditSheet, InboxSheet, JourneysSheet, NewTripSheet, SettingsSheet, SheetFrame, StaySheet, StaysSheet, StopSheet } from './Sheets';
-import { applyOps, type EditResult } from '@/lib/ops';
+import { applyMetaOps, applyOps, type EditResult } from '@/lib/ops';
 import { authedFetch } from '@/lib/access';
 import { explainFailure } from '@/lib/errors';
 import { buildNewTrip, NewTripResultSchema } from '@/lib/newtrip';
-import { DEFAULT_SETTINGS, emptyTrip, load, loadSettings, sampleTrip, save, saveSettings, type Persisted } from '@/lib/store';
+import { DEFAULT_SETTINGS, emptyTrip, load, loadSettings, sample, sampleTrip, save, saveSettings, type Persisted } from '@/lib/store';
 import { dayBits, flightStatus, todayIndex } from '@/lib/derive';
 import { isPlaceholder, toISO, toMin } from '@/lib/format';
 import { C, mono, rule, sans, CLAY, R } from '@/lib/theme';
@@ -174,13 +174,17 @@ export default function App({ onLock }: { onLock: () => void }) {
     setSheet({ type: 'add', tripId: id });
   };
 
-  const setTrip = (id: string, next: Trip, pushHistory?: Trip) =>
-    setData((d) => ({
-      ...d,
-      trips: { ...d.trips, [id]: next },
-      index: d.index.map((m) => (m.id === id ? { ...m, status: next.days.length ? 'planned' : 'empty' } : m)),
-      history: pushHistory ? { ...d.history, [id]: [...(d.history[id] || []), pushHistory] } : d.history,
-    }));
+  const setTrip = (id: string, next: Trip, pushHistory?: Trip, nextMeta?: TripMeta) =>
+    setData((d) => {
+      const old = d.index.find((m) => m.id === id);
+      return {
+        ...d,
+        trips: { ...d.trips, [id]: next },
+        index: d.index.map((m) => (m.id === id ? { ...(nextMeta ?? m), status: next.days.length ? 'planned' : 'empty' } : m)),
+        history: pushHistory ? { ...d.history, [id]: [...(d.history[id] || []), pushHistory] } : d.history,
+        metaHistory: pushHistory && old ? { ...d.metaHistory, [id]: [...(d.metaHistory?.[id] || []), old] } : d.metaHistory,
+      };
+    });
 
   const go = (t: Tab, extra?: { dayIdx?: number; mapMode?: 'day' | 'trip' }) => {
     setTab(t);
@@ -348,7 +352,7 @@ export default function App({ onLock }: { onLock: () => void }) {
       const out = (await res.json()) as EditResult;
       const n = out.ops.length;
       if (n) {
-        setTrip(id, applyOps(before, out.ops), before);
+        setTrip(id, applyOps(before, out.ops), before, applyMetaOps(meta, out.ops));
         flash('Trip updated');
         if (pendingInbox.current) {
           void inbox.dismiss(pendingInbox.current);
@@ -368,12 +372,17 @@ export default function App({ onLock }: { onLock: () => void }) {
     const h = data.history[trip.id] || [];
     const prev = h[h.length - 1];
     if (!prev) return;
-    setData((d) => ({
-      ...d,
-      trips: { ...d.trips, [trip.id]: prev },
-      index: d.index.map((m) => (m.id === trip.id ? { ...m, status: prev.days.length ? 'planned' : 'empty' } : m)),
-      history: { ...d.history, [trip.id]: h.slice(0, -1) },
-    }));
+    setData((d) => {
+      const mh = d.metaHistory?.[trip.id] || [];
+      const prevMeta = mh.length === h.length ? mh[mh.length - 1] : undefined;
+      return {
+        ...d,
+        trips: { ...d.trips, [trip.id]: prev },
+        index: d.index.map((m) => (m.id === trip.id ? { ...(prevMeta ?? m), status: prev.days.length ? 'planned' : 'empty' } : m)),
+        history: { ...d.history, [trip.id]: h.slice(0, -1) },
+        metaHistory: { ...d.metaHistory, [trip.id]: prevMeta ? mh.slice(0, -1) : [] },
+      };
+    });
     setEditResult(null);
     flash('Change undone');
   };
@@ -381,14 +390,16 @@ export default function App({ onLock }: { onLock: () => void }) {
   const resetTrip = () => {
     // A built-in sample trip goes back to its sample; a trip you created has no original, so it is emptied.
     const original = sampleTrip(trip.id) ?? emptyTrip(meta);
+    const origMeta = sample().index.find((m) => m.id === trip.id);
     setData((d) => ({
       ...d,
       trips: { ...d.trips, [trip.id]: original },
-      index: d.index.map((m) => (m.id === trip.id ? { ...m, status: original.days.length ? 'planned' : 'empty' } : m)),
+      index: d.index.map((m) => (m.id === trip.id ? { ...(origMeta ?? m), status: original.days.length ? 'planned' : 'empty' } : m)),
       history: { ...d.history, [trip.id]: [] },
+      metaHistory: { ...d.metaHistory, [trip.id]: [] },
     }));
     setEditResult(null);
-    const ti = todayIndex(meta, original, todayISO);
+    const ti = todayIndex(origMeta ?? meta, original, todayISO);
     setDayIdx(ti >= 0 ? ti : 0);
     flash(original.days.length ? 'Reset to original trip' : 'Trip cleared');
   };

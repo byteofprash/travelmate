@@ -12,6 +12,7 @@ export interface Persisted {
   index: TripMeta[];
   trips: Record<string, Trip>;
   history: Record<string, Trip[]>; // newest last; used for Undo
+  metaHistory?: Record<string, TripMeta[]>; // name/dates as they were at each history entry
 }
 
 const clone = <T,>(o: T): T => JSON.parse(JSON.stringify(o));
@@ -48,7 +49,8 @@ export function load(): Persisted {
 export function save(p: Persisted) {
   try {
     const history = Object.fromEntries(Object.entries(p.history).map(([k, v]) => [k, v.slice(-HISTORY_LIMIT)]));
-    localStorage.setItem(KEY, JSON.stringify({ ...p, history }));
+    const metaHistory = Object.fromEntries(Object.entries(p.metaHistory || {}).map(([k, v]) => [k, v.slice(-HISTORY_LIMIT)]));
+    localStorage.setItem(KEY, JSON.stringify({ ...p, history, metaHistory }));
   } catch {}
 }
 

@@ -111,7 +111,13 @@ const DaySchema = z.preprocess(dropNulls, DayShape);
 const StaySchema = z.preprocess(dropNulls, StayShape);
 const JourneySchema = z.preprocess(dropNulls, JourneyShape);
 
+const ISODate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
+
 export const OpSchema = z.discriminatedUnion('op', [
+  z.object({
+    op: z.literal('update_trip'),
+    fields: z.object({ name: z.string().min(1).max(80).optional(), start: ISODate.optional(), end: ISODate.optional() }),
+  }),
   z.object({ op: z.literal('update_item'), id: z.string(), fields: Fields }),
   z.object({ op: z.literal('add_item'), day: int(), after_id: z.string().nullable().optional(), item: ItemSchema }),
   z.object({ op: z.literal('remove_item'), id: z.string() }),
@@ -162,6 +168,8 @@ export function applyOps(trip: Trip, ops: Op[]): Trip {
   const dayBy = (n: number) => t.days.find((d) => d.num === n);
   for (const o of ops) {
     switch (o.op) {
+      case 'update_trip':
+        break; // lives in the trip index; see applyMetaOps()
       case 'update_item': {
         const [d, i] = findItem(o.id);
         if (d) Object.assign(d.items[i], o.fields);
@@ -218,6 +226,25 @@ export function applyOps(trip: Trip, ops: Op[]): Trip {
     }
   }
   return normalizeTrip(t);
+}
+
+/** Apply update_trip ops (name, start, end) to the trip's index entry. Nights follow the dates. */
+export function applyMetaOps<M extends { name: string; start: string; end: string; nights: number }>(meta: M, ops: Op[]): M {
+  const m = { ...meta };
+  for (const o of ops) {
+    if (o.op !== 'update_trip') continue;
+    const f = o.fields;
+    if (f.name?.trim()) m.name = f.name.trim();
+    const start = f.start ?? m.start;
+    const end = f.end ?? m.end;
+    const valid = (s: string) => !Number.isNaN(Date.parse(s));
+    if (valid(start) && valid(end) && end >= start) {
+      m.start = start;
+      m.end = end;
+      m.nights = Math.round((Date.parse(end) - Date.parse(start)) / 86400000);
+    }
+  }
+  return m;
 }
 
 /** Fill defaults so the UI never trips over partial data from the model. */

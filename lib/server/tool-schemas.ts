@@ -98,7 +98,19 @@ const op = (name: string, properties: Record<string, object>, required: string[]
   additionalProperties: false,
 });
 
+const TRIP_FIELDS = {
+  type: 'object',
+  properties: {
+    name: str('New trip name'),
+    start: str('New first day, YYYY-MM-DD'),
+    end: str('New last day, YYYY-MM-DD'),
+  },
+  description: 'Only the fields to change.',
+  additionalProperties: false,
+};
+
 const ALL_OPS = [
+  op('update_trip', { fields: TRIP_FIELDS }, ['fields']),
   op('update_item', { id: str('Id of the stop or leg'), fields: ITEM_FIELDS }, ['id', 'fields']),
   op('add_item', { day: int('Day number'), after_id: nullable(str('Insert after this item id; null for the start of the day')), item: ITEM }, ['day', 'item']),
   op('remove_item', { id: str() }, ['id']),
