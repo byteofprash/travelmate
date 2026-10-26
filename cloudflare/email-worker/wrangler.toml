@@ -6,13 +6,12 @@ compatibility_date = "2025-01-01"
 # is deployed again. Without this, a deploy replaces dashboard values with whatever is in this file.
 keep_vars = true
 
-# Set these in the dashboard as plain variables (or uncomment and fill them in here, but then they are committed
-# to the repo and override the dashboard):
-#   INBOUND_URL      your app's address plus /api/inbound, e.g. https://travel.byteofprash.com/api/inbound
+# These plain variables are committed here and match the dashboard. (With keep_vars, dashboard values are kept
+# on deploy, but values listed here are applied too.)
+#   INBOUND_URL      the app's address plus /api/inbound
 #   ALLOWED_SENDERS  comma-separated addresses allowed to send to this worker (the address you forward from)
-# And this one as a Secret, never in this file:
+# And this one is a Secret, never in this file:
 #   INBOUND_SECRET   the same value as INBOUND_SECRET in the server .env
-#
-# [vars]
-# INBOUND_URL = "https://travel.byteofprash.com/api/inbound"
-# ALLOWED_SENDERS = "you@example.com"
+[vars]
+INBOUND_URL = "https://travel.byteofprash.com/api/inbound"
+ALLOWED_SENDERS = "swaminathan@talon.one,prash2912@gmail.com"
